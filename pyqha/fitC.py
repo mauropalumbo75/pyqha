@@ -3,12 +3,11 @@
 
 import sys
 import numpy as np
-from read import read_qha_elastic_constants
-from read import read_Etot
-from write import write_qha_C
-from fitutils import fit_anis
-from fitutils import print_polynomial
-from minutils import find_min
+from read import read_Etot, read_qha_elastic_constants
+from write import write_qha_C, write_qha_CT
+from fitutils import fit_anis, print_polynomial
+from minutils import find_min, fquadratic, fquartic
+from fitFvib import fitFvib
 
 ################################################################################
 
@@ -69,7 +68,8 @@ def fitCxx(celldmsx,Cxx,ibrav,out,typeCx):
 
 def fitC(inputfileEtot, inputpathCx, ibrav, typeCx="quadratic"):
     """
-    An auxiliary function for fitting the elastic constant elements of Cxx 
+    An auxiliary function for fitting the elastic constant elements of C over a 
+    grid of values of the lattice parameters.
     """
     # Read the energies (this is necessary to read the celldmsx)
     celldmsx, Ex = read_Etot(inputfileEtot)
@@ -84,35 +84,54 @@ def fitC(inputfileEtot, inputpathCx, ibrav, typeCx="quadratic"):
     
     return aC, chiC
 
-################################################################################
-#   MAIN, for testing the module
-################################################################################
-#
-# sys.argv[1] -> name of the input file (default="output_energy1")
-# sts.argv[2] -> ibrav, lattice type as in Quantum Espresso (default=4 hexagonal for now)
 
-if __name__ == "__main__":
-  
-    # Default command line parameters
-#    inputfileEtot = "Os.pz-spn-kjpaw_psl.1.0.0.UPF/energy_files/output_energy1"
-#    inputpathCx = "Os.pz-spn-kjpaw_psl.1.0.0.UPF/elastic_constants/"  
-    
-    inputfileEtot = "Re.pz-spn-kjpaw_psl.1.0.0.UPF/energy_files/output_energy1"
-    inputpathCx = "Re.pz-spn-kjpaw_psl.1.0.0.UPF/elastic_constants/"  
-    
-    ibrav = 4  # default value, to be later changed to 1
-    typeCx = "quartic"
-        
-    # Read and process command line parameters, if any
-    print ("Possible options are: -fileEtot -ibrav -pathCx -fittypeCx -guess\n")
-    print ("Assuming default values for unspecified options: \n")
-    if len(sys.argv)>1:
-        for i in range(1,len(sys.argv)):
-            if sys.argv[i] == "-fileEtot": inputfileEtot = sys.argv[i+1]
-            elif sys.argv[i] == "-ibrav": ibrav = int(sys.argv[i+1])
-            elif sys.argv[i] == "-pathCx": inputpathCx = int(sys.argv[i+1])
-            elif sys.argv[i] == "-fittypeCx": typeEtot = sys.argv[i+1]
-            elif sys.argv[i] == "-guess": guess = sys.argv[i+1]
+################################################################################
 
-    aC, chiC = fitC(inputfileEtot, inputpathCx, ibrav, typeCx)
+def fitCT(indir, outdir, ibrav, fittypeEtot, fittypeFvib, fittypeC):
+    """
+    This function calculates the elastic constants tensor as a function of
+    temperatature in the quasi-static approximation.
+    First the free energy (Etot+Fvib) is minimized to find the equilibrium values
+    of the lattice parameters. Then the elastic constants are fitted over a grid
+    of lattice parameters values using a quadratic or quartic polynomial. 
+    Finally the elastic constants at each T are obtained from the the fitted 
+    polynomial at the values of the lattice parameters which minimize the free
+    energy at each temperature.
+    """
+    
+    inputfileEtot=indir+"/energy_files/Etot.dat"
+    inputfileFvib=indir+"/therm_files/output_therm.dat"
+    inputpathCx=indir+"/elastic_constants/"
+    
+    # Change the fit type from numeric to string 
+    typeC="quadratic"
+    if (fittypeC==2):
+        typeC="quartic" 
+    
+    # Call the processing function
+    TT, minT, fminT = fitFvib(indir,outdir,ibrav,fittypeEtot,fittypeFvib)
+
+    aC, chiC = fitC(inputfileEtot, inputpathCx, ibrav, typeC)
+
+    nT = 0
+    CTtemp = []
+    # Find the elastic constants
+    for T in range(0,len(TT)):
+        C = []
+        for i in range(0,6):
+            Ccol = []
+            for j in range(0,6):
+                if typeC=="quadratic":
+                    Ctemp = fquadratic(minT[T],aC[i][j],ibrav=4)
+                elif typeC=="quartic":
+                    Ctemp = fquartic(minT[T],aC[i][j],ibrav=4)  
+                Ccol.append(Ctemp)
+            C.append(Ccol)
+        CTtemp.append(C)
+        nT += 1
+    
+    CT = np.array(CTtemp)
+    CT.shape = (nT,6,6)     
+    
+    write_qha_CT(TT,CT,outdir)
 

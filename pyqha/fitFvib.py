@@ -125,6 +125,8 @@ def fitFvib(fin,fout,ibrav,fittypeEtot,fittypeFvib,defaultguess=[0.0,0.0,0.0,0.0
     alphaT = compute_alpha(minT,ibrav)
     #alphaT = compute_alpha_splines(TT,minT,ibrav)
     write_alphaT(fout+"/alphaT.dat",TT,alphaT,ibrav)
+    
+    return TT, minT, fminT
 
 
 ################################################################################

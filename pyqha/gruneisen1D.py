@@ -15,18 +15,16 @@
 
 import numpy as np
 import time
-from read import read_Etot
-from read import read_freq
-from read import read_freq_ext
-from write import write_freq
-from write import write_freq_ext
-from read import read_freq_ext_geo
+from read import read_Etot, read_freq, read_freq_ext, read_freq_ext_geo
+from write import write_freq, write_freq_ext
 
 
 ################################################################################
-# 
-# Find the center geometries. Remember indexex in lists starts from 0...
+
 def find_geocenters(ngeo):
+    """
+    Find the center geometries. Remember indexex in lists starts from 0...
+    """
     cgeo = np.zeros(6,dtype=np.int)
     for i in range(0,len(ngeo)):
         if (ngeo[i] % 2)==0:
@@ -38,50 +36,51 @@ def find_geocenters(ngeo):
 
 
 ################################################################################
-# 
-# Compute the Gruneisen parameters along one direction.
-# This function uses a 1-dimensional polynomial of fourth degree to fit the 
-# frequencies along a certain direction (along a and c axis in hexagonal systems
-# for example). 
-#
-def compute_grun_along_one_direction(nq,modes,ngeo,cgeo,celldmsx,freqgeo,rangegeo,xindex=0):
-        # set a numpy array of volumes for the fit (n=5)
-        xtemp=[]
-        for igeo in rangegeo:
-            xtemp.append(celldmsx[igeo,xindex])
-        x=np.array(xtemp)
 
-        grun=[]
-        for iq in range(0,nq):
-            grunq=[]
-            for ifreq in range(0,modes):
-                ytemp=[]
-                for igeo in rangegeo:
-                    ytemp.append(freqgeo[igeo,iq,ifreq])
-                y=np.array(ytemp)    
-                z=np.polyfit(x, y, 4)
-                p=np.poly1d(z)
-                pderiv=np.polyder(p)
-                if freqgeo[cgeo[xindex],iq,ifreq]<1E-3:
-                    grunq.append(0.0)
-                else:
-                    grunq.append(pderiv(celldmsx[cgeo[xindex],xindex])/freqgeo[cgeo[xindex],iq,ifreq]) #*celldmsx[cgeo[xindex],xindex])
-                #print (x,y,z,p(x),pderiv)
-            grun.append(grunq)
+def compute_grun_along_one_direction(nq,modes,ngeo,cgeo,celldmsx,freqgeo,rangegeo,xindex=0):
+    """
+    Compute the Gruneisen parameters along one direction.
+    This function uses a 1-dimensional polynomial of fourth degree to fit the 
+    frequencies along a certain direction (along a and c axis in hexagonal systems
+    for example). 
+    """
+    # set a numpy array of volumes for the fit (n=5)
+    xtemp=[]
+    for igeo in rangegeo:
+        xtemp.append(celldmsx[igeo,xindex])
+    x=np.array(xtemp)
+
+    grun=[]
+    for iq in range(0,nq):
+        grunq=[]
+        for ifreq in range(0,modes):
+            ytemp=[]
+            for igeo in rangegeo:
+                ytemp.append(freqgeo[igeo,iq,ifreq])
+            y=np.array(ytemp)    
+            z=np.polyfit(x, y, 4)
+            p=np.poly1d(z)
+            pderiv=np.polyder(p)
+            if freqgeo[cgeo[xindex],iq,ifreq]<1E-3:
+                grunq.append(0.0)
+            else:
+                grunq.append(pderiv(celldmsx[cgeo[xindex],xindex])/freqgeo[cgeo[xindex],iq,ifreq]) #*celldmsx[cgeo[xindex],xindex])
+        grun.append(grunq)
             
-        return np.array(grun)    
+    return np.array(grun)    
     
 
 ################################################################################
-# 
-# Read the frequencies for all geometries where the gruneisen parameters must be
-# calculated. This depends on the direction (along a, along c, etc.)
-# According to the direction chosen, start,stop,step must be given to loop over 
-# all geometries as listed in the file containing the energies 
-#
-#
-# More work to do: entend to other ibrav types, etc.
+
 def compute_grun(ngeo,celldmsx,inputfilefreq,ibrav=4,ext=False):
+    """
+    Read the frequencies for all geometries where the gruneisen parameters must be
+    calculated. This depends on the direction (along a, along c, etc.)
+    According to the direction chosen, start,stop,step must be given to loop over 
+    all geometries as listed in the file containing the energies 
+
+    More work to do: entend to other ibrav types, etc.
+    """
     if ibrav==4:    # Hexagonal systems
         cgeo = find_geocenters(ngeo)
         
@@ -134,7 +133,7 @@ def compute_grun(ngeo,celldmsx,inputfilefreq,ibrav=4,ext=False):
 
     
 ################################################################################
-#   MAIN
+#   MAIN, only for testing this module
 ################################################################################
 #
 

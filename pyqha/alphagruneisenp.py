@@ -238,32 +238,41 @@ def join(partials):
 
 ################################################################################
 # 
-# This function computes the thermal expansions at different temperatures from
-# the gruneisen parameters. Different options are possible as listed below:
-#
-# option == 0 -> use V, S, average frequencies and gruneisen parameters at 0 K 
-# option == 1 -> use S at 0 K, calculate V, average frequencies and gruneisen parameters at each T 
-# option == 2 ->  calculate S, V, average frequencies and gruneisen parameters at each T 
-#
-# It also determines how to run the temperature loop in parallel to speed the calculations up
-# nproc is the number of processes to be run in parallel
-#
-def compute_alpha_gruneisein(inputfileEtot,inputfileFvib,inputfileC,inputfilefreq, \
-    typeEtot,typeFvib,typeSx,typefreq,ibrav,guess=None,option=0,rangeT=range(1,10),nproc=1):
+
+def compute_alpha_gruneisein(indir,outdir,typeEtot,typeFvib,typeSx,typefreq,\
+    ibrav,option=0,rangeT=range(1,10),nproc=1,guess=None):
+    """
+    This function computes the thermal expansions at different temperatures from
+    the gruneisen parameters. Different options are possible as listed below:
+
+    option == 0 -> use V, S, average frequencies and gruneisen parameters at 0 K 
+    option == 1 -> use S at 0 K, calculate V, average frequencies and gruneisen parameters at each T 
+    option == 2 ->  calculate S, V, average frequencies and gruneisen parameters at each T 
+
+    It also determines how to run the temperature loop in parallel to speed the calculations up
+    nproc is the number of processes to be run in parallel
+    """
+    
+    inputfileEtot=indir+"/energy_files/Etot.dat"
+    inputfilefreq=indir+"/frequencies"
+    
+    fittypeEtot="quadratic"
+    if (typeEtot==2):
+        fittypeEtot="quartic"
 
     # Read the energies at 0 K
     celldmsx, Ex = read_Etot(inputfileEtot)
     # Fit and find the minimun at 0 K
-    a0, chia0 = fit_anis(celldmsx, Ex, ibrav, out=True, type=typeEtot)
+    a0, chia0 = fit_anis(celldmsx, Ex, ibrav, out=True, type=fittypeEtot)
     if chia0!=None:
-        min0, fmin0 = find_min(a0, ibrav, type=typeEtot, guess=guess)
+        min0, fmin0 = find_min(a0, ibrav, type=fittypeEtot, guess=guess)
     
     # if no guess is given, use the 0 K minimum
     if guess==None:
         guess=min0
     
     if (option!=0): # get the lattice parameters at each T from minimization of F
-        T, minT, fminT = fitFvib(inputfileEtot,inputfileFvib,ibrav,typeEtot,typeFvib,guess) 
+        T, minT, fminT = fitFvib(indir,outdir,ibrav,typeEtot,typeFvib,guess) 
         rangeT=T
         rangeT=range(1,10)
     else:
@@ -283,18 +292,18 @@ def compute_alpha_gruneisein(inputfileEtot,inputfileFvib,inputfileC,inputfilefre
     
     if (option==0):
         # Compute the Gruneisen parameters at 0 K once
-        #weights, freq, grun = fitfreq(celldmsx, min0, inputfilefreq, ibrav, typefreq="quadratic", compute_grun=True)
+        weights, freq, grun = fitfreq(celldmsx, min0, inputfilefreq, ibrav, typefreq="quadratic", compute_grun=True)
         
         # Alternatively, for testing option 0, read the gruneisen parameters from files (already written before)
-        weights, freq = read_freq_ext("average_freq0K")
-        weights, gruntemp1 = read_freq_ext("output_grun_along_a_ext3Dfit")
-        weights, gruntemp2 = read_freq_ext("output_grun_along_c_ext3Dfit")
-        nq = gruntemp1.shape[0]
-        modes = gruntemp1.shape[1]
-        grun = np.zeros((6,nq,modes))
-        grun[0] = gruntemp1
-        grun[1] = gruntemp1
-        grun[2] = gruntemp2
+        #weights, freq = read_freq_ext("average_freq0K")
+        #weights, gruntemp1 = read_freq_ext("output_grun_along_a_ext3Dfit")
+        #weights, gruntemp2 = read_freq_ext("output_grun_along_c_ext3Dfit")
+        #nq = gruntemp1.shape[0]
+        #modes = gruntemp1.shape[1]
+        #grun = np.zeros((6,nq,modes))
+        #grun[0] = gruntemp1
+        #grun[1] = gruntemp1
+        #grun[2] = gruntemp2
     else:          
         # get the weigths and the frequencies from files 
         weightsx, freqx = read_freq_ext_geo(inputfilefreq,range(1,celldmsx.shape[0]+1))
@@ -355,7 +364,8 @@ def compute_alpha_gruneisein(inputfileEtot,inputfileFvib,inputfileC,inputfilefre
     # End of parallel part
     ############################################################################
  
-    write_alphaT("alpha_gruneisen",rangeT,alphaT,ibrav)
+    fout = outdir+"/alpha_gruneisen"
+    write_alphaT(fout,rangeT,alphaT,ibrav)
          
         
 ################################################################################
