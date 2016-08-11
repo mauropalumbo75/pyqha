@@ -167,6 +167,8 @@ def find_min_quadratic(a,ibrav=4,guess=None):
     # First set the initial set, if given
     if guess!=None: 
         x_in = contract_vector(guess,ibrav)
+    else:
+        x_in = contract_vector([0.,0.,0.,0.,0.,0.],ibrav)
 
     #  Find the minimun using minimize from scipy.optimize with the gradient
     #  whatever algorithm with the gradient is more stable and I recommend using it 
@@ -216,7 +218,9 @@ def find_min_quartic(a,ibrav=4,guess=None):
     
     # First set the initial set, if given
     if guess!=None: 
-        x_in = contract_vector(guess,ibrav)         
+        x_in = contract_vector(guess,ibrav)  
+    else:
+        x_in = contract_vector([0.,0.,0.,0.,0.,0.],ibrav)
 
     #  Find the minimun using minimize from scipy.optimize with the gradient
     #  whatever algorithm with the gradient is more stable and I recommend using it 

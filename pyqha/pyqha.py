@@ -32,7 +32,7 @@ def get_input_parameters():
     """
         )
         
-    parser.add_argument('-alpha_grun', type=int, nargs='?', default=1, choices=range(0, 3),
+    parser.add_argument('-alpha_grun', type=int, nargs='?', default=0, choices=range(0, 3),
     help="""Compute the anisotropic thermal expansions from the Gruneisen parameters
     using:\n
     0  = V, gamma and S at 0 K\n

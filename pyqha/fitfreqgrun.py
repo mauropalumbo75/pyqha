@@ -48,7 +48,7 @@ def fitfreqxx(celldmsx,freqxx,ibrav,out,typefreq):
     It returns a nq*modes matrix, whose element [i,j] is the set of coefficients of the 
     polynomial fit and another nq*modes matrix, whose element [i,j] is the corresponding
     chi squared. If the chi squared is zero, the fitting procedure was NOT succesful
-    """
+    """    
     freqa = []
     freqchi = []
     nq = freqxx.shape[0] # total number of q points read
@@ -58,7 +58,7 @@ def fitfreqxx(celldmsx,freqxx,ibrav,out,typefreq):
     for i in range(0,nq):
         for j in range(0,modes):
             freqlabel="f(nq="+str(i+1)+",mode="+str(j+1)+")"
-            a, chi = fit_anis(celldmsx, freqxx[i][j], ibrav, False, typefreq, freqlabel)
+            a, chi = fit_anis(celldmsx, freqxx[i][j], ibrav, False, typefreq, freqlabel)          
             freqa.append(a)
             freqchi.append(chi)
             count += 1

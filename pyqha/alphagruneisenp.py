@@ -239,7 +239,7 @@ def join(partials):
 ################################################################################
 # 
 
-def compute_alpha_gruneisein(indir,outdir,typeEtot,typeFvib,typeSx,typefreq,\
+def compute_alpha_gruneisein(indir,outdir,typeEtot,typeFvib,typeS,typefreq,\
     ibrav,option=0,rangeT=range(1,10),nproc=1,guess=None):
     """
     This function computes the thermal expansions at different temperatures from
@@ -254,11 +254,18 @@ def compute_alpha_gruneisein(indir,outdir,typeEtot,typeFvib,typeSx,typefreq,\
     """
     
     inputfileEtot=indir+"/energy_files/Etot.dat"
-    inputfilefreq=indir+"/frequencies"
+    inputfilefreq=indir+"/frequencies/save_frequencies.dat.g"
+    inputfileC=indir+"/elastic_constants/"
     
     fittypeEtot="quadratic"
     if (typeEtot==2):
         fittypeEtot="quartic"
+    fittypeS="quadratic"
+    if (typeS==2):
+        fittypeS="quartic"
+    fittypefreq="quadratic"
+    if (typefreq==2):
+        fittypefreq="quartic"
 
     # Read the energies at 0 K
     celldmsx, Ex = read_Etot(inputfileEtot)
@@ -273,8 +280,7 @@ def compute_alpha_gruneisein(indir,outdir,typeEtot,typeFvib,typeSx,typefreq,\
     
     if (option!=0): # get the lattice parameters at each T from minimization of F
         T, minT, fminT = fitFvib(indir,outdir,ibrav,typeEtot,typeFvib,guess) 
-        rangeT=T
-        rangeT=range(1,10)
+        #rangeT=T
     else:
         V=compute_volume(min0,ibrav)  # eq. volume at 0 K
         print ("Using the volume at 0 K = ",str(V))
@@ -282,7 +288,7 @@ def compute_alpha_gruneisein(indir,outdir,typeEtot,typeFvib,typeSx,typefreq,\
     
     if (option==2):   # fit S and (later) get the average values at each T
         # Get the polynomial coefficients aS from fitting the elastic compliances (to be used later to get S(T))
-        aS, chiS = fitS(inputfileEtot, inputfileC, ibrav, typeSx)
+        aS, chiS = fitS(inputfileEtot, inputfileC, ibrav, fittypeS)
         aS = aS * RY_KBAR    # convert elastic compliances in (Ryd/au)^-1
     else:           # read S at 0 K from file
         print ("Reading elastic constants and compliances from file "+inputfileC+"...")
@@ -292,7 +298,7 @@ def compute_alpha_gruneisein(indir,outdir,typeEtot,typeFvib,typeSx,typefreq,\
     
     if (option==0):
         # Compute the Gruneisen parameters at 0 K once
-        weights, freq, grun = fitfreq(celldmsx, min0, inputfilefreq, ibrav, typefreq="quadratic", compute_grun=True)
+        weights, freq, grun = fitfreq(celldmsx, min0, inputfilefreq, ibrav, fittypefreq, compute_grun=True)
         
         # Alternatively, for testing option 0, read the gruneisen parameters from files (already written before)
         #weights, freq = read_freq_ext("average_freq0K")
@@ -313,9 +319,9 @@ def compute_alpha_gruneisein(indir,outdir,typeEtot,typeFvib,typeSx,typefreq,\
         freqxx = rearrange_freqx(freqx)
         print ("Done!")
         del freqx       # try to free some memory, but not ideal with the garbage collector
-    
+        
         print ("Fitting frequencies...")
-        afreq, chifreq = fitfreqxx(celldmsx, freqxx, ibrav, True, typefreq)
+        afreq, chifreq = fitfreqxx(celldmsx, freqxx, ibrav, True, fittypefreq)
         print ("Done!")  
      
     ############################################################################
@@ -345,10 +351,10 @@ def compute_alpha_gruneisein(indir,outdir,typeEtot,typeFvib,typeSx,typefreq,\
             it.append([option,startT[i],endT[i],rangeT,V,S,weights,freq,grun,ibrav])
     elif (option==1):
         for i in range(0,nproc):
-            it.append([option,startT[i],endT[i],rangeT,None,S,weights,None,None,ibrav,afreq, minT, freqxx.shape[0],freqxx.shape[1], typefreq])
+            it.append([option,startT[i],endT[i],rangeT,None,S,weights,None,None,ibrav,afreq, minT, freqxx.shape[0],freqxx.shape[1], fittypefreq])
     elif (option==2):
         for i in range(0,nproc):
-            it.append([option,startT[i],endT[i],rangeT,None,None,weights,None,None,ibrav,afreq, minT, freqxx.shape[0],freqxx.shape[1], typefreq, aS, typeSx])     
+            it.append([option,startT[i],endT[i],rangeT,None,None,weights,None,None,ibrav,afreq, minT, freqxx.shape[0],freqxx.shape[1], fittypefreq, aS, fittypeS])     
     else:
         print ("Option not implemented. Exiting...")
         exit()
