@@ -1,0 +1,28 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}
+\contentsline {section}{\numberline {1.1}Installation}{2}{section.1.1}
+\contentsline {chapter}{\numberline {2}Tutorial}{3}{chapter.2}
+\contentsline {section}{\numberline {2.1}Fitting the total energy}{3}{section.2.1}
+\contentsline {section}{\numberline {2.2}Computing thermal properties from phonon DOS}{8}{section.2.2}
+\contentsline {section}{\numberline {2.3}Computing quasi-harmonic properties}{15}{section.2.3}
+\contentsline {section}{\numberline {2.4}Computing quasi-static elastic constant}{23}{section.2.4}
+\contentsline {chapter}{\numberline {3}pyqha package}{29}{chapter.3}
+\contentsline {section}{\numberline {3.1}Module contents}{29}{section.3.1}
+\contentsline {section}{\numberline {3.2}Submodules}{31}{section.3.2}
+\contentsline {section}{\numberline {3.3}pyqha.constants module}{31}{section.3.3}
+\contentsline {section}{\numberline {3.4}pyqha.eos module}{31}{section.3.4}
+\contentsline {section}{\numberline {3.5}pyqha.fitC module}{32}{section.3.5}
+\contentsline {section}{\numberline {3.6}pyqha.fitEtot module}{33}{section.3.6}
+\contentsline {section}{\numberline {3.7}pyqha.fitFvib module}{33}{section.3.7}
+\contentsline {section}{\numberline {3.8}pyqha.fitfreqgrun module}{34}{section.3.8}
+\contentsline {section}{\numberline {3.9}pyqha.fitutils module}{35}{section.3.9}
+\contentsline {section}{\numberline {3.10}pyqha.gruneisen1D module}{39}{section.3.10}
+\contentsline {section}{\numberline {3.11}pyqha.minutils module}{39}{section.3.11}
+\contentsline {section}{\numberline {3.12}pyqha.plotutils module}{39}{section.3.12}
+\contentsline {section}{\numberline {3.13}pyqha.properties\_anis module}{40}{section.3.13}
+\contentsline {section}{\numberline {3.14}pyqha.read module}{40}{section.3.14}
+\contentsline {section}{\numberline {3.15}pyqha.thermo module}{42}{section.3.15}
+\contentsline {section}{\numberline {3.16}pyqha.write module}{42}{section.3.16}
+\contentsline {chapter}{\numberline {4}Indices and tables}{45}{chapter.4}
+\contentsline {chapter}{Python Module Index}{47}{section*.86}
+\contentsline {chapter}{Index}{49}{section*.87}

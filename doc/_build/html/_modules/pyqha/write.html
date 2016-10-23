@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqha.write &#8212; pyqha 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="pyqha 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><h1 style="font-size: 3em;">pyqha</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyqha.write</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="write_elastic_constants"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_elastic_constants">[docs]</a><span class="k">def</span> <span class="nf">write_elastic_constants</span><span class="p">(</span><span class="n">C</span><span class="p">,</span><span class="n">S</span><span class="p">,</span><span class="n">fname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Elastic constants (and elastic compliances) are stored in Voigt notation </span>
+<span class="sd">    They are then 6x6 matrices, stored as numpy matrices of shape [6,6]</span>
+<span class="sd">    So, the elastic constant C11 is in C[0][0], C12 in C[0][1] and so on.</span>
+<span class="sd">    Same for the elastic compliances   </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">fout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="c1"># first write the elastic constants</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># now write the elastic compliances</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">S</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>  
+    <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<span class="c1">################################################################################</span>
+
+<span class="c1"># </span>
+<div class="viewcode-block" id="write_C_geo"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_C_geo">[docs]</a><span class="k">def</span> <span class="nf">write_C_geo</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">C</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">fCout</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write elastic constants calculated on a multidimensional grid of lattice parameters</span>
+<span class="sd">    ngeo defines the total number of geometries evaluated</span>
+<span class="sd">    Note: the order must be the same as for the total energies in the quasi-harmonic calculations!  </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+            <span class="n">C_label</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">fCout</span> <span class="o">+</span> <span class="n">C_label</span> <span class="o">+</span> <span class="s2">&quot;.dat&quot;</span>
+            <span class="n">fout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>    <span class="c1"># Hexagonal systems</span>
+                <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;a</span><span class="se">\t\t\t</span><span class="s2">c/a</span><span class="se">\t\t\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">C_label</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">)):</span>
+                    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+                    
+<span class="c1">################################################################################</span>
+
+<span class="c1"># </span>
+<div class="viewcode-block" id="write_CT"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_CT">[docs]</a><span class="k">def</span> <span class="nf">write_CT</span><span class="p">(</span><span class="n">Ts</span><span class="p">,</span><span class="n">CT</span><span class="p">,</span><span class="n">fCout</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write elastic constants calculated on a multidimensional grid of lattice parameters</span>
+<span class="sd">    ngeo defines the total number of geometries evaluated</span>
+<span class="sd">    Note: the order must be the same as for the total energies!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+            <span class="n">C_label</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">fCout</span> <span class="o">+</span> <span class="n">C_label</span> <span class="o">+</span> <span class="s2">&quot;T.dat&quot;</span>
+            <span class="n">fout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;T (K)</span><span class="se">\t\t\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">C_label</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">CT</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Ts</span><span class="p">[</span><span class="n">T</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">CT</span><span class="p">[</span><span class="n">T</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<span class="c1">################################################################################</span>
+<span class="c1"># </span>
+
+
+<div class="viewcode-block" id="write_Etot"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_Etot">[docs]</a><span class="k">def</span> <span class="nf">write_Etot</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">Ex</span><span class="p">,</span><span class="n">fname</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read cell parameters (a,b,c,alpha,beta,gamma) and energies for a grid of cell</span>
+<span class="sd">    parameters values from file output_energy1. </span>
+<span class="sd">    Each celldms is a vector of lenght 6 containing a,b,c,alpha,beta,gamma respectively</span>
+<span class="sd">    celldmsx and Ex contains the grid of values of celldms and E so that:</span>
+<span class="sd">    celldmsx[0] = celldms0      Ex[0] = E0</span>
+<span class="sd">    celldmsx[1] = celldms1      Ex[1] = E1</span>
+<span class="sd">    celldmsx[2] = celldms2      Ex[2] = E2</span>
+<span class="sd">    ........</span>
+<span class="sd">    values are taken from the file &quot;fname&quot;</span>
+<span class="sd">    ibrav is the Bravais lattice as in Quantum Espresso and is needed in input (default is cubic)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>    <span class="c1"># Hexagonal systems</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;a</span><span class="se">\t\t\t</span><span class="s2">c</span><span class="se">\t\t\t</span><span class="s2">E_tot</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">Ex</span><span class="p">)):</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Ex</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        
+
+<div class="viewcode-block" id="write_celldmsT"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_celldmsT">[docs]</a><span class="k">def</span> <span class="nf">write_celldmsT</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="n">T</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">fout</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>    <span class="c1"># Hexagonal systems    </span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;# T (K)</span><span class="se">\t\t</span><span class="s2">a</span><span class="se">\t\t</span><span class="s2">c</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> 
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">)):</span> 
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span>
+            <span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> 
+    <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="write_alphaT"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_alphaT">[docs]</a><span class="k">def</span> <span class="nf">write_alphaT</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="n">T</span><span class="p">,</span><span class="n">alphaT</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">fout</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>    <span class="c1"># Hexagonal systems    </span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;# T (K) </span><span class="se">\t\t</span><span class="s2">alpha_xx</span><span class="se">\t\t</span><span class="s2">alpha_zz</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> 
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">)):</span> 
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span>
+            <span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alphaT</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alphaT</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> 
+    <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+  
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="write_xy"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_xy">[docs]</a><span class="k">def</span> <span class="nf">write_xy</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">labelx</span><span class="p">,</span><span class="n">labely</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function writes a quantity y versus quantity x into the file fname.</span>
+<span class="sd">    y and x are arrays and should have the same lenght. labelx and labely</span>
+<span class="sd">    are the axis labels (possibly with units), written in the header of the file</span>
+<span class="sd">    (first line).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fout</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;# &quot;</span><span class="o">+</span><span class="n">labelx</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">labely</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>     
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span> 
+        <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="write_freq"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_freq">[docs]</a><span class="k">def</span> <span class="nf">write_freq</span><span class="p">(</span><span class="n">qgeo</span><span class="p">,</span><span class="n">freq</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write frequencies (or Gruneisen parameters) in a file. In this format also q points</span>
+<span class="sd">    coordinates are written but not the weight of each point.</span>
+<span class="sd">    It can be used to write the Gruneisen mode parameters, giving them in input as freq</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nq</span> <span class="o">=</span> <span class="n">qgeo</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># total number of q points read</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># number of frequency modes</span>
+    <span class="n">fout</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &amp;plot nbnd=   &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">modes</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;, nks= &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">nq</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; /&quot;</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">iq</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nq</span><span class="p">):</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;              &quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">iqxyz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.6e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">qgeo</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">iq</span><span class="p">][</span><span class="n">iqxyz</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;    &quot;</span><span class="p">)</span>    <span class="c1"># qpoints coordinates</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    &quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ifreq</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">modes</span><span class="p">):</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.15e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">freq</span><span class="p">[</span><span class="n">iq</span><span class="p">][</span><span class="n">ifreq</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Gruneisein parameters (one for each mode)</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Frequencies (or Gruneisen parameters) written in file &quot;</span><span class="o">+</span><span class="n">filename</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="write_freq_ext"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_freq_ext">[docs]</a><span class="k">def</span> <span class="nf">write_freq_ext</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">freq</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write frequencies (or Gruneisen parameters) on an extended mesh in a file.</span>
+<span class="sd">    In this format, q points coordinates are NOT written but the weight of each point yes.</span>
+<span class="sd">    It can be used to write the Gruneisen mode parameters, giving them in input as freq</span>
+<span class="sd">    Write the gruneisen parameters </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nq</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># total number of q points read</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># number of frequency modes</span>
+    <span class="n">fout</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;         &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">modes</span><span class="o">//</span><span class="mi">3</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; 192     192    192   &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">nq</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;         F</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">iq</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nq</span><span class="p">):</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;              &quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="si">{:.15e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="n">iq</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ifreq</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">modes</span><span class="p">):</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.15e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">freq</span><span class="p">[</span><span class="n">iq</span><span class="p">,</span><span class="n">ifreq</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Frequencies (or Gruneisen parameters) written in file &quot;</span><span class="o">+</span><span class="n">filename</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    
+    
+<div class="viewcode-block" id="write_thermo"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_thermo">[docs]</a><span class="k">def</span> <span class="nf">write_thermo</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="n">T</span><span class="p">,</span> <span class="n">Evib</span><span class="p">,</span> <span class="n">Fvib</span><span class="p">,</span> <span class="n">Svib</span><span class="p">,</span> <span class="n">Cvib</span><span class="p">,</span><span class="n">ZPE</span><span class="p">,</span><span class="n">modes</span><span class="p">):</span>
+    <span class="n">fout</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# total modes from dos = </span><span class="si">{:.10e}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modes</span><span class="p">))</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# ZPE = </span><span class="si">{:.10e}</span><span class="s1"> Ry/cell</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ZPE</span><span class="p">))</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;# Multiply by 13.6058 to have energies in eV/cell etc..</span><span class="se">\n\</span>
+<span class="s2"># Multiply by 13.6058 x 23060.35 = 313 754.5 to have energies in cal/(N mol).</span><span class="se">\n\</span>
+<span class="s2"># Multiply by 13.6058 x 96526.0 = 1 313 313 to have energies in J/(N mol).</span><span class="se">\n\</span>
+<span class="s2"># N is the number of formula units per cell.</span><span class="se">\n</span><span class="s2">#</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;# T (K) </span><span class="se">\t</span><span class="s2">Evib (Ry/cell)</span><span class="se">\t</span><span class="s2">Fvib (Ry/cell)</span><span class="se">\t</span><span class="s2">Svib (Ry/cell/K)</span><span class="se">\t</span><span class="s2">Cvib (Ry/cell/K)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> 
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">Evib</span><span class="p">)):</span> 
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:.10e}</span><span class="se">\t</span><span class="si">{:.10e}</span><span class="se">\t</span><span class="si">{:.10e}</span><span class="se">\t</span><span class="si">{:.10e}</span><span class="se">\t</span><span class="si">{:.10e}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Evib</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Fvib</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Svib</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Cvib</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mauro Palumbo.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5a1.
+    </div>
+  </body>
+</html>

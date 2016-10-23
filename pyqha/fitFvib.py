@@ -1,83 +1,69 @@
-#!/usr/bin/env python3
 #encoding: UTF-8
+# Copyright (C) 2016 Mauro Palumbo
+# This file is distributed under the terms of the # MIT License. 
+# See the file `License' in the root directory of the present distribution.
 
 import sys
 import numpy as np
 from constants import RY_KBAR
-from read import read_Etot, read_EtotV, read_thermo
+from read import read_Etot, read_EtotV, read_thermo, read_dos_geo
 from fitutils import print_polynomial, fit_anis, expand_quadratic_to_quartic
 from minutils import find_min
-from eos import fit_Murn, print_data,calculate_fitted_points, compute_beta
+from eos import fit_Murn, print_eos_data, calculate_fitted_points, compute_beta, compute_Cv, compute_Cp
 from properties_anis import compute_alpha, compute_alpha_splines,compute_heat_capacity
-from write import write_celldmsT, write_alphaT, write_y_T
+from write import write_celldmsT, write_alphaT, write_xy
+from thermo import gen_TT, compute_thermo_geo, rearrange_thermo
+from plotutils import simple_plot_xy, multiple_plot_xy
 
 
 ################################################################################
 
-def rearrange_thermo(T,Evib,Fvib,Svib,Cvib,ngeo=1):
+def fitFvib(fEtot,thermodata,ibrav=4,typeEtot="quadratic",typeFvib="quadratic",defaultguess=[0.0,0.0,0.0,0.0,0.0,0.0]):
     """
-    This function just rearranges the order of the elements in the input matrices
-    The first index of the returning matrices X now gives all geometries at a given
-    T, i.e. X[0] is the vector of the property X a T=T[0][0]. X[0][0] for the first 
-    geometry, X[0][1] the second geometry and so on.
-    """
-    T2=[]
-    Evib2=[]
-    Fvib2=[]
-    Svib2=[]
-    Cvib2=[]
-    #for i in range(0,len(T[0])):
-    # stupid test
-    for i in range(0,len(T[0])):
-        TT=[]
-        TEvib=[]
-        TFvib=[]
-        TSvib=[]
-        TCvib=[]
-        for j in range(0,ngeo):
-            TT.append(T[j][i])
-            TEvib.append(Evib[j][i])
-            TFvib.append(Fvib[j][i])
-            TSvib.append(Svib[j][i])
-            TCvib.append(Cvib[j][i])
-      
-        T2.append(TT)
-        Evib2.append(TEvib)
-        Fvib2.append(TFvib)
-        Svib2.append(TSvib)
-        Cvib2.append(TCvib)
     
-    return len(T2), np.array(T2), Evib2, Fvib2, Svib2, Cvib2
-
-
-################################################################################
-
-def fitFvib(fin,fout,ibrav,fittypeEtot,fittypeFvib,defaultguess=[0.0,0.0,0.0,0.0,0.0,0.0]):
-    """
-    An auxiliary function for handling the qha calculations with Etot+Fvib    
-    """
-    inputfileEtot=fin+"/energy_files/Etot.dat"
-    inputfiledos=fin+"/dos_files/output_therm.dat"
-    inputfileFvib=fin+"/therm_files/output_therm.dat"
+    This function computes quasi-harmonic quantities from the 
+    :math:`E_{tot}(a,b,c)+F_{vib}(a,b,c,T)` as a function of temperature with Murnaghan's
+    EOS. :math:`E_{tot}(a,b,c)` is read from the *fin* file. :math:`F_{vib}(a,b,c,T)`
+    are given in *thermodata* which is a list containing the number of temperatures
+    ( *nT* ) for which the calculations are done and the numpy matrices for 
+    temperatures, vibrational energy, Helmholtz energy, entropy and
+    heat capacity. All these quantities are for each (a,b,c) as in *fin* file. The 
+    real number of lattice parameters depends on *ibrav*, for example for 
+    hexagonal systems (*ibrav=4*) you have only (a,c) values. *ibrav* identifies
+    the Bravais lattice, as in Quantum Espresso.
+        
+    The function fits :math:`E_{tot}(a,b,c)+F_{vib}(a,b,c,T)` with a quadratic
+    or quartic polynomial (as defined by *typeEtot* and *typeFvib* ) at each
+    temperature in *thermodata* and then stores the fitted coefficients.    
+    Note that you can chose a different polynomial type for fitting :math:`E_{tot}(a,b,c)`
+    and :math:`F_{vib}(a,b,c)`. Then it computes the minimun energy :math:`E_{tot}+F_{vib}`
+    and the corresponding lattice parameters :math:`(a_{min},b_{min},c_{min})` 
+    at each temperature by miniimizing the energy.
     
-    # Change the fit type from numeric to string
-    typeEtot="quadratic"
-    if (fittypeEtot==2):
-        typeEtot="quartic"
-    typeFvib="quadratic"
-    if (fittypeFvib==2):
-        typeFvib="quartic"   
+    It also computes the linear thermal expansion tensor (as a numerical derivative of
+    the minimum lattice parameters as a function of temperature (:py:func:`compute_alpha`).
+    
+    It returns the numpy arrays and matrices containing the temperatures (as in input), the
+    minimun energy, minimun lattice parameters, linear thermal expansions. It also
+    returns the fitted coefficients and the :math:`\chi^2` for :math:`E_{tot}(a,b,c)` 
+    only (at T=0 K) and the fitted coefficients and the :math:`\chi^2` for 
+    :math:`E_{tot}(a,b,c)+F_{vib}(a,b,c,T)` at each temperature. 
+    
+    .. Warning::
+       The quantities in *thermodata* are usually obtained from :py:func:`compute_thermo_geo`
+       or from :py:func:`read_thermo` and :py:func:`rearrange_thermo`. It is
+       important that the order in the total energy file *fin* and the order of
+       the thermodynamic data in *thermodata* is the same!  See also *example6* and 
+       the tutorial.
+       
+    """
         
     # Read the Etot at 0 K
-    celldmsx, Ex = read_Etot(inputfileEtot)
+    celldmsx, Ex = read_Etot(fEtot)
     
     ngeo = len(Ex)   # total number of geometries
-    
-    #compute_thermo_files()    # to be implemented
-    
-    # Read the vibrational energies from the directory "therm_files" if present
-    T1, Evib1, Fvib1, Svib1, Cvib1 = read_thermo( inputfileFvib, ngeo )
-    nT, T, Evib, Fvib, Svib, Cvib = rearrange_thermo( T1, Evib1, Fvib1, Svib1, Cvib1, ngeo )
+
+    nT, T, Evib, Fvib, Svib, Cvib = thermodata
     
     # Fit and find the minimun at 0 K
     a0temp, chi0 = fit_anis(celldmsx, Ex, ibrav, out=True, type=typeEtot, ylabel="Etot")
@@ -90,117 +76,110 @@ def fitFvib(fin,fout,ibrav,fittypeEtot,fittypeFvib,defaultguess=[0.0,0.0,0.0,0.0
     else:
         a0=a0temp
         
-    # Fit and find the minimun at T>0 K for each T                    
-    minT=[]
-    fminT=[]
+    # Fit and find the minimun at T>0 K for each T 
+    minT = np.zeros((nT,6))
+    fminT= np.zeros(nT)
+    aT = np.zeros((nT,len(a0)))
+    chiT= np.zeros(nT)
     for i in range(0,nT): 
         print ("####################################################################")
-        print ("T=",T[i][0])
+        print ("T=",T[i])
   
         # Fit Fvib with a quadratic or quartic polynomial, then add the fitted 
         # quadratic or quartic Etot at 0 K and find the minimun
-        aTtemp, chiT = fit_anis(celldmsx,Fvib[i],ibrav,type=typeFvib, ylabel="Fvib")
-        if (chiT>0):
+        aTtemp, chiT[i] = fit_anis(celldmsx,Fvib[i],ibrav,type=typeFvib, ylabel="Fvib")
+        if (chiT[i]>0):
             print (typeEtot+" Etot + "+typeFvib+" Fvib polynomials")
             if (typeEtot=="quartic" and typeFvib=="quadratic"):
-                aT=expand_quadratic_to_quartic(aTtemp)
+                aT[i,:]=expand_quadratic_to_quartic(aTtemp)
                 typemix="quartic"       # find the minimum as a quadratic
             else:
-                aT=aTtemp       
+                aT[i,:]=aTtemp       
                 typemix=typeFvib         # typeFvib and typeFtot are the same
-            print_polynomial(a0+aT)
+            print_polynomial(a0+aT[i,:])
 
-            minTtemp, fminTtemp = find_min(a0+aT,ibrav,type=typemix,guess=min0)
-                
-            minT.append(minTtemp)
-            fminT.append(fminTtemp)  
+            minT[i,:], fminT[i] = find_min(a0+aT[i,:],ibrav,type=typemix,guess=min0)
 
-
-    TT = T[:,0]
-    minT = np.array(minT)
-    fminT = np.array(fminT)
-    write_celldmsT(fout+"/celldmsT.dat",TT,minT,ibrav)
-   
     # Calculate the thermal expansion(s)
     alphaT = compute_alpha(minT,ibrav)
-    #alphaT = compute_alpha_splines(TT,minT,ibrav)
-    write_alphaT(fout+"/alphaT.dat",TT,alphaT,ibrav)
+    #alphaT = compute_alpha_splines(TT,minT,ibrav) # tentative
     
-    return TT, minT, fminT
+    return T, fminT, minT,  alphaT, a0, chi0, aT, chiT
 
 
 ################################################################################
 
-def fitFvibV(fin,fout,fittypeEtot,fittypeFvib):
+def fitFvibV(fin,thermodata,verbosity="low"):
     """
-    An auxiliary function for handling the qha calculations with Etot+Fvib   
+    This function computes quasi-harmonic quantities from the 
+    :math:`E_{tot}(V)+F_{vib}(V,T)` as a function of temperature with Murnaghan's
+    EOS. :math:`E_{tot}(V)` is read from the *fin* file. :math:`F_{vib}(V,T)`
+    are given in *thermodata* which is a list containing the number of temperatures
+    ( *nT* ) for which the calculations are done and the numpy matrices for 
+    temperatures, vibrational energy, Helmholtz energy, entropy and
+    heat capacity. All these quantities are for each volume as in *fin* file.
+        
+    The function fits :math:`E_{tot}(V)+F_{vib}(V,T)` with a Murnaghan's EOS
+    at each temperature in *thermodata* and then stores the fitted coefficients.
+    It also computes the volume thermal expansion as a numerical derivative of
+    the minimum volume as a function of temperature (:py:func:`compute_beta`), the
+    constant volume heat capacity at the minimum volume at each T
+    (:py:func:`compute_Cv`) and the constant pression heat capacity (:py:func:`compute_Cp`).
+    
+    It returns the numpy 1D arrays containing the temperatures (as in input), the
+    minimun energy, minimun volume, bulk modulus, volume thermal expansion, constant
+    volume and constant pressure heat capacities, one matrix with all fitted 
+    coefficients at each T and finally an array with the :math:`\chi^2` at each T.
+    
+    .. Warning::
+       The quantities in *thermodata* are usually obtained from :py:func:`compute_thermo_geo`
+       or from :py:func:`read_thermo` and :py:func:`rearrange_thermo`. It is
+       important that the order in the total energy file *fin* and the order of
+       the thermodynamic data in *thermodata* is the same!  See also *example5* and 
+       the tutorial. 
+       
     """
-
     
-    inputfileEtot=fin+"/energy_files/Etot.dat"
-    inputfiledos=fin+"/dos_files/output_therm.dat"
-    inputfileFvib=fin+"/therm_files/output_therm.dat"
-    
-    V, E = read_EtotV(inputfileEtot)
+    V, E = read_EtotV(fin)
     
     a0, cov, chi = fit_Murn(V,E)
    
-    print_data(V,E,a0,chi,"E")
+    print_eos_data(V,E,a0,chi,"E")
 
     ngeo = len(E)   # total number of geometries
     
-    # Read the vibrational energies
-    T1, Evib1, Fvib1, Svib1, Cvib1 = read_thermo( inputfileFvib, ngeo )
-    nT, T, Evib, Fvib, Svib, Cvib = rearrange_thermo( T1, Evib1, Fvib1, Svib1, Cvib1, ngeo )
+    nT, T, Evib, Fvib, Svib, Cvib = thermodata  # import list of thermodynamic data
    
     # Fit and find the minimun at T>0 K for each T                    
-    aTtemp=[]
-    chiTtemp=[]
+    aT = np.zeros((nT,4))    # Murnaghan EOS always has 4 parameters, store one for eact T
+    chiT = np.zeros((nT))
     for i in range(0,nT): 
         print ("####################################################################")
-        print ("T=",T[i,0])
+        print ("T=",T[i])
   
-        a, cov, chi = fit_Murn(V,E+Fvib[i])   
-        #print_data(V,E+Fvib[i],a,chi,"E")
+        a, cov, chi = fit_Murn(V,E+Fvib[i])
+        if (verbosity=="high"):
+            print_eos_data(V,E+Fvib[i],a,chi,"E+Fvib")  # print full detail at each T
              
         print ("Fmin = {:.10e}".format(a[0])+"\tVmin = {:.10e}".format(a[1])
         +"\tB0 = {:.10e}".format(a[2]*RY_KBAR)+"\t chi^2= {:.10e}".format(chi))
         
-        aTtemp.append(a)
-        chiTtemp.append(chi)
+        aT [i,:] = a
+        chiT[i] = chi
         
-    aT = np.array(aTtemp)
-    aT.shape = (nT,len(a0))
       
-    write_y_T(fout+"/Fmin.dat",T[:,0],aT[:,0],"Fmin")
-    write_y_T(fout+"/Vmin.dat",T[:,0],aT[:,1],"Vmin")
-    write_y_T(fout+"/B0.dat",T[:,0],aT[:,2]*RY_KBAR,"B0")
+    # As in Murnaghan EOS, aT[:,0] is Fmin(T), aT[:,1] is Vmin(T), aT[:,2] is B0(T)
+    # They are arrays, all function of T
     
-    # Derived quantities
+    # Compute the volume thermal expansion as numerical derivative of Vmin(T)
     betaT = compute_beta(aT[:,1])
-    write_y_T(fout+"/beta.dat",T[:,0], betaT,"Beta=1/V dV/dT")
     
-    return 
+    # compute Cv(Vmin(T))
+    Cv = compute_Cv(T,aT[:,1],V,Cvib)
     
-    import matplotlib.pyplot as plt
+    # compute Cp as Cp = Cv + TV beta^2 B0
+    Cp = compute_Cp(T,Cvib[:,4],aT[:,1],aT[:,2],betaT)
     
-    plt.figure(1)
-    plt.subplot(311)
-    plt.xlabel('T (K)')
-    plt.ylabel('Fmin (Ryd) ')
-    plt.plot(T[:,0], aT[:,0], 'r')
-    plt.subplot(312)
-    plt.xlabel('T (K)')
-    plt.ylabel('V (a.u.^3) ')
-    plt.plot(T[:,0], aT[:,1], 'r')
-    plt.subplot(313)
-    plt.xlabel('T (K)')
-    plt.ylabel('B0 ')
-    plt.plot(T[:,0], aT[:,2], 'r')
-    plt.show()
+    return T, aT[:,0], aT[:,1], aT[:,2], betaT, Cv, Cp, aT, chiT
     
-    plt.figure(2)
-    plt.xlabel('T (K)')
-    plt.ylabel(r'$\beta$ ($10^6 K^{-1}$)')
-    plt.plot(T[:,0], betaT*1E6, 'r')
-    plt.show()
+    

@@ -1,0 +1,520 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqha.read &#8212; pyqha 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="pyqha 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><h1 style="font-size: 3em;">pyqha</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyqha.read</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="read_elastic_constants"><a class="viewcode-back" href="../../pyqha.html#pyqha.read.read_elastic_constants">[docs]</a><span class="k">def</span> <span class="nf">read_elastic_constants</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function reads and returns the elastic constants and compliances from</span>
+<span class="sd">    the file *fname* .</span>
+<span class="sd">    Elastic constants (and elastic compliances) are stored in Voigt notation </span>
+<span class="sd">    They are then 6x6 matrices, stored as numpy matrices of shape [6,6]</span>
+<span class="sd">    So, the elastic constant C11 is in C[0,0], C12 in C[0,1] and so on.</span>
+<span class="sd">    Same for the elastic compliances.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">C</span><span class="o">=</span><span class="p">[]</span>          <span class="c1"># C, S matrices for elastic constants and elastic compliances</span>
+    <span class="n">S</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">c</span><span class="o">=</span><span class="p">[]</span>          <span class="c1"># c, s vectors of partial elastic constants and elastic compliances</span>
+    <span class="n">s</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">i</span><span class="o">=</span><span class="mi">0</span>           <span class="c1"># initialize counters</span>
+    <span class="n">countline</span><span class="o">=</span><span class="mi">1</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">linesplit</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">countline</span><span class="o">&lt;</span><span class="mi">13</span><span class="p">:</span>                  <span class="c1"># Read the first 12 lines with the elastic constants</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
+                        <span class="n">c</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">):</span>
+                        <span class="n">c</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span> 
+                    <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+                    <span class="n">C</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                    <span class="n">c</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">countline</span><span class="o">&gt;</span><span class="mi">13</span><span class="p">):</span>             <span class="c1"># Read the last 12 lines with the elastic compliances (1 line in between)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
+                        <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">):</span>
+                        <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span> 
+                    <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+                    <span class="n">S</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                    <span class="n">s</span><span class="o">=</span><span class="p">[]</span>
+            <span class="n">countline</span> <span class="o">+=</span> <span class="mi">1</span>
+   
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">C</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">S</span><span class="p">)</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="read_elastic_constants_geo"><a class="viewcode-back" href="../../pyqha.html#pyqha.read.read_elastic_constants_geo">[docs]</a><span class="k">def</span> <span class="nf">read_elastic_constants_geo</span><span class="p">(</span><span class="n">fC</span><span class="p">,</span><span class="n">ngeo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read elastic constants calculated on a multidimensional grid of lattice parameters</span>
+<span class="sd">    *ngeo* defines the total number of geometries evaluated</span>
+<span class="sd">    Note: the order must be the same as for the total energies!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Cx</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">Sx</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">ngeo</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">fC</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">C</span><span class="p">,</span> <span class="n">S</span> <span class="o">=</span> <span class="n">read_elastic_constants</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="n">Cx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+        <span class="n">Sx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Cx</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Sx</span><span class="p">)</span></div>
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="read_EtotV"><a class="viewcode-back" href="../../pyqha.html#pyqha.read.read_EtotV">[docs]</a><span class="k">def</span> <span class="nf">read_EtotV</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read cell volumes and the corresponding energies from input file *fname*</span>
+<span class="sd">    (1st col, volumes, 2nd col energies). Units must be :math:`a.u.^3` and </span>
+<span class="sd">    :math:`Ryd/cell`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Vx</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">Ex</span><span class="o">=</span><span class="p">[]</span>
+    
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">linesplit</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">V</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">E</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">Vx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+            <span class="n">Ex</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Vx</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Ex</span><span class="p">)</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="read_Etot"><a class="viewcode-back" href="../../pyqha.html#pyqha.read.read_Etot">[docs]</a><span class="k">def</span> <span class="nf">read_Etot</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">bc_as_a_ratio</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read cell parameters *(a,b,c)* and the corresponding energies from input file *fname*. </span>
+<span class="sd">    Each set of cell parameters is stored in a numpy array of lenght 6 </span>
+<span class="sd">    for *(a,b,c,alpha,beta,gamma)* respectively. This is done for a future possible </span>
+<span class="sd">    extension but for now only the first 3 elements are used (the others are always 0).</span>
+<span class="sd">    All sets are stored in *celldmsx* and *Ex*, the former is a nE*6 matrix, </span>
+<span class="sd">    the latter is a nE array.</span>
+<span class="sd">    </span>
+<span class="sd">    *ibrav* identifies the Bravais lattice as in Quantum Espresso and is needed </span>
+<span class="sd">    in input (default is 4, i.e. hexagonal cell). The input file format depends</span>
+<span class="sd">    on *ibrav*, for example in the hex case, the first two columns are for *a* and</span>
+<span class="sd">    *c* and the third is for the energies.</span>
+<span class="sd">    </span>
+<span class="sd">    If *bc_as_a_ratio=True*, the input data are assumed to be given as </span>
+<span class="sd">    :math:`(a,b/a,c/a)` in the input file and hence converted into :math:`(a,b,c)`</span>
+<span class="sd">    which is how they are always stored internally in :py:mod:`pyqha`.</span>
+<span class="sd">    </span>
+<span class="sd">    Units must be :math:`a.u.` and :math:`Ryd/cell`</span>
+<span class="sd"> </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">celldmsx</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">Ex</span><span class="o">=</span><span class="p">[]</span>
+    
+    <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>    <span class="c1"># Hexagonal systems</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="n">celldms</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">6</span><span class="p">])</span>
+                <span class="n">linesplit</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">celldms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">bc_as_a_ratio</span><span class="o">==</span><span class="kc">True</span><span class="p">):</span>
+                    <span class="n">celldms</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">celldms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>   <span class="c1"># convert from c/a to c</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">celldms</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>              <span class="c1"># as it is</span>
+                <span class="n">E</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="n">celldmsx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">celldms</span><span class="p">)</span>
+                <span class="n">Ex</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span>
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Ex</span><span class="p">)</span></div>
+
+<span class="c1">################################################################################</span>
+<span class="c1"># </span>
+ 
+<div class="viewcode-block" id="read_thermo"><a class="viewcode-back" href="../../pyqha.html#pyqha.read.read_thermo">[docs]</a><span class="k">def</span> <span class="nf">read_thermo</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ngeo</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read vibrational thermodynamic functions (Evib, Fvib, Svib, Cvib) as a </span>
+<span class="sd">    function of temperature from the input file *fname*. *ngeo* is the number</span>
+<span class="sd">    of input files to read, corresponding for example to different geometries</span>
+<span class="sd">    in a quasi-harmonic calculation.</span>
+<span class="sd">    If *ngeo&gt;1* reads from the files *fname1*, *fname2*, etc. up to *ngeo*  </span>
+<span class="sd">    Input file(s) have the following format:</span>
+
+<span class="sd">    +------+-----------------+-----------------+-----------------+-----------------+</span>
+<span class="sd">    | T    | :math:`E_{vib}` | :math:`F_{vib}` | :math:`S_{vib}` | :math:`C_{vib}` | </span>
+<span class="sd">    +======+=================+=================+=================+=================+</span>
+<span class="sd">    | 1    | ...             | ...             | ...             | ...             |</span>
+<span class="sd">    +------+-----------------+-----------------+-----------------+-----------------+  </span>
+<span class="sd">    </span>
+<span class="sd">    Lines starting with &quot;#&quot; are not read (comments).    </span>
+
+<span class="sd">    Returning values are :math:`nT*ngeo` numpy matrices (T,Evib,Fvib,Svib,Cvib) containing the </span>
+<span class="sd">    temperatures and the above mentioned thermodynamic functions as for example:</span>
+<span class="sd">    Fvib[T,geo] -&gt; Fvib at the temperature *T* for the geometry *geo*</span>
+<span class="sd">    </span>
+<span class="sd">    Units must be *K* for temperature, *Ryd/cell* for energies, *Ryd/cell/K* for</span>
+<span class="sd">    entropy and heat capacity. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">Evib</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">Fvib</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">Svib</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">Cvib</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">ngeo</span><span class="p">):</span>
+        <span class="n">gT</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">gEvib</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">gFvib</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">gSvib</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">gCvib</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ngeo</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">fname2</span><span class="o">=</span><span class="n">fname</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fname2</span><span class="o">=</span><span class="n">fname</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname2</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="n">linesplit</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">!=</span><span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="s2">&quot;#&quot;</span><span class="p">:</span>
+                    <span class="n">gT</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">)</span>
+                    <span class="n">gEvib</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">)</span>
+                    <span class="n">gFvib</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="p">)</span>
+                    <span class="n">gSvib</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="p">)</span>
+                    <span class="n">gCvib</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="p">)</span>
+        <span class="n">T</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gT</span><span class="p">)</span>
+        <span class="n">Evib</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gEvib</span><span class="p">)</span>
+        <span class="n">Fvib</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gFvib</span><span class="p">)</span>
+        <span class="n">Svib</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gSvib</span><span class="p">)</span>
+        <span class="n">Cvib</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gCvib</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Evib</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Fvib</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Svib</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Cvib</span><span class="p">)</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="read_freq"><a class="viewcode-back" href="../../pyqha.html#pyqha.read.read_freq">[docs]</a><span class="k">def</span> <span class="nf">read_freq</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This funcstion reads the phonon frequencies at each *q* point from a frequency file.  </span>
+<span class="sd">    Input file has the following format (to be done).</span>
+
+<span class="sd">    Returning values are a nq*3 matrix q, each q[i] being a q point (vector of 3 elements)</span>
+<span class="sd">    and a nq*modes matrix freq, each element freq[i] being the phonon frequencies</span>
+<span class="sd">    (vector of modes elements)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">q</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">freq</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">count</span><span class="o">=</span><span class="mi">0</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Reading file of frequencies &quot;</span><span class="o">+</span><span class="n">filename</span><span class="o">+</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">linesplit</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;&amp;plot&quot;</span> <span class="ow">and</span> <span class="n">count</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>   <span class="c1"># read first line with modes and total number of q points</span>
+                <span class="n">modes</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+                <span class="n">nq</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">count</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>  <span class="c1"># it&#39;s a q point line</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">2</span><span class="p">])])</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">count</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>  <span class="c1"># it&#39;s a frequency line</span>
+                <span class="n">frequencies</span><span class="o">=</span><span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">modes</span><span class="p">):</span>
+                    <span class="n">frequencies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>   <span class="c1"># list of frequencies in this line (for a given q point), 3*modes</span>
+                <span class="n">freq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">frequencies</span><span class="p">)</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span></div>
+
+
+<span class="c1">################################################################################</span>
+ 
+
+<div class="viewcode-block" id="read_freq_ext"><a class="viewcode-back" href="../../pyqha.html#pyqha.read.read_freq_ext">[docs]</a><span class="k">def</span> <span class="nf">read_freq_ext</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read the phonon frequencies at each q point from a frequency file. The format </span>
+<span class="sd">    of this file is different from the one read by the function read_freq and</span>
+<span class="sd">    contains usually more frequencies, each with a weight, but no qpoint coordinates.</span>
+<span class="sd">    Input file has the following format:</span>
+
+<span class="sd">    First line contains n. atoms, nqx, nqy, nqz, nq total.</span>
+<span class="sd">    Second line not read.</span>
+<span class="sd">    Third line: weight of the first qpoint</span>
+<span class="sd">    Following lines: phonon frequencies (their number is modes=3*n. atoms), one per line</span>
+<span class="sd">    then again: weight of the next qpoint, phonon frequencies (3*modes), one per line, etc.</span>
+
+<span class="sd">    Weights are diffent because of simmetry</span>
+
+<span class="sd">    Returning values are a nq vector weights, each weights[i] being the weight of a q point </span>
+<span class="sd">    and a nq*modes matrix freq, each element freq[i] being the phonon frequencies</span>
+<span class="sd">    (vector of modes elements) at the qpoint i</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">countline</span><span class="o">=</span><span class="mi">0</span> 
+    <span class="n">weights</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">freq</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">frequencies</span><span class="o">=</span><span class="p">[]</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Reading file of frequencies &quot;</span><span class="o">+</span><span class="n">filename</span><span class="o">+</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">linesplit</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">countline</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>                            <span class="c1"># this is the very first line with natoms and nq</span>
+                <span class="n">modes</span><span class="o">=</span><span class="mi">3</span><span class="o">*</span><span class="nb">int</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                <span class="n">nq</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+                <span class="n">countline</span> <span class="o">=</span> <span class="n">countline</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">countline</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>  <span class="c1"># it&#39;s the second line, just skip it</span>
+                <span class="n">countline</span> <span class="o">=</span> <span class="n">countline</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">countline</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>  <span class="c1"># it&#39;s a weight line</span>
+                <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="n">countline</span> <span class="o">=</span> <span class="n">countline</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">countline</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">:</span>  <span class="c1"># it&#39;s a frequency line</span>
+                <span class="n">frequencies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">)</span>   <span class="c1"># collect the frequencies from each line</span>
+                <span class="n">countline</span> <span class="o">=</span> <span class="n">countline</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">countline</span><span class="o">==</span><span class="p">(</span><span class="n">modes</span><span class="o">+</span><span class="mi">3</span><span class="p">)):</span> 		     <span class="c1"># this is the last line with a frequency, next line is again a weight</span>
+                    <span class="n">freq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">frequencies</span><span class="p">)</span>
+                    <span class="n">frequencies</span><span class="o">=</span><span class="p">[]</span>
+                    <span class="n">countline</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">weights</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span></div>
+
+
+<span class="c1">################################################################################ </span>
+
+<div class="viewcode-block" id="read_freq_geo"><a class="viewcode-back" href="../../pyqha.html#pyqha.read.read_freq_geo">[docs]</a><span class="k">def</span> <span class="nf">read_freq_geo</span><span class="p">(</span><span class="n">inputfilefreq</span><span class="p">,</span><span class="n">rangegeo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read the frequencies for all geometries where the gruneisen parameters must be</span>
+<span class="sd">    calculated. Start, stop, step must be given accordingly. It can be used to read</span>
+<span class="sd">    the frequencies only at some geometries from a larger set, if necessary, </span>
+<span class="sd">    providing the proper start, stop and step values.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">    nq = qgeo.shape[1] -&gt; total number of q points read</span>
+<span class="sd">    modes = freqgeo.shape[2] -&gt; number of frequency modes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">qgeo</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">freqgeo</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rangegeo</span><span class="p">:</span>
+        <span class="n">q</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="n">read_freq</span><span class="p">(</span><span class="n">inputfilefreq</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="n">qgeo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">freqgeo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>  
+        
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">qgeo</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freqgeo</span><span class="p">)</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+
+<div class="viewcode-block" id="read_freq_ext_geo"><a class="viewcode-back" href="../../pyqha.html#pyqha.read.read_freq_ext_geo">[docs]</a><span class="k">def</span> <span class="nf">read_freq_ext_geo</span><span class="p">(</span><span class="n">inputfilefreq</span><span class="p">,</span><span class="n">rangegeo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read the frequencies for all geometries where the gruneisen parameters must be</span>
+<span class="sd">    calculated. </span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">    nq = qgeo.shape[1] -&gt; total number of q points read</span>
+<span class="sd">    modes = freqgeo.shape[2] -&gt; number of frequency modes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weightsgeo</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">freqgeo</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rangegeo</span><span class="p">:</span>
+        <span class="n">weights</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="n">read_freq_ext</span><span class="p">(</span><span class="n">inputfilefreq</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="n">weightsgeo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+        <span class="n">freqgeo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>  
+        
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">weightsgeo</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freqgeo</span><span class="p">)</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+
+<div class="viewcode-block" id="read_dos"><a class="viewcode-back" href="../../pyqha.html#pyqha.read.read_dos">[docs]</a><span class="k">def</span> <span class="nf">read_dos</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read the phonon density of states (y axis) and the corresponding energies (x axis)</span>
+<span class="sd">    from the input file *filename* (1st col energies, 2nd col DOS) and store it</span>
+<span class="sd">    in two numpy arrays which are returned. </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">dens</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Reading phonon dos file &quot;</span><span class="o">+</span><span class="n">filename</span><span class="o">+</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">linesplit</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">&lt;</span><span class="mf">1.0E-10</span><span class="p">):</span>
+                <span class="n">E</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">1.0E-10</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">E</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">dens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">E</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dens</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_dos_geo"><a class="viewcode-back" href="../../pyqha.html#pyqha.read.read_dos_geo">[docs]</a><span class="k">def</span> <span class="nf">read_dos_geo</span><span class="p">(</span><span class="n">fin</span><span class="p">,</span><span class="n">ngeo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read the phonon density of states and energies as in :py:func:`read_dos` from *ngeo* input files</span>
+<span class="sd">    *fin1*, *fin2*, etc. and store it in two numpy matrices which are returned. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># read the first file to determine the number of DOS points</span>
+    <span class="n">E</span><span class="p">,</span> <span class="n">dos</span> <span class="o">=</span> <span class="n">read_dos</span><span class="p">(</span><span class="n">fin</span><span class="o">+</span><span class="s2">&quot;1&quot;</span><span class="p">)</span> 
+     
+    <span class="n">gE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">E</span><span class="p">),</span><span class="n">ngeo</span><span class="p">))</span>
+    <span class="n">gdos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">E</span><span class="p">),</span><span class="n">ngeo</span><span class="p">))</span>   
+    <span class="n">gE</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">E</span>
+    <span class="n">gdos</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">dos</span>
+    
+    <span class="c1"># then read the rest of files </span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">ngeo</span><span class="p">):</span>
+        <span class="n">EE</span><span class="p">,</span> <span class="n">ddos</span> <span class="o">=</span> <span class="n">read_dos</span><span class="p">(</span><span class="n">fin</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> 
+        <span class="n">gE</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">EE</span>
+        <span class="n">gdos</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ddos</span>
+    
+    <span class="k">return</span> <span class="n">gE</span><span class="p">,</span> <span class="n">gdos</span></div>
+
+<span class="c1">################################################################################</span>
+<span class="c1">################################################################################</span>
+<span class="c1"># Work in progress from here... These routines are not ready yet to be used.</span>
+
+
+<div class="viewcode-block" id="read_celldmt_hex"><a class="viewcode-back" href="../../pyqha.html#pyqha.read.read_celldmt_hex">[docs]</a><span class="k">def</span> <span class="nf">read_celldmt_hex</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+  <span class="n">T</span><span class="o">=</span><span class="p">[]</span>
+  <span class="n">celldmst1</span><span class="o">=</span><span class="p">[]</span>
+  <span class="n">celldmst3</span><span class="o">=</span><span class="p">[]</span>
+  <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lines</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="n">linesplit</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+          <span class="n">T</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+          <span class="n">celldmst1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+          <span class="n">celldmst3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+  <span class="k">return</span> <span class="n">T</span><span class="p">,</span> <span class="n">celldmst1</span><span class="p">,</span> <span class="n">celldmst3</span></div>
+
+
+<div class="viewcode-block" id="read_alpha"><a class="viewcode-back" href="../../pyqha.html#pyqha.read.read_alpha">[docs]</a><span class="k">def</span> <span class="nf">read_alpha</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+  <span class="n">T</span><span class="o">=</span><span class="p">[]</span>
+  <span class="n">a</span><span class="o">=</span><span class="p">[]</span>
+  <span class="n">ca</span><span class="o">=</span><span class="p">[]</span>
+  <span class="n">alphaxx</span><span class="o">=</span><span class="p">[]</span>
+  <span class="n">alphazz</span><span class="o">=</span><span class="p">[]</span>
+  <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lines</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+      <span class="n">linesplit</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+      <span class="k">if</span> <span class="n">line</span><span class="o">!=</span><span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="s2">&quot;#&quot;</span><span class="p">:</span>
+        <span class="n">T</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">)</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">)</span>
+        <span class="n">ca</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="p">)</span>
+        <span class="n">alphaxx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="p">)</span>
+        <span class="n">alphazz</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span> <span class="p">)</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="n">ca</span><span class="p">]</span>
+  <span class="n">alpha</span> <span class="o">=</span> <span class="p">[</span><span class="n">alphaxx</span><span class="p">,</span> <span class="n">alphazz</span><span class="p">]</span>
+  <span class="k">return</span> <span class="n">T</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">alpha</span></div>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">#   MAIN, for testing</span>
+<span class="c1">################################################################################</span>
+<span class="c1">#</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mauro Palumbo.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5a1.
+    </div>
+  </body>
+</html>

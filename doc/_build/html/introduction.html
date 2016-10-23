@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &#8212; pyqha 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="pyqha 0.1 documentation" href="index.html" />
+    <link rel="next" title="Tutorial" href="tutorial.html" />
+    <link rel="prev" title="Welcome to pyqha’s documentation!" href="index.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><h1 style="font-size: 3em;">pyqha</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to pyqha’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to pyqha&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorial.html"
+                        title="next chapter">Tutorial</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/introduction.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="introduction">
+<span id="id1"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p><code class="xref py py-mod docutils literal"><span class="pre">pyqha</span></code> is a Python package to perform quasi-harmonic and related calculations from total energies at 0 K, elastic constants at 0 K and phonon densities of states. The package provides Python functions to postprocess the results of your favourite DFT code, such as Quantum Espresso <a class="footnote-reference" href="#qe" id="id2">[1]</a> or VASP <a class="footnote-reference" href="#vasp" id="id3">[2]</a>, to obtain quasi-harmonic properties. It is meant to be imported in your own code or used to produce quasi-harmonic results (see the Tutorial part of this documentation). It is also meant for people who want to tinker with the code and adapt it to their own needs. Finally note that you may couple the package with some other available calculation Python tools, such as <a class="reference external" href="https://wiki.fysik.dtu.dk/ase/about.html">ASE</a> or <a class="reference external" href="http://www.aiida.net/">AiiDA</a>.
+The package is based on numpy, scipy and matplotlib libraries.</p>
+<p>A non-exhaustive list of properties which can be obtained using <code class="xref py py-mod docutils literal"><span class="pre">pyqha</span></code> is:</p>
+<ul class="simple">
+<li>quasi-harmonic Helmholtz energy for isotropic and anisotropic unit cells</li>
+<li>quasi-harmonic thermal expansions for isotropic and anisotropic unit cells</li>
+<li>quasi-harmonic bulk modulus for isotropic unit cells</li>
+<li>quasi-harmonic heat capacity for isotropic unit cells</li>
+<li>quasi-static elastic constants for anisotropic unit cells</li>
+</ul>
+<p>Current features of the package include:</p>
+<ul class="simple">
+<li>Fit the total energy <img class="math" src="_images/math/1b43a9b9fc946c5e4302c3dd56be1b79358f3d66.png" alt="E_{tot}(V)"/> with Murnaghan&#8217;s equation of state</li>
+<li>Fit the total energy <img class="math" src="_images/math/7ba79c6f386b207848b357cb4da8456964768dd1.png" alt="E_{tot}(a,b,c)"/>, where <img class="math" src="_images/math/48f6917edfbcd881ae54ffeab449b6658e9e09dc.png" alt="(a,b,c)"/> are the lattice parameters of hexagonal, tetragonal, orthorombic cells, using a quadratic or quartic polynomial</li>
+<li>Minimize the energy <img class="math" src="_images/math/174aa3d7370f21e26a82adeba71760a12acc82f1.png" alt="E_{tot}(V)+F_{vib}(V,T)"/> as a function of temperature with Murnaghan&#8217;s equation of state</li>
+<li>Minimize the energy <img class="math" src="_images/math/ef0c0737fcead988ed54b2d38a9f0eda9215bcef.png" alt="E_{tot}(a,b,c)+F_{vib}(a,b,c,T)"/> as a function of temperature using a quadratic or quartic polynomial</li>
+<li>Calculate the quasi-static elastic constant tensor as a function of temperature</li>
+</ul>
+<p>The equations to obtain these properties are relatively simple, for an introduction on the quasi-harmonic approximation you can see Baroni et al., available online at <a class="reference external" href="https://arxiv.org/abs/1112.4977">https://arxiv.org/abs/1112.4977</a> or <a class="footnote-reference" href="#palumbo" id="id4">[3]</a>. For an introduction on quasi-static elastic constants see <a class="footnote-reference" href="#wang" id="id5">[4]</a> Have a look at the very good documentation of the <em>thermo_pw</em> fortran package available at <a class="reference external" href="http://qeforge.qe-forge.org/gf/project/thermo_pw/">http://qeforge.qe-forge.org/gf/project/thermo_pw/</a>.</p>
+<table class="docutils footnote" frame="void" id="qe" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td><a class="reference external" href="http://www.quantum-espresso.org/">http://www.quantum-espresso.org/</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="vasp" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td><a class="reference external" href="https://www.vasp.at/">https://www.vasp.at/</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="palumbo" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td><ol class="first last upperalpha simple" start="13">
+<li>Palumbo, B. Burton, A. Costa e silva, B. Fultz, B. Grabowski, G. Grimvall, B. Hallstedt, O. Hellman, B. Lindahl, A. Schneider, P.E.A. Turchi, and W. Xiong. Physica Status Solidi (B) Basic Research, 251(1):14–32, 2014</li>
+</ol>
+</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="wang" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td><ol class="first last upperalpha simple" start="25">
+<li>Wang, J. J. Wang, H. Zhang, V. R. Manga, S. L. Shang, L.-Q. Chen, and Z.-K. Liu. Journal of Physics Condensed Matter, 22:225404, 2010.</li>
+</ol>
+</td></tr>
+</tbody>
+</table>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>You can download all package files from GitHub (<a class="reference external" href="https://github.com/mauropalumbo75/pyqha">https://github.com/mauropalumbo75/pyqha</a>) and then install it with the command:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo python setup.py install
+</pre></div>
+</div>
+<p>The most useful functions for the common user are directly accessible from the <code class="xref py py-mod docutils literal"><span class="pre">pyqha</span></code>. You can import all of them as:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqha</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>or you can import only the ones you need. The above command also makes available a number of useful constants that you can use for unit conversions.</p>
+<p>More functions are available as submodules. See the related documentation for more details. Note, however, that most of these functions are less well documented and are meant for advanced users or if you want to tinker with the code.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to pyqha’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mauro Palumbo.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5a1.
+    </div>
+  </body>
+</html>

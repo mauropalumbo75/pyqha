@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqha.fitC &#8212; pyqha 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="pyqha 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><h1 style="font-size: 3em;">pyqha</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyqha.fitC</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1">#encoding: UTF-8</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">read</span> <span class="k">import</span> <span class="n">read_Etot</span><span class="p">,</span> <span class="n">read_elastic_constants_geo</span><span class="p">,</span> <span class="n">read_thermo</span>
+<span class="kn">from</span> <span class="nn">write</span> <span class="k">import</span> <span class="n">write_C_geo</span><span class="p">,</span> <span class="n">write_CT</span>
+<span class="kn">from</span> <span class="nn">fitutils</span> <span class="k">import</span> <span class="n">fit_anis</span><span class="p">,</span> <span class="n">print_polynomial</span>
+<span class="kn">from</span> <span class="nn">minutils</span> <span class="k">import</span> <span class="n">find_min</span><span class="p">,</span> <span class="n">fquadratic</span><span class="p">,</span> <span class="n">fquartic</span>
+<span class="kn">from</span> <span class="nn">fitFvib</span> <span class="k">import</span> <span class="n">fitFvib</span>
+<span class="kn">from</span> <span class="nn">thermo</span> <span class="k">import</span> <span class="n">gen_TT</span><span class="p">,</span> <span class="n">compute_thermo_geo</span><span class="p">,</span> <span class="n">rearrange_thermo</span>
+<span class="kn">from</span> <span class="nn">plotutils</span> <span class="k">import</span> <span class="n">simple_plot_xy</span><span class="p">,</span> <span class="n">multiple_plot_xy</span>
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="rearrange_Cx"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitC.rearrange_Cx">[docs]</a><span class="k">def</span> <span class="nf">rearrange_Cx</span><span class="p">(</span><span class="n">Cx</span><span class="p">,</span><span class="n">ngeo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function rearrange the input numpy matrix *Cx* into an equivalent matrix *Cxx*</span>
+<span class="sd">    for fitting it.</span>
+<span class="sd">    *Cx* is a :math:`ngeo*6*6` matrix, each *Cx[i]* is the 6*6 *C* matrix for a given geometry ( *i* )</span>
+<span class="sd">    *Cxx* is a Lmath:`6*6*ngeo` matrix, each *Cxx[i][j]* is a vector with all values for different</span>
+<span class="sd">    geometries of the *Cij* elastic constant matrix element. For example, *Cxx[0,0]*</span>
+<span class="sd">    is the vector with ngeo values of the *C11* elastic constant and so on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Cxx</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">ngeo</span><span class="p">):</span>
+                <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Cx</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+            <span class="n">Cxx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>    
+  
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Cxx</span><span class="p">)</span>
+    <span class="n">temp</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="n">ngeo</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">temp</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="fitCxx"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitC.fitCxx">[docs]</a><span class="k">def</span> <span class="nf">fitCxx</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">Cxx</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">typeC</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function fits the elastic constant elements of *Cxx* as a function of the</span>
+<span class="sd">    grid of lattice parameters :math:`(a,b,c)`. </span>
+<span class="sd">    The real number of lattice parameters depends on *ibrav*, for example for </span>
+<span class="sd">    hexagonal systems (*ibrav=4*) you have only (a,c) values. *ibrav* identifies</span>
+<span class="sd">    the Bravais lattice, as in Quantum Espresso.</span>
+
+<span class="sd">    It returns a 6*6 matrix, each element *[i,j]* being the set of coefficients of the </span>
+<span class="sd">    polynomial fit and another 6*6 matrix, each element *[i,j]* being the corresponding</span>
+<span class="sd">    :math:`\chi^2`. If the chi squared is zero, the fitting procedure was NOT succesful</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># the most general way (in view of possible extensions) to determine the  </span>
+    <span class="c1"># number of fitting coefficients (for any possible ibrav and typeCx) is to</span>
+    <span class="c1"># fit one and then use len()</span>
+    <span class="n">atemp</span><span class="p">,</span> <span class="n">chitemp</span> <span class="o">=</span> <span class="n">fit_anis</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">Cxx</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">ibrav</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">typeC</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>      
+    <span class="n">Ca</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">atemp</span><span class="p">)))</span>
+    <span class="n">Cchi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+            <span class="n">Clabel</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">Ca</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">Cchi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">fit_anis</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">Cxx</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">ibrav</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">typeC</span><span class="p">,</span> <span class="n">Clabel</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">Ca</span><span class="p">,</span> <span class="n">Cchi</span></div>
+
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="fitCT"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitC.fitCT">[docs]</a><span class="k">def</span> <span class="nf">fitCT</span><span class="p">(</span><span class="n">aC</span><span class="p">,</span> <span class="n">chiC</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">minT</span><span class="p">,</span> <span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">typeC</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculates the elastic constants tensor *CT* as a function of</span>
+<span class="sd">    temperatature in the quasi-static approximation.</span>
+<span class="sd">    It takes in input *aC* and *chiC*, the fitted coefficients of the elastic </span>
+<span class="sd">    constants as a function of :math:`(a,b,c)` and the corresponding :math:`\chi^2`.</span>
+<span class="sd">    It also takes in input an array of temperatures *T* and the corresponding</span>
+<span class="sd">    lattice parameters *minT*, i.e. :math:`(a_{min},b_{min},c_{min})` from a </span>
+<span class="sd">    previous quasi-harmonic calculations (as in example6). </span>
+<span class="sd">    It also needs in input the Bravais lattice ( *ibrav* ) and the type of polynomial</span>
+<span class="sd">    ( *typeC* ) used for fitting the input *aC*.</span>
+<span class="sd">    </span>
+<span class="sd">    The function uses the coefficients *aC* to compute the elastic tensor at</span>
+<span class="sd">    each temperature in the array *T* from the corresponding lattice parameters</span>
+<span class="sd">    :math:`(a_{min},b_{min},c_{min})` in *minT*.</span>
+<span class="sd">    </span>
+<span class="sd">    It returns the temperature array and the a matrix *CT* with all the elastic</span>
+<span class="sd">    tensors at each T ( *CT[i]* is the elastic constants matrix for the </span>
+<span class="sd">    temperature *T[i]*)</span>
+<span class="sd">    </span>
+<span class="sd">    .. Warning::</span>
+<span class="sd">       The coefficients *aC* must be the result of fitting the elastic constants</span>
+<span class="sd">       over the same :math:`(a,b,c)` grid used in the quasi-harmonic calculations</span>
+<span class="sd">       corresponding to *minT* values! (See example7) </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">CT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">),</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+    <span class="c1"># Find the elastic constants</span>
+    <span class="k">for</span> <span class="n">iT</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">)):</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+            <span class="n">Ccol</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">typeC</span><span class="o">==</span><span class="s2">&quot;quadratic&quot;</span><span class="p">:</span>
+                    <span class="n">Ctemp</span> <span class="o">=</span> <span class="n">fquadratic</span><span class="p">(</span><span class="n">minT</span><span class="p">[</span><span class="n">iT</span><span class="p">],</span><span class="n">aC</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span><span class="n">ibrav</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">typeC</span><span class="o">==</span><span class="s2">&quot;quartic&quot;</span><span class="p">:</span>
+                    <span class="n">Ctemp</span> <span class="o">=</span> <span class="n">fquartic</span><span class="p">(</span><span class="n">minT</span><span class="p">[</span><span class="n">iT</span><span class="p">],</span><span class="n">aC</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span><span class="n">ibrav</span><span class="p">)</span>  
+                <span class="n">Ccol</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Ctemp</span><span class="p">)</span>
+            <span class="n">C</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Ccol</span><span class="p">)</span>
+        <span class="n">CT</span><span class="p">[</span><span class="n">iT</span><span class="p">]</span> <span class="o">=</span> <span class="n">C</span>
+    
+    <span class="k">return</span> <span class="n">T</span><span class="p">,</span> <span class="n">CT</span></div>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mauro Palumbo.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5a1.
+    </div>
+  </body>
+</html>

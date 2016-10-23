@@ -1,6 +1,8 @@
-#!/usr/bin/env python3
 #encoding: UTF-8
-#
+# Copyright (C) 2016 Mauro Palumbo
+# This file is distributed under the terms of the # MIT License. 
+# See the file `License' in the root directory of the present distribution.
+
 # This part is still very messy...
 
 import numpy as np
@@ -8,7 +10,7 @@ import time
 import math
 import sys
 from read import read_Etot, read_freq, read_freq_ext, read_elastic_constants, \
-                 read_qha_elastic_constants, read_freq_ext_geo
+                 read_elastic_constants_geo, read_freq_ext_geo
 from write import write_freq, write_freq_ext, write_alphaT, write_qha_C, write_qha_CT
 from constants import RY_KBAR, K_BOLTZMANN_RY, kb1
 from fitutils import fit_anis
@@ -226,7 +228,7 @@ def fitS(inputfileEtot, inputpathCx, ibrav, typeSx="quadratic"):
     celldmsx, Ex = read_Etot(inputfileEtot)
 
     ngeo = len(Ex)
-    Cx, Sx = read_qha_elastic_constants(ngeo, inputpathCx)
+    Cx, Sx = read_elastic_constants_geo(ngeo, inputpathCx)
     
     # This function works for both C and S, here I use it for S 
     Sxx = rearrange_Cx(Sx,ngeo)

@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqha.fitFvib &#8212; pyqha 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="pyqha 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><h1 style="font-size: 3em;">pyqha</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyqha.fitFvib</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1">#encoding: UTF-8</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="n">RY_KBAR</span>
+<span class="kn">from</span> <span class="nn">read</span> <span class="k">import</span> <span class="n">read_Etot</span><span class="p">,</span> <span class="n">read_EtotV</span><span class="p">,</span> <span class="n">read_thermo</span><span class="p">,</span> <span class="n">read_dos_geo</span>
+<span class="kn">from</span> <span class="nn">fitutils</span> <span class="k">import</span> <span class="n">print_polynomial</span><span class="p">,</span> <span class="n">fit_anis</span><span class="p">,</span> <span class="n">expand_quadratic_to_quartic</span>
+<span class="kn">from</span> <span class="nn">minutils</span> <span class="k">import</span> <span class="n">find_min</span>
+<span class="kn">from</span> <span class="nn">eos</span> <span class="k">import</span> <span class="n">fit_Murn</span><span class="p">,</span> <span class="n">print_eos_data</span><span class="p">,</span> <span class="n">calculate_fitted_points</span><span class="p">,</span> <span class="n">compute_beta</span><span class="p">,</span> <span class="n">compute_Cv</span><span class="p">,</span> <span class="n">compute_Cp</span>
+<span class="kn">from</span> <span class="nn">properties_anis</span> <span class="k">import</span> <span class="n">compute_alpha</span><span class="p">,</span> <span class="n">compute_alpha_splines</span><span class="p">,</span><span class="n">compute_heat_capacity</span>
+<span class="kn">from</span> <span class="nn">write</span> <span class="k">import</span> <span class="n">write_celldmsT</span><span class="p">,</span> <span class="n">write_alphaT</span><span class="p">,</span> <span class="n">write_xy</span>
+<span class="kn">from</span> <span class="nn">thermo</span> <span class="k">import</span> <span class="n">gen_TT</span><span class="p">,</span> <span class="n">compute_thermo_geo</span><span class="p">,</span> <span class="n">rearrange_thermo</span>
+<span class="kn">from</span> <span class="nn">plotutils</span> <span class="k">import</span> <span class="n">simple_plot_xy</span><span class="p">,</span> <span class="n">multiple_plot_xy</span>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="fitFvib"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitFvib.fitFvib">[docs]</a><span class="k">def</span> <span class="nf">fitFvib</span><span class="p">(</span><span class="n">fEtot</span><span class="p">,</span><span class="n">thermodata</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">typeEtot</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span><span class="n">typeFvib</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span><span class="n">defaultguess</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    This function computes quasi-harmonic quantities from the </span>
+<span class="sd">    :math:`E_{tot}(a,b,c)+F_{vib}(a,b,c,T)` as a function of temperature with Murnaghan&#39;s</span>
+<span class="sd">    EOS. :math:`E_{tot}(a,b,c)` is read from the *fin* file. :math:`F_{vib}(a,b,c,T)`</span>
+<span class="sd">    are given in *thermodata* which is a list containing the number of temperatures</span>
+<span class="sd">    ( *nT* ) for which the calculations are done and the numpy matrices for </span>
+<span class="sd">    temperatures, vibrational energy, Helmholtz energy, entropy and</span>
+<span class="sd">    heat capacity. All these quantities are for each (a,b,c) as in *fin* file. The </span>
+<span class="sd">    real number of lattice parameters depends on *ibrav*, for example for </span>
+<span class="sd">    hexagonal systems (*ibrav=4*) you have only (a,c) values. *ibrav* identifies</span>
+<span class="sd">    the Bravais lattice, as in Quantum Espresso.</span>
+<span class="sd">        </span>
+<span class="sd">    The function fits :math:`E_{tot}(a,b,c)+F_{vib}(a,b,c,T)` with a quadratic</span>
+<span class="sd">    or quartic polynomial (as defined by *typeEtot* and *typeFvib* ) at each</span>
+<span class="sd">    temperature in *thermodata* and then stores the fitted coefficients.    </span>
+<span class="sd">    Note that you can chose a different polynomial type for fitting :math:`E_{tot}(a,b,c)`</span>
+<span class="sd">    and :math:`F_{vib}(a,b,c)`. Then it computes the minimun energy :math:`E_{tot}+F_{vib}`</span>
+<span class="sd">    and the corresponding lattice parameters :math:`(a_{min},b_{min},c_{min})` </span>
+<span class="sd">    at each temperature by miniimizing the energy.</span>
+<span class="sd">    </span>
+<span class="sd">    It also computes the linear thermal expansion tensor (as a numerical derivative of</span>
+<span class="sd">    the minimum lattice parameters as a function of temperature (:py:func:`compute_alpha`).</span>
+<span class="sd">    </span>
+<span class="sd">    It returns the numpy arrays and matrices containing the temperatures (as in input), the</span>
+<span class="sd">    minimun energy, minimun lattice parameters, linear thermal expansions. It also</span>
+<span class="sd">    returns the fitted coefficients and the :math:`\chi^2` for :math:`E_{tot}(a,b,c)` </span>
+<span class="sd">    only (at T=0 K) and the fitted coefficients and the :math:`\chi^2` for </span>
+<span class="sd">    :math:`E_{tot}(a,b,c)+F_{vib}(a,b,c,T)` at each temperature. </span>
+<span class="sd">    </span>
+<span class="sd">    .. Warning::</span>
+<span class="sd">       The quantities in *thermodata* are usually obtained from :py:func:`compute_thermo_geo`</span>
+<span class="sd">       or from :py:func:`read_thermo` and :py:func:`rearrange_thermo`. It is</span>
+<span class="sd">       important that the order in the total energy file *fin* and the order of</span>
+<span class="sd">       the thermodynamic data in *thermodata* is the same!  See also *example6* and </span>
+<span class="sd">       the tutorial.</span>
+<span class="sd">       </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+        
+    <span class="c1"># Read the Etot at 0 K</span>
+    <span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span> <span class="o">=</span> <span class="n">read_Etot</span><span class="p">(</span><span class="n">fEtot</span><span class="p">)</span>
+    
+    <span class="n">ngeo</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ex</span><span class="p">)</span>   <span class="c1"># total number of geometries</span>
+
+    <span class="n">nT</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">Evib</span><span class="p">,</span> <span class="n">Fvib</span><span class="p">,</span> <span class="n">Svib</span><span class="p">,</span> <span class="n">Cvib</span> <span class="o">=</span> <span class="n">thermodata</span>
+    
+    <span class="c1"># Fit and find the minimun at 0 K</span>
+    <span class="n">a0temp</span><span class="p">,</span> <span class="n">chi0</span> <span class="o">=</span> <span class="n">fit_anis</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">typeEtot</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Etot&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">chi0</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
+        <span class="n">min0</span><span class="p">,</span> <span class="n">fmin0</span> <span class="o">=</span> <span class="n">find_min</span><span class="p">(</span><span class="n">a0temp</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">typeEtot</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">defaultguess</span><span class="p">)</span>
+     
+    <span class="c1"># if a mixed type fitting has been used, expand the vector of polynomial coefficients</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">typeEtot</span><span class="o">==</span><span class="s2">&quot;quadratic&quot;</span> <span class="ow">and</span> <span class="n">typeFvib</span><span class="o">==</span><span class="s2">&quot;quartic&quot;</span><span class="p">):</span>
+        <span class="n">a0</span><span class="o">=</span><span class="n">expand_quadratic_to_quartic</span><span class="p">(</span><span class="n">a0temp</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">a0</span><span class="o">=</span><span class="n">a0temp</span>
+        
+    <span class="c1"># Fit and find the minimun at T&gt;0 K for each T </span>
+    <span class="n">minT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nT</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+    <span class="n">fminT</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nT</span><span class="p">)</span>
+    <span class="n">aT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nT</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">a0</span><span class="p">)))</span>
+    <span class="n">chiT</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nT</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nT</span><span class="p">):</span> 
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;####################################################################&quot;</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;T=&quot;</span><span class="p">,</span><span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+  
+        <span class="c1"># Fit Fvib with a quadratic or quartic polynomial, then add the fitted </span>
+        <span class="c1"># quadratic or quartic Etot at 0 K and find the minimun</span>
+        <span class="n">aTtemp</span><span class="p">,</span> <span class="n">chiT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fit_anis</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">Fvib</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">ibrav</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="n">typeFvib</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Fvib&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">chiT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="n">typeEtot</span><span class="o">+</span><span class="s2">&quot; Etot + &quot;</span><span class="o">+</span><span class="n">typeFvib</span><span class="o">+</span><span class="s2">&quot; Fvib polynomials&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">typeEtot</span><span class="o">==</span><span class="s2">&quot;quartic&quot;</span> <span class="ow">and</span> <span class="n">typeFvib</span><span class="o">==</span><span class="s2">&quot;quadratic&quot;</span><span class="p">):</span>
+                <span class="n">aT</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span><span class="o">=</span><span class="n">expand_quadratic_to_quartic</span><span class="p">(</span><span class="n">aTtemp</span><span class="p">)</span>
+                <span class="n">typemix</span><span class="o">=</span><span class="s2">&quot;quartic&quot;</span>       <span class="c1"># find the minimum as a quadratic</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">aT</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span><span class="o">=</span><span class="n">aTtemp</span>       
+                <span class="n">typemix</span><span class="o">=</span><span class="n">typeFvib</span>         <span class="c1"># typeFvib and typeFtot are the same</span>
+            <span class="n">print_polynomial</span><span class="p">(</span><span class="n">a0</span><span class="o">+</span><span class="n">aT</span><span class="p">[</span><span class="n">i</span><span class="p">,:])</span>
+
+            <span class="n">minT</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span> <span class="n">fminT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">find_min</span><span class="p">(</span><span class="n">a0</span><span class="o">+</span><span class="n">aT</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="n">ibrav</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="n">typemix</span><span class="p">,</span><span class="n">guess</span><span class="o">=</span><span class="n">min0</span><span class="p">)</span>
+
+    <span class="c1"># Calculate the thermal expansion(s)</span>
+    <span class="n">alphaT</span> <span class="o">=</span> <span class="n">compute_alpha</span><span class="p">(</span><span class="n">minT</span><span class="p">,</span><span class="n">ibrav</span><span class="p">)</span>
+    <span class="c1">#alphaT = compute_alpha_splines(TT,minT,ibrav) # tentative</span>
+    
+    <span class="k">return</span> <span class="n">T</span><span class="p">,</span> <span class="n">fminT</span><span class="p">,</span> <span class="n">minT</span><span class="p">,</span>  <span class="n">alphaT</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">chi0</span><span class="p">,</span> <span class="n">aT</span><span class="p">,</span> <span class="n">chiT</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="fitFvibV"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitFvib.fitFvibV">[docs]</a><span class="k">def</span> <span class="nf">fitFvibV</span><span class="p">(</span><span class="n">fin</span><span class="p">,</span><span class="n">thermodata</span><span class="p">,</span><span class="n">verbosity</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function computes quasi-harmonic quantities from the </span>
+<span class="sd">    :math:`E_{tot}(V)+F_{vib}(V,T)` as a function of temperature with Murnaghan&#39;s</span>
+<span class="sd">    EOS. :math:`E_{tot}(V)` is read from the *fin* file. :math:`F_{vib}(V,T)`</span>
+<span class="sd">    are given in *thermodata* which is a list containing the number of temperatures</span>
+<span class="sd">    ( *nT* ) for which the calculations are done and the numpy matrices for </span>
+<span class="sd">    temperatures, vibrational energy, Helmholtz energy, entropy and</span>
+<span class="sd">    heat capacity. All these quantities are for each volume as in *fin* file.</span>
+<span class="sd">        </span>
+<span class="sd">    The function fits :math:`E_{tot}(V)+F_{vib}(V,T)` with a Murnaghan&#39;s EOS</span>
+<span class="sd">    at each temperature in *thermodata* and then stores the fitted coefficients.</span>
+<span class="sd">    It also computes the volume thermal expansion as a numerical derivative of</span>
+<span class="sd">    the minimum volume as a function of temperature (:py:func:`compute_beta`), the</span>
+<span class="sd">    constant volume heat capacity at the minimum volume at each T</span>
+<span class="sd">    (:py:func:`compute_Cv`) and the constant pression heat capacity (:py:func:`compute_Cp`).</span>
+<span class="sd">    </span>
+<span class="sd">    It returns the numpy 1D arrays containing the temperatures (as in input), the</span>
+<span class="sd">    minimun energy, minimun volume, bulk modulus, volume thermal expansion, constant</span>
+<span class="sd">    volume and constant pressure heat capacities, one matrix with all fitted </span>
+<span class="sd">    coefficients at each T and finally an array with the :math:`\chi^2` at each T.</span>
+<span class="sd">    </span>
+<span class="sd">    .. Warning::</span>
+<span class="sd">       The quantities in *thermodata* are usually obtained from :py:func:`compute_thermo_geo`</span>
+<span class="sd">       or from :py:func:`read_thermo` and :py:func:`rearrange_thermo`. It is</span>
+<span class="sd">       important that the order in the total energy file *fin* and the order of</span>
+<span class="sd">       the thermodynamic data in *thermodata* is the same!  See also *example5* and </span>
+<span class="sd">       the tutorial. </span>
+<span class="sd">       </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">V</span><span class="p">,</span> <span class="n">E</span> <span class="o">=</span> <span class="n">read_EtotV</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
+    
+    <span class="n">a0</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">chi</span> <span class="o">=</span> <span class="n">fit_Murn</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">E</span><span class="p">)</span>
+   
+    <span class="n">print_eos_data</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">E</span><span class="p">,</span><span class="n">a0</span><span class="p">,</span><span class="n">chi</span><span class="p">,</span><span class="s2">&quot;E&quot;</span><span class="p">)</span>
+
+    <span class="n">ngeo</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>   <span class="c1"># total number of geometries</span>
+    
+    <span class="n">nT</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">Evib</span><span class="p">,</span> <span class="n">Fvib</span><span class="p">,</span> <span class="n">Svib</span><span class="p">,</span> <span class="n">Cvib</span> <span class="o">=</span> <span class="n">thermodata</span>  <span class="c1"># import list of thermodynamic data</span>
+   
+    <span class="c1"># Fit and find the minimun at T&gt;0 K for each T                    </span>
+    <span class="n">aT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nT</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>    <span class="c1"># Murnaghan EOS always has 4 parameters, store one for eact T</span>
+    <span class="n">chiT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nT</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nT</span><span class="p">):</span> 
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;####################################################################&quot;</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;T=&quot;</span><span class="p">,</span><span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+  
+        <span class="n">a</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">chi</span> <span class="o">=</span> <span class="n">fit_Murn</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">E</span><span class="o">+</span><span class="n">Fvib</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">verbosity</span><span class="o">==</span><span class="s2">&quot;high&quot;</span><span class="p">):</span>
+            <span class="n">print_eos_data</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">E</span><span class="o">+</span><span class="n">Fvib</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">a</span><span class="p">,</span><span class="n">chi</span><span class="p">,</span><span class="s2">&quot;E+Fvib&quot;</span><span class="p">)</span>  <span class="c1"># print full detail at each T</span>
+             
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Fmin = </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Vmin = </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">B0 = </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">RY_KBAR</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> chi^2= </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">chi</span><span class="p">))</span>
+        
+        <span class="n">aT</span> <span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="n">chiT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">chi</span>
+        
+      
+    <span class="c1"># As in Murnaghan EOS, aT[:,0] is Fmin(T), aT[:,1] is Vmin(T), aT[:,2] is B0(T)</span>
+    <span class="c1"># They are arrays, all function of T</span>
+    
+    <span class="c1"># Compute the volume thermal expansion as numerical derivative of Vmin(T)</span>
+    <span class="n">betaT</span> <span class="o">=</span> <span class="n">compute_beta</span><span class="p">(</span><span class="n">aT</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="c1"># compute Cv(Vmin(T))</span>
+    <span class="n">Cv</span> <span class="o">=</span> <span class="n">compute_Cv</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">aT</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="n">V</span><span class="p">,</span><span class="n">Cvib</span><span class="p">)</span>
+    
+    <span class="c1"># compute Cp as Cp = Cv + TV beta^2 B0</span>
+    <span class="n">Cp</span> <span class="o">=</span> <span class="n">compute_Cp</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">Cvib</span><span class="p">[:,</span><span class="mi">4</span><span class="p">],</span><span class="n">aT</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="n">aT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span><span class="n">betaT</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">T</span><span class="p">,</span> <span class="n">aT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">aT</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">aT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span> <span class="n">betaT</span><span class="p">,</span> <span class="n">Cv</span><span class="p">,</span> <span class="n">Cp</span><span class="p">,</span> <span class="n">aT</span><span class="p">,</span> <span class="n">chiT</span></div>
+    
+    
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mauro Palumbo.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5a1.
+    </div>
+  </body>
+</html>

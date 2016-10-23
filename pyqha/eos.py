@@ -1,4 +1,7 @@
 #encoding: UTF-8
+# Copyright (C) 2016 Mauro Palumbo
+# This file is distributed under the terms of the # MIT License. 
+# See the file `License' in the root directory of the present distribution.
 
 from constants import RY_KBAR
 from math import pow
@@ -8,8 +11,17 @@ from scipy.optimize import curve_fit
 ################################################################################
 # Murnaghan EOS functions 
 #
-# This one is in the format for the fit 
+# This one is in the format ideal for fitting, not the canonical one in textbooks 
 def E_MurnV(V,a0,a1,a2,a3):
+    """
+    This function implements the Murnaghan EOS (in a form which is best for fitting).
+    Returns the energy at the volume *V* using the coefficients *a0,a1,a2,a3* 
+    from the equation:
+    
+    .. math::
+       a_0 - (a_2*a_1)/(a_3-1.0) V a_2/a_3 ( a_1/V^{a_3})/(a_3-1.0) +1.0 )
+    
+    """
     res=np.zeros(len(V))
     for i in range(0,len(V)):
         res[i]=a0 - a2*a1/(a3-1.0) + V[i]*a2/a3*( pow(a1/V[i],a3)/(a3-1.0)+1.0 )
@@ -17,24 +29,42 @@ def E_MurnV(V,a0,a1,a2,a3):
 
 # Other functions
 def E_Murn(V,a):
+    """
+    As :py:func:`E_MurnV` but input parameters are given as a single list 
+    *a=[a0,a1,a2,a3]*.
+    """
     return a[0] - a[2]*a[1]/(a[3]-1.0) + V*a[2]/a[3]*( pow(a[1]/V,a[3])/(a[3]-1.0)+1.0 )
 
 def P_Murn(V,a):
+    """
+    As :py:func:`E_MurnV` but input parameters are given as a single list 
+    *a=[a0,a1,a2,a3]* and it returns the pressure not the energy from the EOS.
+    """
     return a[2]/a[3]*(pow(a[1]/V,a[3])-1.0)
 
 def H_Murn(V,a):
+    """
+    This function return
+    
+    As :py:func:`E_MurnV` but input parameters are given as a single list 
+    *a=[a0,a1,a2,a3]* and it returns the pressure not the energy from the EOS.
+    """
     return E_Murn(V,a)+P_Murn(V,a)*V
 
 
 ################################################################################
-# Print the data and the fitted results 
-# ylabel can be "E", "Fvib", etc.
-def print_data(x,y,a,chi,ylabel="E"):    
+
+def print_eos_data(x,y,a,chi,ylabel="Etot"):   
+    """
+    Print the data and the fitted results using the EOS. It can be used for
+    different fitted quantities using the proper ylabel. ylabel can be "Etot", 
+    "Fvib", etc.
+    """
     print ("# Murnaghan EOS \t\t chi squared= {:.10e}".format(chi))
-    print ("# E0= {:.10e}".format(a[1])+"\t V0= {:.10e}".format(a[1])+"\t B0= {:.10e}".format(a[2]*RY_KBAR)
+    print ("# "+ylabel+"min= {:.10e} Ry".format(a[0])+"\t Vmin= {:.10e} a.u.^3".format(a[1])+"\t B0= {:.10e} kbar".format(a[2]*RY_KBAR)
     +"\t dB0/dV= {:.10e}".format(a[3]))
     print (80*"#")
-    print ("# V","\t\t\t",ylabel,"\t\t\t",ylabel+"fit","\t\t\t",ylabel+"-"+ylabel+"fit")
+    print ("# V *a.u.^3)","\t\t",ylabel," (Ry)\t\t",ylabel+"fit"," (Ry)\t\t",ylabel+"-"+ylabel+"fit (Ry)\tP (kbar)")
     for i in range(0,len(y)):
         print ("{:.10e}".format(x[i]),"\t", "{:.10e}".format(y[i])+
         "\t {:.10e}".format(E_Murn(x[i],a))+
@@ -42,15 +72,19 @@ def print_data(x,y,a,chi,ylabel="E"):
         "\t {:.10e}".format(P_Murn(x[i],a)*RY_KBAR))
 
 ################################################################################
-# Write the data and the fitted results as in the Murnaghan EOS 
-# ylabel can be "E", "Fvib", etc.
+
 def write_Etotfitted(filename,x,y,a,chi,ylabel="E"): 
+    """
+    Write in filename the data and the fitted results using the EOS. It can be used for
+    different fitted quantities using the proper ylabel. ylabel can be "Etot", 
+    "Fvib", etc.
+    """
     fout=open(filename, "w")
     fout.write("# Murnaghan EOS \t\t chi squared= {:.10e}".format(chi))
-    fout.write("# E0= {:.10e}".format(a[1])+"\t V0= {:.10e}".format(a[1])+"\t B0= {:.10e}".format(a[2]*RY_KBAR)
+    fout.write("# E0= {:.10e} Ry".format(a[1])+"\t V0= {:.10e} a.u.^3".format(a[1])+"\t B0= {:.10e} kbar".format(a[2]*RY_KBAR)
     +"\t dB0/dV= {:.10e}".format(a[3]))
     fout.write(80*"#")
-    fout.write("# V"+"\t\t\t"+ylabel+"\t\t\t"+ylabel+"fit"+"\t\t\t"+ylabel+"-"+ylabel+"fit")
+    print ("# V *a.u.^3)","\t\t",ylabel," (Ry)\t\t",ylabel+"fit"," (Ry)\t\t",ylabel+"-"+ylabel+"fit (Ry)\tP (kbar)")
     for i in range(0,len(y)):
         fout.write("{:.10e}".format(x[i])+"\t"+"{:.10e}".format(y[i])+
         "\t {:.10e}".format(E_Murn(x[i],a))+
@@ -58,9 +92,11 @@ def write_Etotfitted(filename,x,y,a,chi,ylabel="E"):
         "\t {:.10e}".format(P_Murn(x[i],a)*RY_KBAR))
 
 ################################################################################
-# Calculated a denser mesh of E(V) points for plotting...
 #
 def calculate_fitted_points(V,a):
+    """
+    Calculates a denser mesh of E(V) points for plotting...
+    """
     Vstep = (V[len(V)-1]-V[0])/1000
     Vdense = np.zeros(1000)
     Edensefitted = np.zeros(1000)
@@ -72,20 +108,21 @@ def calculate_fitted_points(V,a):
 
 
 ################################################################################
-# This is the function for fitting with a EOS as a function of volume only
-#
-# The input variable x is an 1D array of volumes, y are the corresponding 
-# energies
-# 
+
 def fit_Murn(V,E):
+    """
+    This is the function for fitting with the Murnaghan EOS as a function of volume only.
+
+    The input variable V is an 1D array of volumes, E are the corresponding 
+    energies (or other analogous quantity to be fitted with the Murnaghan EOS.
     
+    """
     # reasonable initial guesses for EOS parameters
     a0=E[len(E)/2]
     a1=V[len(V)/2]
     a2=500/RY_KBAR
     a3=5.0
     
-    # Create the auxiliary A numpy matrix for the fitting coefficients (quadratic polynomial)
     a, pcov = curve_fit(E_MurnV, V, E, p0=[a0,a1,a2,a3])
     
     chi = 0
@@ -97,7 +134,39 @@ def fit_Murn(V,E):
 
 
 def compute_beta(minT):
+    """
+    This function computes the volumetric thermal expansion as a numerical
+    derivative of the volume as a function of temperature V(T). This is obtained
+    from the free energy minimization which should be done before.
+    """
     grad=np.gradient(np.array(minT))  # numerical derivatives with numpy
     betaT = np.array(grad)  # grad contains the derivatives with respect to T
                                 # also convert to np.array format    
     return betaT/minT
+
+
+def compute_Cv(T,Vmin,V,Cvib):
+    """
+    This function computes the isocoric heat capacity as a function of temperature.
+    From *Cvib*, which is a matrix with *Cvib(T,V)* as from the harmonic calculations
+    determines the *Cv* at each temperature by linear interpolation between the values
+    at the two volumes closest to Vmin(T). Vmin(T) is from the minimization of F(V,T)
+    and *V* is the array of volumes used for it.
+    Returns *Cv(T)*.
+    
+    Not implemented yet.
+    """
+    Cv = np.zeros(len(T))
+    for iT in range(0,len(T)):
+        Cv_interpolated = np.interp(Vmin[iT], V, Cvib[iT,:])
+        Cv[iT] = Cv_interpolated
+        
+    return Cv
+
+def compute_Cp(T,Cv,V,B0,beta):
+    """
+    This function computes the isobaric heat capacity from the eq. Cp-Cv=...
+    Not implemented yet.
+    """
+    Cp = Cv + T * V * beta * beta * B0
+    return Cp

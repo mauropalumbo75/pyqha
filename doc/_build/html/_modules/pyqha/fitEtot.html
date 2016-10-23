@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqha.fitEtot &#8212; pyqha 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="pyqha 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><h1 style="font-size: 3em;">pyqha</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyqha.fitEtot</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1">#encoding: UTF-8</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">read</span> <span class="k">import</span> <span class="n">read_EtotV</span><span class="p">,</span> <span class="n">read_Etot</span>
+<span class="kn">from</span> <span class="nn">eos</span> <span class="k">import</span> <span class="n">fit_Murn</span><span class="p">,</span> <span class="n">print_eos_data</span><span class="p">,</span> <span class="n">write_Etotfitted</span>
+<span class="kn">from</span> <span class="nn">fitutils</span> <span class="k">import</span> <span class="n">fit_anis</span>
+<span class="kn">from</span> <span class="nn">minutils</span> <span class="k">import</span> <span class="n">find_min</span>
+
+   
+<div class="viewcode-block" id="fitEtotV"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitEtot.fitEtotV">[docs]</a><span class="k">def</span> <span class="nf">fitEtotV</span><span class="p">(</span><span class="n">fin</span><span class="p">,</span><span class="n">fout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function reads :math:`E(V)` data from the input file *fin*, fits them with a Murnaghan EOS,</span>
+<span class="sd">    prints the results on the *stdout* and write them in the file &quot;fout&quot;.</span>
+<span class="sd">    It returns the volumes and energies read from the input file, the fitted coefficients </span>
+<span class="sd">    of the EOS and the corresponding :math:`\chi^2`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">V</span><span class="p">,</span> <span class="n">E</span> <span class="o">=</span> <span class="n">read_EtotV</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>   
+    <span class="n">a</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">chi</span> <span class="o">=</span> <span class="n">fit_Murn</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">E</span><span class="p">)</span>
+    <span class="n">print_eos_data</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">E</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">chi</span><span class="p">,</span><span class="s2">&quot;Etot&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">fout</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">write_Etotfitted</span><span class="p">(</span><span class="n">fout</span><span class="p">,</span><span class="n">V</span><span class="p">,</span><span class="n">E</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">chi</span><span class="p">,</span><span class="s2">&quot;Etot&quot;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">V</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">chi</span></div>
+    
+
+<div class="viewcode-block" id="fitEtot"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitEtot.fitEtot">[docs]</a><span class="k">def</span> <span class="nf">fitEtot</span><span class="p">(</span><span class="n">fin</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">fittype</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span><span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function reads the file *fin* containing the energies as a function</span>
+<span class="sd">    of the lattice parameters :math:`E(a,b,c)` and fits them with a quartic (*fittype=&quot;quartic&quot;*) or </span>
+<span class="sd">    quadratic (*fittype=&quot;quadratic&quot;*) polynomial. Then it finds the minimun energy</span>
+<span class="sd">    and the corresponding lattice parameters. </span>
+<span class="sd">    ibrav is the Bravais lattice, guess is an initial guess for the minimization.</span>
+<span class="sd">    Depending on ibrav, a different number of lattice parameters is considered.</span>
+<span class="sd">    It prints fitting results on the screen (which can be redericted to *stdout*)</span>
+<span class="sd">    if *out=True*.</span>
+<span class="sd">    It returns the lattice parameters and energies as in the input file *fin*,</span>
+<span class="sd">    the fitted coefficients of the polynomial, the corresponding :math:`\chi^2`,</span>
+<span class="sd">    the lattice parameters at the minimum and the minimun energy.</span>
+<span class="sd">    </span>
+<span class="sd">    Note: for cubic systems use fitEtotV instead.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Read the energies </span>
+    <span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span> <span class="o">=</span> <span class="n">read_Etot</span><span class="p">(</span><span class="n">fin</span><span class="p">,</span><span class="n">ibrav</span><span class="p">)</span>
+
+    <span class="c1"># Fit and find the minimun at 0 K</span>
+    <span class="n">a0</span><span class="p">,</span> <span class="n">chia0</span> <span class="o">=</span> <span class="n">fit_anis</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">fittype</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">chia0</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
+        <span class="n">mincelldms</span><span class="p">,</span> <span class="n">fmin</span> <span class="o">=</span> <span class="n">find_min</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">fittype</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">chia0</span><span class="p">,</span> <span class="n">mincelldms</span><span class="p">,</span> <span class="n">fmin</span> </div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mauro Palumbo.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5a1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqha.gruneisen1D &#8212; pyqha 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="pyqha 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><h1 style="font-size: 3em;">pyqha</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyqha.gruneisen1D</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1">#encoding: UTF-8</span>
+
+<span class="c1">################################################################################</span>
+<span class="c1"># </span>
+<span class="c1"># This file contains some functions to compute the Gruneisein parameters</span>
+<span class="c1"># using 1-dimensional polynomials along each necessary direction according to the</span>
+<span class="c1"># unit cell of the system. For example, for hexagonal systems it is along a and c</span>
+<span class="c1"># directions where a and c are the vectors of the hex cell.</span>
+<span class="c1"># </span>
+<span class="c1"># The results obtained in this way are less accurate than performing the fit</span>
+<span class="c1"># using a multi-dimensional polynomial over the whole grid of lattice parameters.</span>
+<span class="c1"># The latter is thus preferable (implemented in fitfreqgrun.py).</span>
+<span class="c1"># Note: the functions in this file would need to be tested and possibly improved</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">read</span> <span class="k">import</span> <span class="n">read_Etot</span><span class="p">,</span> <span class="n">read_freq</span><span class="p">,</span> <span class="n">read_freq_ext</span><span class="p">,</span> <span class="n">read_freq_ext_geo</span>
+<span class="kn">from</span> <span class="nn">write</span> <span class="k">import</span> <span class="n">write_freq</span><span class="p">,</span> <span class="n">write_freq_ext</span>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="find_geocenters"><a class="viewcode-back" href="../../pyqha.html#pyqha.gruneisen1D.find_geocenters">[docs]</a><span class="k">def</span> <span class="nf">find_geocenters</span><span class="p">(</span><span class="n">ngeo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the center geometries. Remember indexex in lists starts from 0...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cgeo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">ngeo</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ngeo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">cgeo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ngeo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cgeo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ngeo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span>
+            
+    <span class="k">return</span> <span class="n">cgeo</span><span class="o">+</span><span class="mi">1</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="compute_grun_along_one_direction"><a class="viewcode-back" href="../../pyqha.html#pyqha.gruneisen1D.compute_grun_along_one_direction">[docs]</a><span class="k">def</span> <span class="nf">compute_grun_along_one_direction</span><span class="p">(</span><span class="n">nq</span><span class="p">,</span><span class="n">modes</span><span class="p">,</span><span class="n">ngeo</span><span class="p">,</span><span class="n">cgeo</span><span class="p">,</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">freqgeo</span><span class="p">,</span><span class="n">rangegeo</span><span class="p">,</span><span class="n">xindex</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the Gruneisen parameters along one direction.</span>
+<span class="sd">    This function uses a 1-dimensional polynomial of fourth degree to fit the </span>
+<span class="sd">    frequencies along a certain direction (along a and c axis in hexagonal systems</span>
+<span class="sd">    for example). </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># set a numpy array of volumes for the fit (n=5)</span>
+    <span class="n">xtemp</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">igeo</span> <span class="ow">in</span> <span class="n">rangegeo</span><span class="p">:</span>
+        <span class="n">xtemp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">[</span><span class="n">igeo</span><span class="p">,</span><span class="n">xindex</span><span class="p">])</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xtemp</span><span class="p">)</span>
+
+    <span class="n">grun</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">iq</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nq</span><span class="p">):</span>
+        <span class="n">grunq</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ifreq</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">modes</span><span class="p">):</span>
+            <span class="n">ytemp</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">for</span> <span class="n">igeo</span> <span class="ow">in</span> <span class="n">rangegeo</span><span class="p">:</span>
+                <span class="n">ytemp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freqgeo</span><span class="p">[</span><span class="n">igeo</span><span class="p">,</span><span class="n">iq</span><span class="p">,</span><span class="n">ifreq</span><span class="p">])</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ytemp</span><span class="p">)</span>    
+            <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">poly1d</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+            <span class="n">pderiv</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">polyder</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">freqgeo</span><span class="p">[</span><span class="n">cgeo</span><span class="p">[</span><span class="n">xindex</span><span class="p">],</span><span class="n">iq</span><span class="p">,</span><span class="n">ifreq</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">1</span><span class="n">E</span><span class="o">-</span><span class="mi">3</span><span class="p">:</span>
+                <span class="n">grunq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">grunq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pderiv</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">[</span><span class="n">cgeo</span><span class="p">[</span><span class="n">xindex</span><span class="p">],</span><span class="n">xindex</span><span class="p">])</span><span class="o">/</span><span class="n">freqgeo</span><span class="p">[</span><span class="n">cgeo</span><span class="p">[</span><span class="n">xindex</span><span class="p">],</span><span class="n">iq</span><span class="p">,</span><span class="n">ifreq</span><span class="p">])</span> <span class="c1">#*celldmsx[cgeo[xindex],xindex])</span>
+        <span class="n">grun</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grunq</span><span class="p">)</span>
+            
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grun</span><span class="p">)</span>    </div>
+    
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="compute_grun"><a class="viewcode-back" href="../../pyqha.html#pyqha.gruneisen1D.compute_grun">[docs]</a><span class="k">def</span> <span class="nf">compute_grun</span><span class="p">(</span><span class="n">ngeo</span><span class="p">,</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">inputfilefreq</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">ext</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read the frequencies for all geometries where the gruneisen parameters must be</span>
+<span class="sd">    calculated. This depends on the direction (along a, along c, etc.)</span>
+<span class="sd">    According to the direction chosen, start,stop,step must be given to loop over </span>
+<span class="sd">    all geometries as listed in the file containing the energies </span>
+
+<span class="sd">    More work to do: entend to other ibrav types, etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>    <span class="c1"># Hexagonal systems</span>
+        <span class="n">cgeo</span> <span class="o">=</span> <span class="n">find_geocenters</span><span class="p">(</span><span class="n">ngeo</span><span class="p">)</span>
+        
+        <span class="c1"># read frequencies and q points for every geometry</span>
+        <span class="n">startgeo</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">endgeo</span> <span class="o">=</span> <span class="n">ngeo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">ngeo</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+        <span class="n">stepgeo</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">ext</span><span class="p">:</span>
+            <span class="n">weightsgeo</span><span class="p">,</span> <span class="n">freqgeo</span> <span class="o">=</span> <span class="n">read_freq_ext_geo</span><span class="p">(</span><span class="n">inputfilefreq</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="n">startgeo</span><span class="p">,</span><span class="n">endgeo</span><span class="p">,</span><span class="n">stepgeo</span><span class="p">))</span>
+            <span class="n">nq</span> <span class="o">=</span> <span class="n">weightsgeo</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># total number of q points read</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">qgeo</span><span class="p">,</span> <span class="n">freqgeo</span> <span class="o">=</span> <span class="n">read_freq_geo</span><span class="p">(</span><span class="n">inputfilefreq</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="n">startgeo</span><span class="p">,</span><span class="n">endgeo</span><span class="p">,</span><span class="n">stepgeo</span><span class="p">))</span>
+            <span class="n">nq</span> <span class="o">=</span> <span class="n">qgeo</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># total number of q points read</span>
+        
+        <span class="n">modes</span> <span class="o">=</span> <span class="n">freqgeo</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># number of frequency modes</span>
+                
+        <span class="c1">################################################################################</span>
+        <span class="c1"># First along the a axis</span>
+        <span class="n">startgeo</span> <span class="o">=</span> <span class="n">cgeo</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">ngeo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">endgeo</span> <span class="o">=</span> <span class="n">cgeo</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">ngeo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">ngeo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">stepgeo</span> <span class="o">=</span> <span class="mi">1</span>
+        
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="mi">80</span><span class="o">*</span><span class="s2">&quot;#&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="mi">80</span><span class="o">*</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Calculating Gruneisen parameter along a axis... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">grun_along_a</span> <span class="o">=</span> <span class="n">compute_grun_along_one_direction</span><span class="p">(</span><span class="n">nq</span><span class="p">,</span><span class="n">modes</span><span class="p">,</span><span class="n">ngeo</span><span class="p">,</span><span class="n">cgeo</span><span class="p">,</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">freqgeo</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="n">startgeo</span><span class="p">,</span><span class="n">endgeo</span><span class="p">,</span><span class="n">stepgeo</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Done! </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ext</span><span class="p">:</span>
+            <span class="n">write_freq_ext</span><span class="p">(</span><span class="n">weightsgeo</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">grun_along_a</span><span class="p">,</span><span class="s2">&quot;output_grun_along_a_ext1Dfit&quot;</span><span class="p">)</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">write_freq</span><span class="p">(</span><span class="n">qgeo</span><span class="p">,</span><span class="n">grun_along_a</span><span class="p">,</span><span class="s2">&quot;output_grun_along_a1Dfit&quot;</span><span class="p">)</span>
+            
+ 
+        <span class="c1">################################################################################</span>
+        <span class="c1"># now along c</span>
+        <span class="n">startgeo</span> <span class="o">=</span> <span class="n">cgeo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">endgeo</span> <span class="o">=</span> <span class="n">ngeo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">ngeo</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">stepgeo</span> <span class="o">=</span> <span class="n">ngeo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="mi">80</span><span class="o">*</span><span class="s2">&quot;#&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="mi">80</span><span class="o">*</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Calculating Gruneisen parameter along c axis... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>    
+        <span class="n">grun_along_c</span> <span class="o">=</span> <span class="n">compute_grun_along_one_direction</span><span class="p">(</span><span class="n">nq</span><span class="p">,</span><span class="n">modes</span><span class="p">,</span><span class="n">ngeo</span><span class="p">,</span><span class="n">cgeo</span><span class="p">,</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">freqgeo</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="n">startgeo</span><span class="p">,</span><span class="n">endgeo</span><span class="p">,</span><span class="n">stepgeo</span><span class="p">),</span><span class="mi">2</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Done! </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ext</span><span class="p">:</span>
+            <span class="n">write_freq_ext</span><span class="p">(</span><span class="n">weightsgeo</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">grun_along_c</span><span class="p">,</span><span class="s2">&quot;output_grun_along_c_ext1Dfit&quot;</span><span class="p">)</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">write_freq</span><span class="p">(</span><span class="n">qgeo</span><span class="p">,</span><span class="n">grun_along_c</span><span class="p">,</span><span class="s2">&quot;output_grun_along_c1Dfit&quot;</span><span class="p">)</span></div>
+
+
+    
+<span class="c1">################################################################################</span>
+<span class="c1">#   MAIN, only for testing this module</span>
+<span class="c1">################################################################################</span>
+<span class="c1">#</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+  
+    <span class="c1"># Default command line parameters</span>
+    <span class="n">inputfileEtot</span> <span class="o">=</span> <span class="s2">&quot;Os.pz-spn-kjpaw_psl.1.0.0.UPF/energy_files/output_energy1&quot;</span>
+    <span class="n">inputfilefreq</span> <span class="o">=</span> <span class="s2">&quot;Os.pz-spn-kjpaw_psl.1.0.0.UPF/frequencies/save_frequencies.dat.g&quot;</span>
+    
+    <span class="c1">#inputfileEtot = &quot;Re.pz-spn-kjpaw_psl.1.0.0.UPF/energy_files/output_energy1&quot;</span>
+    <span class="c1">#inputfilefreq = &quot;Re.pz-spn-kjpaw_psl.1.0.0.UPF/frequencies/save_frequencies.dat.g&quot;</span>
+    
+    <span class="c1">#inputfilefreq = &quot;Os.pz-spn-kjpaw_psl.1.0.0.UPF/frequencies/output_frq.dat.g&quot;</span>
+    
+    <span class="c1"># Read the energies </span>
+    <span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span> <span class="o">=</span> <span class="n">read_Etot</span><span class="p">(</span><span class="n">inputfileEtot</span><span class="p">)</span>
+
+    <span class="n">ngeo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+    <span class="n">ngeo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="mi">5</span>
+    <span class="n">ngeo</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="mi">5</span>
+  
+    <span class="c1"># Compute the Gruneisen parameters if you haven&#39;t done it before</span>
+    <span class="n">compute_grun</span><span class="p">(</span><span class="n">ngeo</span><span class="p">,</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">inputfilefreq</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">ext</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Finished. Elapsed time: &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">elapsed_time</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; s.&quot;</span><span class="p">)</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mauro Palumbo.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5a1.
+    </div>
+  </body>
+</html>

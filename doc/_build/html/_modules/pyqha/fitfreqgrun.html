@@ -1,0 +1,300 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqha.fitfreqgrun &#8212; pyqha 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="pyqha 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><h1 style="font-size: 3em;">pyqha</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyqha.fitfreqgrun</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1">#encoding: UTF-8</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">read</span> <span class="k">import</span> <span class="n">read_Etot</span><span class="p">,</span> <span class="n">read_freq_ext_geo</span>
+<span class="kn">from</span> <span class="nn">fitutils</span> <span class="k">import</span> <span class="n">fit_anis</span><span class="p">,</span> <span class="n">print_polynomial</span>
+<span class="kn">from</span> <span class="nn">minutils</span> <span class="k">import</span> <span class="n">fquadratic</span><span class="p">,</span> <span class="n">fquartic</span><span class="p">,</span> <span class="n">fquadratic_der</span><span class="p">,</span> <span class="n">fquartic_der</span><span class="p">,</span> <span class="n">find_min</span>
+<span class="kn">from</span> <span class="nn">write</span> <span class="k">import</span> <span class="n">write_freq_ext</span>
+
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="rearrange_freqx"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitfreqgrun.rearrange_freqx">[docs]</a><span class="k">def</span> <span class="nf">rearrange_freqx</span><span class="p">(</span><span class="n">freqx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function rearrange the input numpy matrix freqx into an equivalent matrix freqxx</span>
+<span class="sd">    for the subsequent fitting.</span>
+<span class="sd">    freqx is a ngeo*nq*modes matrix, each freqx[i] is the nq*modes freq matrix for a given geometry (i)</span>
+<span class="sd">    freqxx is a nq*modes*ngeo matrix, each freqxx[i][j] is a vector with all values for different</span>
+<span class="sd">    geometries of the frequencies at point q=i and mode=j. For example, freqxx[0][0]</span>
+<span class="sd">    is the vector with ngeo values of the frequencies at the first q-point and first mode so on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ngeo</span><span class="o">=</span><span class="n">freqx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">nq</span><span class="o">=</span><span class="n">freqx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">modes</span><span class="o">=</span><span class="n">freqx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">freqxx</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nq</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">modes</span><span class="p">):</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">ngeo</span><span class="p">):</span>
+                <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freqx</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+            <span class="n">freqxx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>    
+  
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freqxx</span><span class="p">)</span>
+    <span class="n">temp</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">nq</span><span class="p">,</span><span class="n">modes</span><span class="p">,</span><span class="n">ngeo</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">temp</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="fitfreqxx"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitfreqgrun.fitfreqxx">[docs]</a><span class="k">def</span> <span class="nf">fitfreqxx</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">freqxx</span><span class="p">,</span><span class="n">ibrav</span><span class="p">,</span><span class="n">out</span><span class="p">,</span><span class="n">typefreq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function fits the frequencies in freqxx as a function of the</span>
+<span class="sd">    grid of lattice parameters.</span>
+
+<span class="sd">    It returns a nq*modes matrix, whose element [i,j] is the set of coefficients of the </span>
+<span class="sd">    polynomial fit and another nq*modes matrix, whose element [i,j] is the corresponding</span>
+<span class="sd">    chi squared. If the chi squared is zero, the fitting procedure was NOT succesful</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">freqa</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">freqchi</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">nq</span> <span class="o">=</span> <span class="n">freqxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># total number of q points read</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="n">freqxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># number of frequency modes</span>
+    <span class="c1">#nq=10   # for testing quickly</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nq</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">modes</span><span class="p">):</span>
+            <span class="n">freqlabel</span><span class="o">=</span><span class="s2">&quot;f(nq=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;,mode=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;)&quot;</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">chi</span> <span class="o">=</span> <span class="n">fit_anis</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">freqxx</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">ibrav</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">typefreq</span><span class="p">,</span> <span class="n">freqlabel</span><span class="p">)</span>          
+            <span class="n">freqa</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">freqchi</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chi</span><span class="p">)</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">count</span><span class="o">%</span><span class="mi">1000</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>
+                <span class="nb">print</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; frequencies fitted...&quot;</span><span class="p">)</span>
+    
+    <span class="n">tempfreqa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freqa</span><span class="p">)</span>
+    <span class="n">tempfreqchi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freqchi</span><span class="p">)</span>
+
+    <span class="c1"># Reshape the matrixes so that tempCa[i][j] contains the polinomial coefficients</span>
+    <span class="c1"># for the Cij elastic constant and tempCchi[i][j] the corresponding chi squared</span>
+    <span class="n">tempfreqa</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">nq</span><span class="p">,</span><span class="n">modes</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">tempfreqa</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">tempfreqchi</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">nq</span><span class="p">,</span><span class="n">modes</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">tempfreqa</span><span class="p">,</span> <span class="n">tempfreqchi</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+<span class="c1">#</span>
+<div class="viewcode-block" id="freqmin"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitfreqgrun.freqmin">[docs]</a><span class="k">def</span> <span class="nf">freqmin</span><span class="p">(</span><span class="n">afreq</span><span class="p">,</span> <span class="n">min0</span><span class="p">,</span> <span class="n">nq</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">typefreq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculate the frequencies from the fitted polynomials at the </span>
+<span class="sd">    minimun point min0. afreq contains the fitted polynomial coefficients. </span>
+
+<span class="sd">    It returns a nq*modes matrix, whose element [i,j] is the fitted frequency </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nq</span><span class="p">,</span><span class="n">modes</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nq</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">modes</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">typefreq</span><span class="o">==</span><span class="s2">&quot;quadratic&quot;</span><span class="p">:</span>
+                <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquadratic</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">afreq</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">typefreq</span><span class="o">==</span><span class="s2">&quot;quartic&quot;</span><span class="p">:</span>
+                <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquartic</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">afreq</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> 
+                
+    <span class="k">return</span> <span class="n">f</span></div>
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="freqmingrun"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitfreqgrun.freqmingrun">[docs]</a><span class="k">def</span> <span class="nf">freqmingrun</span><span class="p">(</span><span class="n">afreq</span><span class="p">,</span> <span class="n">min0</span><span class="p">,</span> <span class="n">nq</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">typefreq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculate the frequencies and the gruneisen parameters </span>
+<span class="sd">    from the fitted polynomials at the minimun point min0. afreq contains the </span>
+<span class="sd">    fitted polynomial coefficients. </span>
+
+<span class="sd">    It returns a nq*modes matrix, whose element [i,j] is the fitted frequency </span>
+<span class="sd">    In addition, it returns a nq*modes*6 with the Gruneisein parameters.</span>
+<span class="sd">    Each element [i,j,k] is the the Gruneisein parameter at nq=i, mode=j and direction</span>
+<span class="sd">    k (for example, in hex systems k=0 is a direction, k=2 is c direction, other are zero)</span>
+
+<span class="sd">    Note that the Gruneisein parameters are not multiplied for the lattice parameters </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#nq = 10 # for testing quickly</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nq</span><span class="p">,</span><span class="n">modes</span><span class="p">))</span>
+    <span class="n">grun</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="n">nq</span><span class="p">,</span><span class="n">modes</span><span class="p">))</span>   <span class="c1"># initialize the Gruneisein parameters matrix</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nq</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">modes</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">typefreq</span><span class="o">==</span><span class="s2">&quot;quadratic&quot;</span><span class="p">:</span>
+                <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquadratic</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">afreq</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">1</span><span class="n">E</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span>
+                    <span class="n">grun</span><span class="p">[:,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">grun</span><span class="p">[:,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquadratic_der</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">afreq</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">ibrav</span><span class="p">)</span><span class="o">/</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">min0</span>
+            <span class="k">elif</span> <span class="n">typefreq</span><span class="o">==</span><span class="s2">&quot;quartic&quot;</span><span class="p">:</span>
+                <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquartic</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">afreq</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> 
+                <span class="k">if</span> <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">1</span><span class="n">E</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span>
+                    <span class="n">grun</span><span class="p">[:,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">grun</span><span class="p">[:,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquartic_der</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">afreq</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">ibrav</span><span class="p">)</span><span class="o">/</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">min0</span>
+    
+    <span class="k">return</span> <span class="n">f</span><span class="p">,</span> <span class="n">grun</span> </div>
+
+
+<span class="c1">################################################################################</span>
+ 
+<div class="viewcode-block" id="fitfreq"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitfreqgrun.fitfreq">[docs]</a><span class="k">def</span> <span class="nf">fitfreq</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">min0</span><span class="p">,</span> <span class="n">inputfilefreq</span><span class="p">,</span> <span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">typefreq</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">compute_grun</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An auxiliary function for fitting the frequencies. It returns a matrix of nq*modes</span>
+<span class="sd">    frequencies obtained for the fitted polynomial (quadratic or quartic) at the </span>
+<span class="sd">    minimun point min0. It also returns the weigths of each q point where the </span>
+<span class="sd">    frequencies are available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># get the weigths and the frequencies from files </span>
+    <span class="n">weightsx</span><span class="p">,</span> <span class="n">freqx</span> <span class="o">=</span> <span class="n">read_freq_ext_geo</span><span class="p">(</span><span class="n">inputfilefreq</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">celldmsx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Rearranging frequencies...&quot;</span><span class="p">)</span>
+    <span class="n">freqxx</span> <span class="o">=</span> <span class="n">rearrange_freqx</span><span class="p">(</span><span class="n">freqx</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Done!&quot;</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">freqx</span>
+    
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Fitting frequencies...&quot;</span><span class="p">)</span>
+    <span class="n">afreq</span><span class="p">,</span> <span class="n">chifreq</span> <span class="o">=</span> <span class="n">fitfreqxx</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">freqxx</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">typefreq</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Done!&quot;</span><span class="p">)</span>  
+    
+    <span class="n">f</span><span class="p">,</span> <span class="n">grun</span> <span class="o">=</span> <span class="n">freqmingrun</span><span class="p">(</span><span class="n">afreq</span><span class="p">,</span> <span class="n">min0</span><span class="p">,</span> <span class="n">freqxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">freqxx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">typefreq</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">weightsx</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span> <span class="n">f</span><span class="p">,</span> <span class="n">grun</span>	<span class="c1"># weights for different geometries are supposed to be the same, return only one</span></div>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1">#   MAIN, to be used for testing the module</span>
+<span class="c1">################################################################################</span>
+<span class="c1">#</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+  
+    <span class="c1"># Default command line parameters</span>
+    <span class="n">inputfileEtot</span> <span class="o">=</span> <span class="s2">&quot;Os.pz-spn-kjpaw_psl.1.0.0.UPF/energy_files/output_energy1&quot;</span>
+    <span class="n">inputfilefreq</span> <span class="o">=</span> <span class="s2">&quot;Os.pz-spn-kjpaw_psl.1.0.0.UPF/frequencies/save_frequencies.dat.g&quot;</span>  
+    
+    <span class="c1">#inputfileEtot = &quot;Re.pz-spn-kjpaw_psl.1.0.0.UPF/energy_files/output_energy1&quot;</span>
+    <span class="c1">#inputfilefreq = &quot;Re.pz-spn-kjpaw_psl.1.0.0.UPF/frequencies/save_frequencies.dat.g&quot;  </span>
+    
+    <span class="n">ibrav</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># default value, to be later changed to 1</span>
+    <span class="n">typeEtot</span> <span class="o">=</span> <span class="s2">&quot;quartic&quot;</span>
+    <span class="n">typefreq</span> <span class="o">=</span> <span class="s2">&quot;quadratic&quot;</span>
+    <span class="n">guess</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.13327423</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.57852513</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+        
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    
+    <span class="c1"># Read the energies (this is necessary to read the celldmsx)</span>
+    <span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span> <span class="o">=</span> <span class="n">read_Etot</span><span class="p">(</span><span class="n">inputfileEtot</span><span class="p">)</span>
+    <span class="c1"># Fit and find the minimun at 0 K</span>
+    <span class="n">a0</span><span class="p">,</span> <span class="n">chia0</span> <span class="o">=</span> <span class="n">fit_anis</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">typeEtot</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">chia0</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
+        <span class="n">min0</span><span class="p">,</span> <span class="n">fmin0</span> <span class="o">=</span> <span class="n">find_min</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">typeEtot</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">)</span>
+    
+    <span class="c1"># fit the frequencies over the grid of lattice parameters and get the fitted</span>
+    <span class="c1"># ones at the minimum point from Etot (min0)</span>
+    <span class="n">weights</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">grun</span> <span class="o">=</span> <span class="n">fitfreq</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">min0</span><span class="p">,</span> <span class="n">inputfilefreq</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">typefreq</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">compute_grun</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_freq_ext</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="s2">&quot;average_freqPython&quot;</span><span class="p">)</span>
+    <span class="n">write_freq_ext</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">grun</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s2">&quot;output_grun_along_a_ext3Dfit&quot;</span><span class="p">)</span>
+    <span class="n">write_freq_ext</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">grun</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s2">&quot;output_grun_along_c_ext3Dfit&quot;</span><span class="p">)</span>
+
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Finished. Elapsed time: &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">elapsed_time</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; s.&quot;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mauro Palumbo.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5a1.
+    </div>
+  </body>
+</html>

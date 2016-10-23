@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqha.eos &#8212; pyqha 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="pyqha 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><h1 style="font-size: 3em;">pyqha</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyqha.eos</h1><div class="highlight"><pre>
+<span></span><span class="c1">#encoding: UTF-8</span>
+
+<span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="n">RY_KBAR</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="nb">pow</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="k">import</span> <span class="n">curve_fit</span>
+
+<span class="c1">################################################################################</span>
+<span class="c1"># Murnaghan EOS functions </span>
+<span class="c1">#</span>
+<span class="c1"># This one is in the format ideal for fitting, not the canonical one in textbooks </span>
+<div class="viewcode-block" id="E_MurnV"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.E_MurnV">[docs]</a><span class="k">def</span> <span class="nf">E_MurnV</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">a0</span><span class="p">,</span><span class="n">a1</span><span class="p">,</span><span class="n">a2</span><span class="p">,</span><span class="n">a3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function implements the Murnaghan EOS (in a form which is best for fitting).</span>
+<span class="sd">    Returns the energy at the volume *V* using the coefficients *a0,a1,a2,a3* </span>
+<span class="sd">    from the equation:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">       a_0 - (a_2*a_1)/(a_3-1.0) V a_2/a_3 ( a_1/V^{a_3})/(a_3-1.0) +1.0 )</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">V</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">V</span><span class="p">)):</span>
+        <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">a0</span> <span class="o">-</span> <span class="n">a2</span><span class="o">*</span><span class="n">a1</span><span class="o">/</span><span class="p">(</span><span class="n">a3</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">+</span> <span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">a2</span><span class="o">/</span><span class="n">a3</span><span class="o">*</span><span class="p">(</span> <span class="nb">pow</span><span class="p">(</span><span class="n">a1</span><span class="o">/</span><span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">a3</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">a3</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span><span class="o">+</span><span class="mf">1.0</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+<span class="c1"># Other functions</span>
+<div class="viewcode-block" id="E_Murn"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.E_Murn">[docs]</a><span class="k">def</span> <span class="nf">E_Murn</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">a</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    As :py:func:`E_MurnV` but input parameters are given as a single list </span>
+<span class="sd">    *a=[a0,a1,a2,a3]*.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">+</span> <span class="n">V</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="p">(</span> <span class="nb">pow</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">V</span><span class="p">,</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span><span class="o">+</span><span class="mf">1.0</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="P_Murn"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.P_Murn">[docs]</a><span class="k">def</span> <span class="nf">P_Murn</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">a</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    As :py:func:`E_MurnV` but input parameters are given as a single list </span>
+<span class="sd">    *a=[a0,a1,a2,a3]* and it returns the pressure not the energy from the EOS.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="nb">pow</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">V</span><span class="p">,</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="H_Murn"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.H_Murn">[docs]</a><span class="k">def</span> <span class="nf">H_Murn</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">a</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function return</span>
+<span class="sd">    </span>
+<span class="sd">    As :py:func:`E_MurnV` but input parameters are given as a single list </span>
+<span class="sd">    *a=[a0,a1,a2,a3]* and it returns the pressure not the energy from the EOS.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">E_Murn</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">a</span><span class="p">)</span><span class="o">+</span><span class="n">P_Murn</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">V</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="print_eos_data"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.print_eos_data">[docs]</a><span class="k">def</span> <span class="nf">print_eos_data</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">chi</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Etot&quot;</span><span class="p">):</span>   
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print the data and the fitted results using the EOS. It can be used for</span>
+<span class="sd">    different fitted quantities using the proper ylabel. ylabel can be &quot;Etot&quot;, </span>
+<span class="sd">    &quot;Fvib&quot;, etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;# Murnaghan EOS </span><span class="se">\t\t</span><span class="s2"> chi squared= </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">chi</span><span class="p">))</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;# &quot;</span><span class="o">+</span><span class="n">ylabel</span><span class="o">+</span><span class="s2">&quot;min= </span><span class="si">{:.10e}</span><span class="s2"> Ry&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> Vmin= </span><span class="si">{:.10e}</span><span class="s2"> a.u.^3&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> B0= </span><span class="si">{:.10e}</span><span class="s2"> kbar&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">RY_KBAR</span><span class="p">)</span>
+    <span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> dB0/dV= </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="mi">80</span><span class="o">*</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;# V *a.u.^3)&quot;</span><span class="p">,</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">ylabel</span><span class="p">,</span><span class="s2">&quot; (Ry)</span><span class="se">\t\t</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">ylabel</span><span class="o">+</span><span class="s2">&quot;fit&quot;</span><span class="p">,</span><span class="s2">&quot; (Ry)</span><span class="se">\t\t</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">ylabel</span><span class="o">+</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="n">ylabel</span><span class="o">+</span><span class="s2">&quot;fit (Ry)</span><span class="se">\t</span><span class="s2">P (kbar)&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">+</span>
+        <span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">E_Murn</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">a</span><span class="p">))</span><span class="o">+</span>
+        <span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">E_Murn</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">a</span><span class="p">))</span><span class="o">+</span>
+        <span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">P_Murn</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">RY_KBAR</span><span class="p">))</span></div>
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="write_Etotfitted"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.write_Etotfitted">[docs]</a><span class="k">def</span> <span class="nf">write_Etotfitted</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">chi</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;E&quot;</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write in filename the data and the fitted results using the EOS. It can be used for</span>
+<span class="sd">    different fitted quantities using the proper ylabel. ylabel can be &quot;Etot&quot;, </span>
+<span class="sd">    &quot;Fvib&quot;, etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fout</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;# Murnaghan EOS </span><span class="se">\t\t</span><span class="s2"> chi squared= </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">chi</span><span class="p">))</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;# E0= </span><span class="si">{:.10e}</span><span class="s2"> Ry&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> V0= </span><span class="si">{:.10e}</span><span class="s2"> a.u.^3&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> B0= </span><span class="si">{:.10e}</span><span class="s2"> kbar&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">RY_KBAR</span><span class="p">)</span>
+    <span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> dB0/dV= </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="mi">80</span><span class="o">*</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;# V *a.u.^3)&quot;</span><span class="p">,</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">ylabel</span><span class="p">,</span><span class="s2">&quot; (Ry)</span><span class="se">\t\t</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">ylabel</span><span class="o">+</span><span class="s2">&quot;fit&quot;</span><span class="p">,</span><span class="s2">&quot; (Ry)</span><span class="se">\t\t</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">ylabel</span><span class="o">+</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="n">ylabel</span><span class="o">+</span><span class="s2">&quot;fit (Ry)</span><span class="se">\t</span><span class="s2">P (kbar)&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">+</span>
+        <span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">E_Murn</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">a</span><span class="p">))</span><span class="o">+</span>
+        <span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">E_Murn</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">a</span><span class="p">))</span><span class="o">+</span>
+        <span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> </span><span class="si">{:.10e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">P_Murn</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">RY_KBAR</span><span class="p">))</span></div>
+
+<span class="c1">################################################################################</span>
+<span class="c1">#</span>
+<div class="viewcode-block" id="calculate_fitted_points"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.calculate_fitted_points">[docs]</a><span class="k">def</span> <span class="nf">calculate_fitted_points</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">a</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates a denser mesh of E(V) points for plotting...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Vstep</span> <span class="o">=</span> <span class="p">(</span><span class="n">V</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">V</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">V</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">1000</span>
+    <span class="n">Vdense</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">Edensefitted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="n">Vdense</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">V</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">Vstep</span><span class="o">*</span><span class="n">i</span> 
+        <span class="n">Edensefitted</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">E_Murn</span><span class="p">(</span><span class="n">Vdense</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">a</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">Vdense</span><span class="p">,</span> <span class="n">Edensefitted</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="fit_Murn"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.fit_Murn">[docs]</a><span class="k">def</span> <span class="nf">fit_Murn</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">E</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the function for fitting with the Murnaghan EOS as a function of volume only.</span>
+
+<span class="sd">    The input variable V is an 1D array of volumes, E are the corresponding </span>
+<span class="sd">    energies (or other analogous quantity to be fitted with the Murnaghan EOS.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># reasonable initial guesses for EOS parameters</span>
+    <span class="n">a0</span><span class="o">=</span><span class="n">E</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">E</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">a1</span><span class="o">=</span><span class="n">V</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">V</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">a2</span><span class="o">=</span><span class="mi">500</span><span class="o">/</span><span class="n">RY_KBAR</span>
+    <span class="n">a3</span><span class="o">=</span><span class="mf">5.0</span>
+    
+    <span class="n">a</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">E_MurnV</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">[</span><span class="n">a0</span><span class="p">,</span><span class="n">a1</span><span class="p">,</span><span class="n">a2</span><span class="p">,</span><span class="n">a3</span><span class="p">])</span>
+    
+    <span class="n">chi</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">V</span><span class="p">)):</span>
+        <span class="n">chi</span> <span class="o">+=</span> <span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">E_Murn</span><span class="p">(</span><span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">a</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span>
+    
+    <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">pcov</span><span class="p">,</span> <span class="n">chi</span></div>
+
+
+
+<div class="viewcode-block" id="compute_beta"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.compute_beta">[docs]</a><span class="k">def</span> <span class="nf">compute_beta</span><span class="p">(</span><span class="n">minT</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function computes the volumetric thermal expansion as a numerical</span>
+<span class="sd">    derivative of the volume as a function of temperature V(T). This is obtained</span>
+<span class="sd">    from the free energy minimization which should be done before.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grad</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">minT</span><span class="p">))</span>  <span class="c1"># numerical derivatives with numpy</span>
+    <span class="n">betaT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grad</span><span class="p">)</span>  <span class="c1"># grad contains the derivatives with respect to T</span>
+                                <span class="c1"># also convert to np.array format    </span>
+    <span class="k">return</span> <span class="n">betaT</span><span class="o">/</span><span class="n">minT</span></div>
+
+
+<div class="viewcode-block" id="compute_Cv"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.compute_Cv">[docs]</a><span class="k">def</span> <span class="nf">compute_Cv</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">Vmin</span><span class="p">,</span><span class="n">V</span><span class="p">,</span><span class="n">Cvib</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function computes the isocoric heat capacity as a function of temperature.</span>
+<span class="sd">    From *Cvib*, which is a matrix with *Cvib(T,V)* as from the harmonic calculations</span>
+<span class="sd">    determines the *Cv* at each temperature by linear interpolation between the values</span>
+<span class="sd">    at the two volumes closest to Vmin(T). Vmin(T) is from the minimization of F(V,T)</span>
+<span class="sd">    and *V* is the array of volumes used for it.</span>
+<span class="sd">    Returns *Cv(T)*.</span>
+<span class="sd">    </span>
+<span class="sd">    Not implemented yet.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Cv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">iT</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">)):</span>
+        <span class="n">Cv_interpolated</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">Vmin</span><span class="p">[</span><span class="n">iT</span><span class="p">],</span> <span class="n">V</span><span class="p">,</span> <span class="n">Cvib</span><span class="p">[</span><span class="n">iT</span><span class="p">,:])</span>
+        <span class="n">Cv</span><span class="p">[</span><span class="n">iT</span><span class="p">]</span> <span class="o">=</span> <span class="n">Cv_interpolated</span>
+        
+    <span class="k">return</span> <span class="n">Cv</span></div>
+
+<div class="viewcode-block" id="compute_Cp"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.compute_Cp">[docs]</a><span class="k">def</span> <span class="nf">compute_Cp</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">Cv</span><span class="p">,</span><span class="n">V</span><span class="p">,</span><span class="n">B0</span><span class="p">,</span><span class="n">beta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function computes the isobaric heat capacity from the eq. Cp-Cv=...</span>
+<span class="sd">    Not implemented yet.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Cp</span> <span class="o">=</span> <span class="n">Cv</span> <span class="o">+</span> <span class="n">T</span> <span class="o">*</span> <span class="n">V</span> <span class="o">*</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">B0</span>
+    <span class="k">return</span> <span class="n">Cp</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mauro Palumbo.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5a1.
+    </div>
+  </body>
+</html>

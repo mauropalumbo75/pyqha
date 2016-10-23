@@ -1,4 +1,7 @@
-# -*- coding: utf-8 -*-
+#encoding: UTF-8
+# Copyright (C) 2016 Mauro Palumbo
+# This file is distributed under the terms of the # MIT License. 
+# See the file `License' in the root directory of the present distribution.
 
 import numpy as np
 from scipy.optimize import minimize
@@ -239,3 +242,34 @@ def find_min_quartic(a,ibrav=4,guess=None):
         print ("WARNING! Problems in extremum finding: ",res_quartic.message)
   
     return expand_vector(res_quartic.x,ibrav)
+
+
+################################################################################
+#
+def calculate_fitted_points_anis(celldmsx,nmesh, fittype="quadratic",ibrav=4,a=None):
+    """
+    Calculates a denser mesh of Efitted(celldmsx) points for plotting. nmesh = (nx,ny,nz)
+    gives the dimensions of the mesh. 
+    """
+    na = nmesh[0]
+    nb = nmesh[1]
+    nc = nmesh[2]
+    
+    if (fittype=="quadratic"):
+        fit_fun=fquadratic
+    else:
+        fit_fun=fquartic
+    
+    if (ibrav==4):      # hex
+        astep = (celldmsx[:,0].max()-celldmsx[:,0].min())/na
+        cstep = (celldmsx[:,2].max()-celldmsx[:,2].min())/nc
+        celldmsxdense = np.zeros((na*nc,6))
+        Edense = np.zeros(na*nc)
+        for i in range(0,na):
+            for j in range(0,nc):
+                index = i*na+j
+                celldmsxdense[index,0] = celldmsx[:,0].min() + astep*i 
+                celldmsxdense[index,2] = celldmsx[:,2].min() + cstep*j 
+                Edense[index] = fit_fun(celldmsxdense[index,:],a)
+        
+    return celldmsxdense, Edense

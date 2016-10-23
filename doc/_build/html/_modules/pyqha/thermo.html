@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqha.thermo &#8212; pyqha 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="pyqha 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><h1 style="font-size: 3em;">pyqha</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyqha.thermo</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1">#encoding: UTF-8</span>
+
+<span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="n">RY_TO_CMM1</span><span class="p">,</span> <span class="n">K_BOLTZMANN_RY</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">tanh</span><span class="p">,</span> <span class="n">sinh</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">exp</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">read</span> <span class="k">import</span> <span class="n">read_dos</span><span class="p">,</span> <span class="n">read_dos_geo</span>
+<span class="kn">from</span> <span class="nn">write</span> <span class="k">import</span> <span class="n">write_thermo</span>
+
+
+<div class="viewcode-block" id="dos_integral"><a class="viewcode-back" href="../../pyqha.html#pyqha.thermo.dos_integral">[docs]</a><span class="k">def</span> <span class="nf">dos_integral</span><span class="p">(</span><span class="n">E</span><span class="p">,</span><span class="n">dos</span><span class="p">,</span><span class="n">m</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function to compute the integral of an input phonon DOS (*dos*) with the 3/8 Simpson method.</span>
+<span class="sd">    *m* is the moment of the integral, if :math:`m&gt;0` different moments can be calculated.</span>
+<span class="sd">    For example, with :math:`m=0` (default) it returns the number of modes from the dos, </span>
+<span class="sd">    with :math:`m=1` it returns the ZPE. The input energy (*E*) and phonon DOS (*dos*) are expected to be in</span>
+<span class="sd">    :math:`cm^{-1}`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">somma</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">dos</span><span class="p">)</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">somma</span> <span class="o">+=</span> <span class="mf">3.0</span><span class="o">*</span><span class="nb">pow</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="n">m</span><span class="p">)</span><span class="o">*</span><span class="n">dos</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="mf">3.0</span><span class="o">*</span><span class="nb">pow</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">m</span><span class="p">)</span><span class="o">*</span><span class="n">dos</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mf">2.0</span><span class="o">*</span><span class="nb">pow</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">],</span><span class="n">m</span><span class="p">)</span><span class="o">*</span><span class="n">dos</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span>
+        
+    <span class="k">return</span> <span class="n">h</span><span class="o">*</span><span class="n">somma</span><span class="o">*</span><span class="mf">3.0</span><span class="o">/</span><span class="mf">8.0</span><span class="p">;</span></div>
+
+
+<div class="viewcode-block" id="compute_thermo"><a class="viewcode-back" href="../../pyqha.html#pyqha.thermo.compute_thermo">[docs]</a><span class="k">def</span> <span class="nf">compute_thermo</span><span class="p">(</span><span class="n">E</span><span class="p">,</span><span class="n">dos</span><span class="p">,</span><span class="n">TT</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function computes the vibrational energy, Helmholtz energy, entropy and</span>
+<span class="sd">    heat capacity in the harmonic approximation from the input numpy arrays *E* </span>
+<span class="sd">    and *dos* containing the phonon DOS(E). The calculation is done over a set of</span>
+<span class="sd">    temperatures given in input as a numpy array *TT*.</span>
+<span class="sd">    It also computes the number of phonon modes obtained from the input DOS (which</span>
+<span class="sd">    must be approximately equal to :math:`3*N`, with *N* the number of atoms per cell)</span>
+<span class="sd">    and the ZPE. The input energy and dos are expected to be in 1/cm-1. </span>
+<span class="sd">    It returns numpy arrays for the following quantities (in this order):</span>
+<span class="sd">    temperatures, vibrational energy, Helmholtz energy, entropy, heat capacity.</span>
+<span class="sd">    Plus it returns the ZPE and number of phonon modes obtained from the input DOS.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dos</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Not enough points in the phonon DOS!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="n">ZPE</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">dos_integral</span><span class="p">(</span><span class="n">E</span><span class="p">,</span><span class="n">dos</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="n">dos_integral</span><span class="p">(</span><span class="n">E</span><span class="p">,</span><span class="n">dos</span><span class="p">)</span>
+    
+    <span class="n">EvibT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">))</span>
+    <span class="n">SvibT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">))</span>
+    <span class="n">CvibT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">))</span>
+    <span class="n">FvibT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">)):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">K_BOLTZMANN_RY</span><span class="o">*</span><span class="n">TT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">arg2</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">arg</span>
+        <span class="n">Evib</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">Svib</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">Cvib</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">dos</span><span class="p">)</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">):</span>
+
+            <span class="n">Evib</span> <span class="o">+=</span> <span class="mf">3.0</span><span class="o">*</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="n">tanh</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">arg2</span><span class="p">))</span><span class="o">*</span><span class="n">dos</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span>\
+            <span class="mf">3.0</span><span class="o">*</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">tanh</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">arg2</span><span class="p">))</span><span class="o">*</span><span class="n">dos</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span>\
+            <span class="mf">2.0</span><span class="o">*</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">tanh</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">arg2</span><span class="p">))</span><span class="o">*</span><span class="n">dos</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span>
+        
+            <span class="n">Svib</span> <span class="o">+=</span> <span class="mf">3.0</span><span class="o">*</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="n">arg2</span><span class="o">/</span><span class="n">tanh</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="n">arg2</span><span class="p">)</span><span class="o">-</span><span class="n">log</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">sinh</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="n">arg2</span><span class="p">)))</span><span class="o">*</span><span class="n">dos</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span>\
+            <span class="mf">3.0</span><span class="o">*</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">arg2</span><span class="o">/</span><span class="n">tanh</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">arg2</span><span class="p">)</span><span class="o">-</span><span class="n">log</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">sinh</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">arg2</span><span class="p">)))</span><span class="o">*</span><span class="n">dos</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span>\
+            <span class="mf">2.0</span><span class="o">*</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">arg2</span><span class="o">/</span><span class="n">tanh</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">arg2</span><span class="p">)</span><span class="o">-</span><span class="n">log</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">sinh</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">arg2</span><span class="p">)))</span><span class="o">*</span><span class="n">dos</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span>
+            
+            <span class="n">Cvib</span> <span class="o">+=</span> <span class="mf">3.0</span><span class="o">*</span><span class="nb">pow</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="n">arg</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span> <span class="mf">4.0</span><span class="o">*</span><span class="nb">pow</span><span class="p">(</span><span class="n">sinh</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">arg2</span><span class="p">)),</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span><span class="o">*</span><span class="n">dos</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span>\
+                <span class="mf">3.0</span><span class="o">*</span><span class="nb">pow</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">arg</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span> <span class="mf">4.0</span><span class="o">*</span><span class="nb">pow</span><span class="p">(</span><span class="n">sinh</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">arg2</span><span class="p">)),</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span><span class="o">*</span><span class="n">dos</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span>\
+                <span class="mf">2.0</span><span class="o">*</span><span class="nb">pow</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">arg</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span> <span class="mf">4.0</span><span class="o">*</span><span class="nb">pow</span><span class="p">(</span><span class="n">sinh</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">arg2</span><span class="p">)),</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span><span class="o">*</span><span class="n">dos</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span>
+            
+        <span class="n">EvibT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">*</span><span class="mf">0.5</span><span class="o">*</span><span class="n">Evib</span><span class="o">*</span><span class="mf">3.0</span><span class="o">/</span><span class="mf">8.0</span>  <span class="c1">#  h is the integration step, 0.5 comes from the equation for E,</span>
+                                                    <span class="c1"># the factor 3.0/8.0 comes from the Simpson 3/8 rule</span>
+        <span class="n">SvibT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">*</span><span class="n">K_BOLTZMANN_RY</span><span class="o">*</span><span class="n">Svib</span><span class="o">*</span><span class="mf">3.0</span><span class="o">/</span><span class="mf">8.0</span>
+        <span class="n">CvibT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">*</span><span class="n">K_BOLTZMANN_RY</span><span class="o">*</span><span class="n">Cvib</span><span class="o">*</span><span class="mf">3.0</span><span class="o">/</span><span class="mf">8.0</span>
+    <span class="n">FvibT</span> <span class="o">=</span> <span class="n">EvibT</span> <span class="o">-</span> <span class="n">SvibT</span> <span class="o">*</span> <span class="n">TT</span>
+    
+    <span class="k">return</span> <span class="n">TT</span><span class="p">,</span> <span class="n">EvibT</span><span class="p">,</span> <span class="n">SvibT</span><span class="p">,</span> <span class="n">CvibT</span><span class="p">,</span> <span class="n">FvibT</span><span class="p">,</span> <span class="n">ZPE</span><span class="p">,</span> <span class="n">modes</span></div>
+
+
+<div class="viewcode-block" id="compute_thermo_geo"><a class="viewcode-back" href="../../pyqha.html#pyqha.thermo.compute_thermo_geo">[docs]</a><span class="k">def</span> <span class="nf">compute_thermo_geo</span><span class="p">(</span><span class="n">fin</span><span class="p">,</span><span class="n">fout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">ngeo</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">TT</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">])):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function reads the input dos file(s) from *fin+i*, with *i* a number from</span>
+<span class="sd">    1 to *ngeo* + 1 and computes vibrational energy, Helmholtz energy, entropy and</span>
+<span class="sd">    heat capacity in the harmonic approximation. Then writes the output on file(s)</span>
+<span class="sd">    if fout!=None.</span>
+<span class="sd">    Output file(s) have the following format:</span>
+
+<span class="sd">    +------+-----------------+-----------------+-----------------+-----------------+</span>
+<span class="sd">    | T    | :math:`E_{vib}` | :math:`F_{vib}` | :math:`S_{vib}` | :math:`C_{vib}` | </span>
+<span class="sd">    +======+=================+=================+=================+=================+</span>
+<span class="sd">    | 1    | ...             | ...             | ...             | ...             |</span>
+<span class="sd">    +------+-----------------+-----------------+-----------------+-----------------+   </span>
+
+<span class="sd">    and are names *fout* +1, *fout* +2,... for each geometry.</span>
+
+<span class="sd">    Returning values are (len(TT),ngeo) numpy matrices (T,gEvib,gFvib,gSvib,gCvib,gZPE,gmodes) </span>
+<span class="sd">    containing the </span>
+<span class="sd">    temperatures and the above mentioned thermodynamic functions as for example:</span>
+<span class="sd">    Fvib[T,geo] -&gt; Fvib at the temperature &quot;T&quot; for the geometry &quot;geo&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">gEvib</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">),</span><span class="n">ngeo</span><span class="p">))</span>
+    <span class="n">gFvib</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">),</span><span class="n">ngeo</span><span class="p">))</span>
+    <span class="n">gSvib</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">),</span><span class="n">ngeo</span><span class="p">))</span>
+    <span class="n">gCvib</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">),</span><span class="n">ngeo</span><span class="p">))</span>
+    <span class="n">gZPE</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ngeo</span><span class="p">))</span>
+    <span class="n">gmodes</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ngeo</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">ngeo</span><span class="p">):</span>
+        <span class="n">E</span><span class="p">,</span> <span class="n">dos</span> <span class="o">=</span> <span class="n">read_dos</span><span class="p">(</span><span class="n">fin</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>        
+        <span class="n">T</span><span class="p">,</span> <span class="n">Evib</span><span class="p">,</span> <span class="n">Svib</span><span class="p">,</span> <span class="n">Cvib</span><span class="p">,</span> <span class="n">Fvib</span><span class="p">,</span> <span class="n">ZPE</span><span class="p">,</span> <span class="n">modes</span> <span class="o">=</span> <span class="n">compute_thermo</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">RY_TO_CMM1</span><span class="p">,</span><span class="n">dos</span><span class="o">*</span><span class="n">RY_TO_CMM1</span><span class="p">,</span><span class="n">TT</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">fout</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">write_thermo</span><span class="p">(</span><span class="n">fout</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="n">T</span><span class="p">,</span> <span class="n">Evib</span><span class="p">,</span> <span class="n">Fvib</span><span class="p">,</span> <span class="n">Svib</span><span class="p">,</span> <span class="n">Cvib</span><span class="p">,</span> <span class="n">ZPE</span><span class="p">,</span> <span class="n">modes</span><span class="p">)</span>
+        
+        <span class="n">gEvib</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">Evib</span>
+        <span class="n">gFvib</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">Fvib</span>
+        <span class="n">gSvib</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">Svib</span>
+        <span class="n">gCvib</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">Cvib</span>
+        <span class="n">gZPE</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">ZPE</span>
+        <span class="n">gmodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">modes</span>
+    
+    <span class="k">return</span> <span class="n">TT</span><span class="p">,</span> <span class="n">gEvib</span><span class="p">,</span> <span class="n">gFvib</span><span class="p">,</span> <span class="n">gSvib</span><span class="p">,</span> <span class="n">gCvib</span><span class="p">,</span> <span class="n">gZPE</span><span class="p">,</span> <span class="n">gmodes</span></div>
+
+
+<div class="viewcode-block" id="gen_TT"><a class="viewcode-back" href="../../pyqha.html#pyqha.thermo.gen_TT">[docs]</a><span class="k">def</span> <span class="nf">gen_TT</span><span class="p">(</span><span class="n">Tstart</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">Tend</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">Tstep</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple function to generate a numpy array of temperatures, starting from</span>
+<span class="sd">    *Tstart* and ending to *Tend* (or the closest *T&lt;Tend* accorinding to the *Tstep* )</span>
+<span class="sd">    with step *Tstep* .</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Tsteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">Tend</span><span class="o">-</span><span class="n">Tstart</span><span class="p">)</span><span class="o">//</span><span class="n">Tstep</span><span class="p">)</span>
+    <span class="n">TT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Tsteps</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">Tsteps</span><span class="p">):</span>
+        <span class="n">TT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Tstart</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="n">Tstep</span>
+        
+    <span class="k">return</span> <span class="n">TT</span></div>
+
+
+<span class="c1">################################################################################</span>
+<div class="viewcode-block" id="rearrange_thermo"><a class="viewcode-back" href="../../pyqha.html#pyqha.thermo.rearrange_thermo">[docs]</a><span class="k">def</span> <span class="nf">rearrange_thermo</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">Evib</span><span class="p">,</span><span class="n">Fvib</span><span class="p">,</span><span class="n">Svib</span><span class="p">,</span><span class="n">Cvib</span><span class="p">,</span><span class="n">ngeo</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function just rearranges the order of the elements in the input matrices</span>
+<span class="sd">    The first index of the returning matrices *X* now gives all geometries at a given</span>
+<span class="sd">    *T*, i.e. *X[0]* is the vector of the property *X* a *T=T[0,0]* . *X[0,0]* for the first </span>
+<span class="sd">    geometry, *X[0,1]* the second geometry and so on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Evib2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="n">ngeo</span><span class="p">))</span>
+    <span class="n">Fvib2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="n">ngeo</span><span class="p">))</span>
+    <span class="n">Svib2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="n">ngeo</span><span class="p">))</span>
+    <span class="n">Cvib2</span> <span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="n">ngeo</span><span class="p">))</span> 
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">ngeo</span><span class="p">):</span>
+            <span class="n">Evib2</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Evib</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">Fvib2</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Fvib</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">Svib2</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Svib</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">Cvib2</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Cvib</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Evib2</span><span class="p">,</span> <span class="n">Fvib2</span><span class="p">,</span> <span class="n">Svib2</span><span class="p">,</span> <span class="n">Cvib2</span></div>
+    
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mauro Palumbo.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5a1.
+    </div>
+  </body>
+</html>

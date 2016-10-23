@@ -1,4 +1,7 @@
-# -*- coding: utf-8 -*-
+#encoding: UTF-8
+# Copyright (C) 2016 Mauro Palumbo
+# This file is distributed under the terms of the # MIT License. 
+# See the file `License' in the root directory of the present distribution.
 
 import numpy as np
 
@@ -29,28 +32,28 @@ def write_elastic_constants(C,S,fname):
 ################################################################################
 
 # 
-def write_qha_C(celldmsx,C,ibrav=4,path=""):
+def write_C_geo(celldmsx,C,ibrav=4,fCout=""):
     """
     Write elastic constants calculated on a multidimensional grid of lattice parameters
     ngeo defines the total number of geometries evaluated
-    Note: the order must be the same as for the total energies!  
+    Note: the order must be the same as for the total energies in the quasi-harmonic calculations!  
     """
     for i in range(0,6):
         for j in range(0,6):
             C_label = "C" + str(i+1) + str(j+1)
-            fname = path + C_label + ".dat"
+            fname = fCout + C_label + ".dat"
             fout = open(fname, "w")
             if ibrav==4:    # Hexagonal systems
                 fout.write("a\t\t\tc/a\t\t\t"+C_label+"\n")
                 for k in range(0,len(celldmsx)):
-                    fout.write("{:.10e}".format(celldmsx[i][0])+"\t"+"{:.10e}".format(celldmsx[i][2])
+                    fout.write("{:.10e}".format(celldmsx[k,0])+"\t"+"{:.10e}".format(celldmsx[k,2])
                     +"\t"+"{:.10e}".format(C[i][j][k])+"\n")
             fout.close()
                     
 ################################################################################
 
 # 
-def write_qha_CT(Ts,CT,path=""):
+def write_CT(Ts,CT,fCout=""):
     """
     Write elastic constants calculated on a multidimensional grid of lattice parameters
     ngeo defines the total number of geometries evaluated
@@ -59,11 +62,11 @@ def write_qha_CT(Ts,CT,path=""):
     for i in range(0,6):
         for j in range(0,6):
             C_label = "C" + str(i+1) + str(j+1)
-            fname = path + C_label + "T.dat"
+            fname = fCout + C_label + "T.dat"
             fout = open(fname, "w")
             fout.write("T (K)\t\t\t"+C_label+"\n")
             for T in range(0,CT.shape[0]):
-                fout.write("{:.10e}".format(Ts[T])+"\t"+"{:.10e}".format(CT[T][i][j])+"\n")
+                fout.write("{:.10e}".format(Ts[T])+"\t"+"{:.10e}".format(CT[T,i,j])+"\n")
             fout.close()
 
 ################################################################################
@@ -94,7 +97,7 @@ def write_Etot(celldmsx,Ex,fname,ibrav=4):
 def write_celldmsT(fname,T,x,ibrav=4):
     fout=open(fname,"w")
     if ibrav==4:    # Hexagonal systems    
-        fout.write("# T (K)\ta\tc\n") 
+        fout.write("# T (K)\t\ta\t\tc\n") 
         for i in range(0,len(T)): 
             fout.write("{:.10e}".format(T[i])+"\t"+"{:.10e}".format(x[i][0])+"\t"+
             "{:.10e}".format(x[i][2])+"\t"+"\n") 
@@ -104,7 +107,7 @@ def write_celldmsT(fname,T,x,ibrav=4):
 def write_alphaT(fname,T,alphaT,ibrav=4):
     fout=open(fname,"w")
     if ibrav==4:    # Hexagonal systems    
-        fout.write("# T (K) \talpha_xx\talpha_zz\n") 
+        fout.write("# T (K) \t\talpha_xx\t\talpha_zz\n") 
         for i in range(0,len(T)): 
             fout.write("{:.10e}".format(T[i])+"\t"
             +"\t"+"{:.10e}".format(alphaT[i,0])+"\t"+"{:.10e}".format(alphaT[i,2])+"\n") 
@@ -113,17 +116,18 @@ def write_alphaT(fname,T,alphaT,ibrav=4):
 
 ################################################################################
 
-def write_y_T(fname,T,y,label):
+def write_xy(fname,x,y,labelx,labely):
     """
-    This function writes a quantity y versus temperature T into the file fname.
-    y and T are arrays and should have the same lenght. label is the name of the
-    quantity to write, written in the header of the file (first line).
+    This function writes a quantity y versus quantity x into the file fname.
+    y and x are arrays and should have the same lenght. labelx and labely
+    are the axis labels (possibly with units), written in the header of the file
+    (first line).
     """
     fout=open(fname,"w")
-    header = "# T (K) \t"+label+"\n"
+    header = "# "+labelx+"\t"+labely+"\n"
     fout.write(header)     
-    for i in range(0,len(T)): 
-        line = "{:.10e}".format(T[i])+"\t"+"{:.10e}".format(y[i])+"\n"
+    for i in range(0,len(x)): 
+        line = "{:.10e}".format(x[i])+"\t\t"+"{:.10e}".format(y[i])+"\n"
         fout.write(line)
     fout.close()
 
@@ -175,4 +179,16 @@ def write_freq_ext(weights,freq,filename):
     print ("\nFrequencies (or Gruneisen parameters) written in file "+filename+"\n")
     
     
-
+def write_thermo(fname,T, Evib, Fvib, Svib, Cvib,ZPE,modes):
+    fout=open(fname,"w")
+    fout.write('# total modes from dos = {:.10e}\n'.format(modes))
+    fout.write('# ZPE = {:.10e} Ry/cell\n'.format(ZPE))
+    fout.write("# Multiply by 13.6058 to have energies in eV/cell etc..\n\
+# Multiply by 13.6058 x 23060.35 = 313 754.5 to have energies in cal/(N mol).\n\
+# Multiply by 13.6058 x 96526.0 = 1 313 313 to have energies in J/(N mol).\n\
+# N is the number of formula units per cell.\n#\n")
+    
+    fout.write("# T (K) \tEvib (Ry/cell)\tFvib (Ry/cell)\tSvib (Ry/cell/K)\tCvib (Ry/cell/K)\n") 
+    for i in range(0,len(Evib)): 
+        fout.write('{:.10e}\t{:.10e}\t{:.10e}\t{:.10e}\t{:.10e}\n'.format(T[i],Evib[i],Fvib[i],Svib[i],Cvib[i]))
+    fout.close()

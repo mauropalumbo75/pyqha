@@ -1,6 +1,7 @@
-# -*- coding: utf-8 -*-
-__author__ = "mauro"
-__date__ = "$30-Jan-2016 21:25:36$"
+#encoding: UTF-8
+# Copyright (C) 2016 Mauro Palumbo
+# This file is distributed under the terms of the # MIT License. 
+# See the file `License' in the root directory of the present distribution.
 
 import numpy as np
 
@@ -8,11 +9,12 @@ import numpy as np
 
 def read_elastic_constants(fname):
     """
-    This function reads and returns the elastic constants and compliances.
+    This function reads and returns the elastic constants and compliances from
+    the file *fname* .
     Elastic constants (and elastic compliances) are stored in Voigt notation 
     They are then 6x6 matrices, stored as numpy matrices of shape [6,6]
-    So, the elastic constant C11 is in C[0][0], C12 in C[0][1] and so on.
-    Same for the elastic compliances
+    So, the elastic constant C11 is in C[0,0], C12 in C[0,1] and so on.
+    Same for the elastic compliances.
     """
     C=[]          # C, S matrices for elastic constants and elastic compliances
     S=[]
@@ -52,16 +54,16 @@ def read_elastic_constants(fname):
 
 ################################################################################
 
-def read_qha_elastic_constants(ngeo, path=""):
+def read_elastic_constants_geo(fC,ngeo):
     """
     Read elastic constants calculated on a multidimensional grid of lattice parameters
-    ngeo defines the total number of geometries evaluated
+    *ngeo* defines the total number of geometries evaluated
     Note: the order must be the same as for the total energies!
     """
     Cx = []
     Sx = []
     for i in range(1,ngeo+1):
-        fname = path + "output_el_cons.g" + str(i) + ".dat"
+        fname = fC + str(i)
         C, S = read_elastic_constants(fname)
         Cx.append(C)
         Sx.append(S)
@@ -72,8 +74,9 @@ def read_qha_elastic_constants(ngeo, path=""):
 
 def read_EtotV(fname):
     """
-    Read volumes and energies for a isotropic calculation. Values are taken from the file "fname"
-    ibrav is as in Quantum Espresso and is needed in input (default is cubic)
+    Read cell volumes and the corresponding energies from input file *fname*
+    (1st col, volumes, 2nd col energies). Units must be :math:`a.u.^3` and 
+    :math:`Ryd/cell`
     """
     Vx=[]
     Ex=[]
@@ -91,20 +94,26 @@ def read_EtotV(fname):
 
 ################################################################################
 
-def read_Etot(fname, ibrav=4):
+def read_Etot(fname, ibrav=4, bc_as_a_ratio = True):
     """
-    Read cell parameters and energies from input file fname. 
-    Each celldms is a vector of lenght 6 containing a,b,c,alpha,beta,gamma respectively
-    celldmsx and Ex contains the grid of values of celldms and E so that:
-    celldmsx[0] = celldms0      Ex[0] = E0
-    celldmsx[1] = celldms1      Ex[1] = E1
-    celldmsx[2] = celldms2      Ex[2] = E2
-    ........
-    values are taken from the file "fname"
-    ibrav is as in Quantum Espresso and is needed in input (default is cubic)
+    Read cell parameters *(a,b,c)* and the corresponding energies from input file *fname*. 
+    Each set of cell parameters is stored in a numpy array of lenght 6 
+    for *(a,b,c,alpha,beta,gamma)* respectively. This is done for a future possible 
+    extension but for now only the first 3 elements are used (the others are always 0).
+    All sets are stored in *celldmsx* and *Ex*, the former is a nE*6 matrix, 
+    the latter is a nE array.
+    
+    *ibrav* identifies the Bravais lattice as in Quantum Espresso and is needed 
+    in input (default is 4, i.e. hexagonal cell). The input file format depends
+    on *ibrav*, for example in the hex case, the first two columns are for *a* and
+    *c* and the third is for the energies.
+    
+    If *bc_as_a_ratio=True*, the input data are assumed to be given as 
+    :math:`(a,b/a,c/a)` in the input file and hence converted into :math:`(a,b,c)`
+    which is how they are always stored internally in :py:mod:`pyqha`.
+    
+    Units must be :math:`a.u.` and :math:`Ryd/cell`
  
-    Values of lattice parameters from QE are converted in standard lattice parameters,
-    i.e. b and c instead of factors b/a and c/a
     """
     celldmsx=[]
     Ex=[]
@@ -115,11 +124,15 @@ def read_Etot(fname, ibrav=4):
                 celldms=np.zeros([6])
                 linesplit=line.split()
                 celldms[0]=float(linesplit[0])
-                #celldms[2]=float(linesplit[1]) # as it is
-                celldms[2]=float(linesplit[1])*celldms[0]   # convert from c/a to c
+                if (bc_as_a_ratio==True):
+                    celldms[2]=float(linesplit[1])*celldms[0]   # convert from c/a to c
+                else:
+                    celldms[2]=float(linesplit[1])              # as it is
                 E=float(linesplit[2])
                 celldmsx.append(celldms)
                 Ex.append(E)
+    else:
+        return
     
     return np.array(celldmsx), np.array(Ex)
 
@@ -128,18 +141,27 @@ def read_Etot(fname, ibrav=4):
  
 def read_thermo(fname, ngeo=1):
     """
-    Read cell vibrational thermodynamic functions (Evib, Fvib, Svib, Cvib) as a 
-    function of temperature (nT temperatures as in input files) and for different
-    geometries (ngeo) 
-    Input file(s) must have the following format:
-    T   Evib    Fvib    Svib    Cvib    
-    1   ...     ...     ....    ...
-    ........
-    values are taken from the file(s) fname.g1, fname.g2, etc. for each geometry.
+    Read vibrational thermodynamic functions (Evib, Fvib, Svib, Cvib) as a 
+    function of temperature from the input file *fname*. *ngeo* is the number
+    of input files to read, corresponding for example to different geometries
+    in a quasi-harmonic calculation.
+    If *ngeo>1* reads from the files *fname1*, *fname2*, etc. up to *ngeo*  
+    Input file(s) have the following format:
 
-    Returning values are nT*ngeo numpy matrices (T,Evib,Fvib,Svib,Cvib) containing the 
+    +------+-----------------+-----------------+-----------------+-----------------+
+    | T    | :math:`E_{vib}` | :math:`F_{vib}` | :math:`S_{vib}` | :math:`C_{vib}` | 
+    +======+=================+=================+=================+=================+
+    | 1    | ...             | ...             | ...             | ...             |
+    +------+-----------------+-----------------+-----------------+-----------------+  
+    
+    Lines starting with "#" are not read (comments).    
+
+    Returning values are :math:`nT*ngeo` numpy matrices (T,Evib,Fvib,Svib,Cvib) containing the 
     temperatures and the above mentioned thermodynamic functions as for example:
-    Fvib[T][geo] -> Fvib at the temperature "T" for the geometry "geo"
+    Fvib[T,geo] -> Fvib at the temperature *T* for the geometry *geo*
+    
+    Units must be *K* for temperature, *Ryd/cell* for energies, *Ryd/cell/K* for
+    entropy and heat capacity. 
     """
     T=[]
     Evib=[]
@@ -152,7 +174,10 @@ def read_thermo(fname, ngeo=1):
         gFvib=[]
         gSvib=[]
         gCvib=[]
-        fname2=fname+".g"+str(i+1)
+        if (ngeo>1):
+            fname2=fname+str(i+1)
+        else:
+            fname2=fname
         with open(fname2, "r") as lines:
             for line in lines:
                 linesplit=line.split()
@@ -175,20 +200,14 @@ def read_thermo(fname, ngeo=1):
 
 def read_freq(filename):
     """
-    Read the phonon frequencies at each q point from a frequency file.  
-    Input file (for example from thermo_pw) has the following format:
-    &plot nbnd=     6, nks=   342 /
-            0.000000  0.000000  0.000000
-    -0.0000   -0.0000    0.0000  200.1106  200.1106  299.8824
-            0.022222  0.000000  0.000000
-    9.8401   11.1499   17.7609  200.2470  200.3982  299.7714
-            0.044444  0.000000  0.000000
-    ....
+    This funcstion reads the phonon frequencies at each *q* point from a frequency file.  
+    Input file has the following format (to be done).
 
     Returning values are a nq*3 matrix q, each q[i] being a q point (vector of 3 elements)
     and a nq*modes matrix freq, each element freq[i] being the phonon frequencies
     (vector of modes elements)
     """
+    
     q=[]
     freq=[]
     count=0
@@ -220,24 +239,8 @@ def read_freq_ext(filename):
     Read the phonon frequencies at each q point from a frequency file. The format 
     of this file is different from the one read by the function read_freq and
     contains usually more frequencies, each with a weight, but no qpoint coordinates.
-    Input file (for example from thermo_pw) has the following format:
-         2       192       192       192    307393
-         F
-         0.141285083912966E-06
-    -0.7142368571499E-05
-    -0.5893225492475E-05
-    0.1387907734881E-05
-    0.2001106263587E+03
-    0.2001106263588E+03
-    0.2998824026349E+03
-         0.282570167825932E-06
-    0.1584937719099E+01
-    0.1584937719102E+01
-    0.3082066539423E+01
-    0.2001045986544E+03
-    0.2001045986545E+03
-    0.2998676623586E+03
-    ....
+    Input file has the following format:
+
     First line contains n. atoms, nqx, nqy, nqz, nq total.
     Second line not read.
     Third line: weight of the first qpoint
@@ -307,9 +310,7 @@ def read_freq_geo(inputfilefreq,rangegeo):
 def read_freq_ext_geo(inputfilefreq,rangegeo):
     """
     Read the frequencies for all geometries where the gruneisen parameters must be
-    calculated. Start, stop, step must be given accordingly. It can be used to read
-    the frequencies only at some geometries from a larger set, if necessary, 
-    providing the proper start, stop and step values.
+    calculated. 
 
     Notes:
     nq = qgeo.shape[1] -> total number of q points read
@@ -324,6 +325,53 @@ def read_freq_ext_geo(inputfilefreq,rangegeo):
         
     return np.array(weightsgeo), np.array(freqgeo)
 
+
+################################################################################
+
+
+def read_dos(filename):
+    """
+    Read the phonon density of states (y axis) and the corresponding energies (x axis)
+    from the input file *filename* (1st col energies, 2nd col DOS) and store it
+    in two numpy arrays which are returned. 
+
+    """
+    E = []
+    dens = []
+    print ("Reading phonon dos file "+filename+"...")
+    with open(filename, "r") as lines:
+        for line in lines:
+            linesplit=line.split()
+            if (float(linesplit[0])<1.0E-10):
+                E.append(1.0E-10)
+            else:
+                E.append(float(linesplit[0]))
+            dens.append(float(linesplit[1]))
+
+    return np.array(E), np.array(dens)
+
+
+def read_dos_geo(fin,ngeo):
+    """
+    Read the phonon density of states and energies as in :py:func:`read_dos` from *ngeo* input files
+    *fin1*, *fin2*, etc. and store it in two numpy matrices which are returned. 
+    """
+    
+    # read the first file to determine the number of DOS points
+    E, dos = read_dos(fin+"1") 
+     
+    gE = np.zeros((len(E),ngeo))
+    gdos = np.zeros((len(E),ngeo))   
+    gE[:,0] = E
+    gdos[:,0] = dos
+    
+    # then read the rest of files 
+    for i in range(1,ngeo):
+        EE, ddos = read_dos(fin+str(i+1)) 
+        gE[:,i] = EE
+        gdos[:,i] = ddos
+    
+    return gE, gdos
 
 ################################################################################
 ################################################################################
@@ -362,3 +410,12 @@ def read_alpha(fname):
   x = [a,ca]
   alpha = [alphaxx, alphazz]
   return T,x,alpha
+
+
+################################################################################
+#   MAIN, for testing
+################################################################################
+#
+
+if __name__ == "__main__":
+    pass

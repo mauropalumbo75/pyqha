@@ -1,0 +1,53 @@
+.. _tests:
+
+
+
+####################
+This is a part
+####################
+
+****************
+a chapter
+****************
+
+================
+a section
+================
+
+This is a test file. *test1* **test2** ``pippo``
+
+* This is a test bullet list
+* one more bullet in 
+  two lines
+
+  * a nested example
+  * boooo
+
+1. pippo
+2. pluto
+
+
+
+an example of term definition
+  this is the definition
+
+
++------------------------+------------+----------+----------+
+| Header row, column 1   | Header 2   | Header 3 | Header 4 |
+| (header rows optional) |            |          |          |
++========================+============+==========+==========+
+| body row 1, column 1   | column 2   | column 3 | column 4 |
++------------------------+------------+----------+----------+
+| body row 2             | ...        | ...      |          |
++------------------------+------------+----------+----------+
+
+.. tip::
+   Stai attento!
+
+.. warning::
+   boojj
+
+An example of citation [#ref]_. A second example [#pippo]_.
+
+.. [#ref] M. Palumbo et al. blabla
+.. [#pippo] the book of pippo

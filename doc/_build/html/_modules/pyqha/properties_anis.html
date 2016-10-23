@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqha.properties_anis &#8212; pyqha 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="pyqha 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><h1 style="font-size: 3em;">pyqha</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyqha.properties_anis</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">interpolate</span>
+<span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="n">RY_KBAR</span>
+
+<span class="c1">################################################################################ </span>
+
+<div class="viewcode-block" id="compute_volume"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_volume">[docs]</a><span class="k">def</span> <span class="nf">compute_volume</span><span class="p">(</span><span class="n">celldms</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the volume given the celldms, only for ibrav=4 for now</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.866025404</span><span class="o">*</span><span class="n">celldms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">celldms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">celldms</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span></div>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1"># </span>
+
+<div class="viewcode-block" id="compute_alpha"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_alpha">[docs]</a><span class="k">def</span> <span class="nf">compute_alpha</span><span class="p">(</span><span class="n">minT</span><span class="p">,</span><span class="n">ibrav</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculate the thermal expansion alphaT at different temperatures</span>
+<span class="sd">    from the input minT matrix by computing the numerical derivatives with numpy.</span>
+<span class="sd">    The input matrix minT has shape nT*6, where the first index is the temperature </span>
+<span class="sd">    and the second the lattice parameter. For example, minT[i,0] and minT[i,2] are</span>
+<span class="sd">    the lattice parameters a and c at the temperature i.</span>
+<span class="sd"> </span>
+<span class="sd">    More ibrav types must be implemented</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">grad</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">minT</span><span class="p">))</span>  <span class="c1"># numerical derivatives with numpy</span>
+    <span class="n">alphaT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grad</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># grad[0] contains the derivatives with respect to T, which is the first axis in minT</span>
+                                <span class="c1"># also convert to np.array format</span>
+    
+    <span class="c1"># now normalize the alpha properly. It must be different for different ibrav</span>
+    <span class="c1"># to avoid a divide by 0 error (minT is zero for lattice parameters not defined</span>
+    <span class="c1"># in the system)</span>
+    <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
+        <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">minT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">minT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+        
+    <span class="k">return</span> <span class="n">alphaT</span></div>
+
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="compute_alpha_splines"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_alpha_splines">[docs]</a><span class="k">def</span> <span class="nf">compute_alpha_splines</span><span class="p">(</span><span class="n">TT</span><span class="p">,</span><span class="n">minT</span><span class="p">,</span><span class="n">ibrav</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculate the thermal expansion alphaT at different temperatures</span>
+<span class="sd">    as the previous function but with splines</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">alphaT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">)</span><span class="o">*</span><span class="mi">6</span><span class="p">)</span>
+    <span class="n">alphaT</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">),</span><span class="mi">6</span><span class="p">)</span>
+    
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">TT</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">minT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="n">E</span><span class="o">-</span><span class="mi">11</span><span class="p">)</span>
+    <span class="n">ynew</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">minT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">2</span><span class="n">E</span><span class="o">-</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">ynew</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="c1"># now normalize the alpha properly. It must be different for different ibrav</span>
+    <span class="c1"># to avoid a divide by 0 error (minT is zero for lattice parameters not defined</span>
+    <span class="c1"># in the system)</span>
+    <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
+        <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">minT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">minT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+        
+    <span class="k">return</span> <span class="n">alphaT</span></div>
+
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="compute_heat_capacity"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_heat_capacity">[docs]</a><span class="k">def</span> <span class="nf">compute_heat_capacity</span><span class="p">(</span><span class="n">TT</span><span class="p">,</span><span class="n">minT</span><span class="p">,</span><span class="n">alphaT</span><span class="p">,</span><span class="n">C</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculate the difference between the constant stress heat capacity</span>
+<span class="sd">    C_sigma and the constant strain heat capacity C_epsilon from the V, the thermal</span>
+<span class="sd">    expansions and the elastic constant tensor C</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">C</span> <span class="o">/</span> <span class="n">RY_KBAR</span>
+    <span class="n">CT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">)):</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="n">compute_volume</span><span class="p">(</span><span class="n">minT</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">ibrav</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="n">alphaT</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">l</span><span class="p">]</span> <span class="o">*</span> <span class="n">C</span><span class="p">[</span><span class="n">l</span><span class="p">,</span><span class="n">m</span><span class="p">]</span> <span class="o">*</span> <span class="n">alphaT</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">m</span><span class="p">]</span>
+        <span class="n">CT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">V</span> <span class="o">*</span> <span class="n">TT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">temp</span>    <span class="c1"># this is C_sigma-C_epsilon at a given T</span>
+  
+    <span class="k">return</span> <span class="n">CT</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mauro Palumbo.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5a1.
+    </div>
+  </body>
+</html>

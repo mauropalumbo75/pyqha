@@ -1,4 +1,7 @@
-# -*- coding: utf-8 -*-
+#encoding: UTF-8
+# Copyright (C) 2016 Mauro Palumbo
+# This file is distributed under the terms of the # MIT License. 
+# See the file `License' in the root directory of the present distribution.
 
 import numpy as np
 from scipy import interpolate
@@ -23,7 +26,7 @@ def compute_alpha(minT,ibrav):
     from the input minT matrix by computing the numerical derivatives with numpy.
     The input matrix minT has shape nT*6, where the first index is the temperature 
     and the second the lattice parameter. For example, minT[i,0] and minT[i,2] are
-    the lattice parameters a and c at the temperature i
+    the lattice parameters a and c at the temperature i.
  
     More ibrav types must be implemented
     """

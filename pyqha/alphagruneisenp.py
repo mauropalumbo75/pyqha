@@ -1,6 +1,8 @@
-#!/usr/bin/env python3
 #encoding: UTF-8
-#
+# Copyright (C) 2016 Mauro Palumbo
+# This file is distributed under the terms of the # MIT License. 
+# See the file `License' in the root directory of the present distribution.
+
 # This part is still very messy...
 
 import numpy as np

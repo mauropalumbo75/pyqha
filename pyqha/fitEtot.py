@@ -1,56 +1,57 @@
-#!/usr/bin/env python3
 #encoding: UTF-8
+# Copyright (C) 2016 Mauro Palumbo
+# This file is distributed under the terms of the # MIT License. 
+# See the file `License' in the root directory of the present distribution.
 
 import sys
 import time
 from read import read_EtotV, read_Etot
-from eos import fit_Murn, print_data, calculate_fitted_points, write_Etotfitted
+from eos import fit_Murn, print_eos_data, write_Etotfitted
 from fitutils import fit_anis
 from minutils import find_min
 
-
-def fitEtotV(fin,fout):
+   
+def fitEtotV(fin,fout=None):
     """
-    This function reads E(V) data from a file, fits them with a Murnaghan EOS,
-    prints the results on the screen and in the file "Etotfitted.dat"
+    This function reads :math:`E(V)` data from the input file *fin*, fits them with a Murnaghan EOS,
+    prints the results on the *stdout* and write them in the file "fout".
+    It returns the volumes and energies read from the input file, the fitted coefficients 
+    of the EOS and the corresponding :math:`\chi^2`.
     """
-    inputfileEtot=fin+"/energy_files/Etot.dat"
-    outputfileEtot=fout+"Etotfitted.dat"
     
-    V, E = read_EtotV(inputfileEtot)   
+    V, E = read_EtotV(fin)   
     a, cov, chi = fit_Murn(V,E)
-    print_data(V,E,a,chi,"Etot")
-    write_Etotfitted(outputfileEtot,V,E,a,chi,"Etot")
+    print_eos_data(V,E,a,chi,"Etot")
+    if (fout!=None):
+        write_Etotfitted(fout,V,E,a,chi,"Etot")
     
-    # Plotting using matplotlib
-    Vdense, Edensefitted = calculate_fitted_points(V,a)
-    import matplotlib.pyplot as plt
-    plt.plot(V, E, 'o', label='Etot data', markersize=10)
-    plt.plot(Vdense, Edensefitted, 'r', label='Fitted EOS')
-    plt.legend()
-    plt.xlabel('V (a.u.^3)')
-    plt.ylabel('E (a.u.) ')
-    plt.show()
-
-
-def fitEtot(fin,fout,ibrav,fittype):
-    """
-    This function reads E(celldms) data from a file, fits them with a quartic or 
-    quadratic polynomial, prints the results on the screen and in the file "Etotfitted.dat"
-    """
-    guess=[5.12374914,0.0,8.19314311,0.0,0.0,0.0]
+    return V, E, a, chi
     
-    inputfileEtot=fin+"/energy_files/Etot.dat"
-    outputfileEtot=fout+"Etotfitted.dat"
+
+def fitEtot(fin, out=True, ibrav=4,fittype="quadratic",guess=None):
+    """
+    This function reads the file *fin* containing the energies as a function
+    of the lattice parameters :math:`E(a,b,c)` and fits them with a quartic (*fittype="quartic"*) or 
+    quadratic (*fittype="quadratic"*) polynomial. Then it finds the minimun energy
+    and the corresponding lattice parameters. 
+    ibrav is the Bravais lattice, guess is an initial guess for the minimization.
+    Depending on ibrav, a different number of lattice parameters is considered.
+    It prints fitting results on the screen (which can be redericted to *stdout*)
+    if *out=True*.
+    It returns the lattice parameters and energies as in the input file *fin*,
+    the fitted coefficients of the polynomial, the corresponding :math:`\chi^2`,
+    the lattice parameters at the minimum and the minimun energy.
+    
+    Note: for cubic systems use fitEtotV instead.
+    """
     
     # Read the energies 
-    celldmsx, Ex = read_Etot(inputfileEtot)
+    celldmsx, Ex = read_Etot(fin,ibrav)
 
-    fittypeEtot="quadratic"
-    if (fittype==2):
-        fittypeEtot="quartic"
     # Fit and find the minimun at 0 K
-    a0, chia0 = fit_anis(celldmsx, Ex, ibrav, out=True, type=fittypeEtot)
+    a0, chia0 = fit_anis(celldmsx, Ex, ibrav, out, type=fittype)
     if chia0!=None:
-        mina0, fmina0 = find_min(a0, ibrav, type=fittypeEtot, guess=guess)
-    
+        mincelldms, fmin = find_min(a0, ibrav, type=fittype, guess=guess)
+        
+    return celldmsx, Ex, a0, chia0, mincelldms, fmin 
+
