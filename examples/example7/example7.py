@@ -52,10 +52,15 @@ if __name__ == "__main__":
            
     write_CT(TT,CT,fCout="./elastic_constants/")
     
-    simple_plot_xy(TT,CT[:,0,0],xlabel="T (K)",ylabel="C11 (kbar)")
-    simple_plot_xy(TT,CT[:,0,1],xlabel="T (K)",ylabel="C12 (kbar)")
-    simple_plot_xy(TT,CT[:,0,2],xlabel="T (K)",ylabel="C13 (kbar)")
-    simple_plot_xy(TT,CT[:,2,2],xlabel="T (K)",ylabel="C33 (kbar)")
+    fig1 = simple_plot_xy(TT,CT[:,0,0],xlabel="T (K)",ylabel="C11 (kbar)")
+    fig2 = simple_plot_xy(TT,CT[:,0,1],xlabel="T (K)",ylabel="C12 (kbar)")
+    fig3 = simple_plot_xy(TT,CT[:,0,2],xlabel="T (K)",ylabel="C13 (kbar)")
+    fig4 = simple_plot_xy(TT,CT[:,2,2],xlabel="T (K)",ylabel="C33 (kbar)")
+    fig1.savefig("figure_1.png")
+    fig2.savefig("figure_2.png")
+    fig3.savefig("figure_3.png")
+    fig4.savefig("figure_4.png")
+
     
     # plot now 4 elastic constants in the same plot
     import numpy as np
@@ -65,5 +70,6 @@ if __name__ == "__main__":
     pCxx[:,2] = CT[:,0,2]
     pCxx[:,3] = CT[:,2,2]
     Clabels = ["C11","C12","C13","C33"]
-    multiple_plot_xy(T,pCxx,xlabel="T (K)",ylabel="Cxx (kbar)",labels=Clabels)
+    fig5 = multiple_plot_xy(T,pCxx,xlabel="T (K)",ylabel="Cxx (kbar)",labels=Clabels)
+    fig5.savefig("figure_5.png")    
 

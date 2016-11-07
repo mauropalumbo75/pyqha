@@ -134,32 +134,7 @@ def write_xy(fname,x,y,labelx,labely):
 
 ################################################################################
 
-def write_freq(qgeo,freq,filename):
-    """
-    Write frequencies (or Gruneisen parameters) in a file. In this format also q points
-    coordinates are written but not the weight of each point.
-    It can be used to write the Gruneisen mode parameters, giving them in input as freq
-    """
-    nq = qgeo.shape[1] # total number of q points read
-    modes = freq.shape[1]  # number of frequency modes
-    fout=open(filename, "w")
-    fout.write(" &plot nbnd=   "+str(modes)+", nks= "+str(nq)+" /")
-    fout.write("\n")
-    for iq in range(0,nq):
-        fout.write("              ")
-        for iqxyz in range(0,3):
-            fout.write("{:.6e}".format(qgeo[0][iq][iqxyz])+"    ")    # qpoints coordinates
-        fout.write("\n    ")
-        for ifreq in range(0,modes):
-            fout.write("{:.15e}".format(freq[iq][ifreq])+"\t")  # Gruneisein parameters (one for each mode)
-        fout.write("\n")
-    fout.close()
-    print ("\nFrequencies (or Gruneisen parameters) written in file "+filename+"\n")
-
-
-################################################################################
-
-def write_freq_ext(weights,freq,filename):
+def write_freq(weights,freq,filename):
     """
     Write frequencies (or Gruneisen parameters) on an extended mesh in a file.
     In this format, q points coordinates are NOT written but the weight of each point yes.
@@ -192,3 +167,31 @@ def write_thermo(fname,T, Evib, Fvib, Svib, Cvib,ZPE,modes):
     for i in range(0,len(Evib)): 
         fout.write('{:.10e}\t{:.10e}\t{:.10e}\t{:.10e}\t{:.10e}\n'.format(T[i],Evib[i],Fvib[i],Svib[i],Cvib[i]))
     fout.close()
+
+################################################################################
+# This function may not be necessary, format not used
+
+def write_freq_old(qgeo,freq,filename):
+    """
+    Write frequencies (or Gruneisen parameters) in a file. In this format also q points
+    coordinates are written but not the weight of each point.
+    It can be used to write the Gruneisen mode parameters, giving them in input as freq
+    """
+    nq = qgeo.shape[1] # total number of q points read
+    modes = freq.shape[1]  # number of frequency modes
+    fout=open(filename, "w")
+    fout.write(" &plot nbnd=   "+str(modes)+", nks= "+str(nq)+" /")
+    fout.write("\n")
+    for iq in range(0,nq):
+        fout.write("              ")
+        for iqxyz in range(0,3):
+            fout.write("{:.6e}".format(qgeo[0][iq][iqxyz])+"    ")    # qpoints coordinates
+        fout.write("\n    ")
+        for ifreq in range(0,modes):
+            fout.write("{:.15e}".format(freq[iq][ifreq])+"\t")  # Gruneisein parameters (one for each mode)
+        fout.write("\n")
+    fout.close()
+    print ("\nFrequencies (or Gruneisen parameters) written in file "+filename+"\n")
+
+
+################################################################################

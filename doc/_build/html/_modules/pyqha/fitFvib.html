@@ -72,8 +72,10 @@
           <div class="body" role="main">
             
   <h1>Source code for pyqha.fitFvib</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python3</span>
-<span class="c1">#encoding: UTF-8</span>
+<span></span><span class="c1">#encoding: UTF-8</span>
+<span class="c1"># Copyright (C) 2016 Mauro Palumbo</span>
+<span class="c1"># This file is distributed under the terms of the # MIT License. </span>
+<span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -90,7 +92,8 @@
 
 <span class="c1">################################################################################</span>
 
-<div class="viewcode-block" id="fitFvib"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitFvib.fitFvib">[docs]</a><span class="k">def</span> <span class="nf">fitFvib</span><span class="p">(</span><span class="n">fEtot</span><span class="p">,</span><span class="n">thermodata</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">typeEtot</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span><span class="n">typeFvib</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span><span class="n">defaultguess</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]):</span>
+<div class="viewcode-block" id="fitFvib"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitFvib.fitFvib">[docs]</a><span class="k">def</span> <span class="nf">fitFvib</span><span class="p">(</span><span class="n">fEtot</span><span class="p">,</span><span class="n">thermodata</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">typeEtot</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span><span class="n">typeFvib</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span><span class="n">defaultguess</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;BFGS&quot;</span><span class="p">,</span><span class="n">minoptions</span><span class="o">=</span><span class="p">{},</span><span class="n">splinesoptions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    </span>
 <span class="sd">    This function computes quasi-harmonic quantities from the </span>
@@ -128,8 +131,36 @@
 <span class="sd">       the thermodynamic data in *thermodata* is the same!  See also *example6* and </span>
 <span class="sd">       the tutorial.</span>
 <span class="sd">       </span>
+<span class="sd">        </span>
+<span class="sd">    Advanced input parameters:</span>
+<span class="sd">    </span>
+<span class="sd">    *guess*, an initial guess for the minimization. It is a 6 elements list </span>
+<span class="sd">    [a,b,c,0,0,0]. </span>
+<span class="sd">    </span>
+<span class="sd">    *method*, the method to be used in the minimization procedure, as in the</span>
+<span class="sd">    scipy.optimize.minimize. See its documentation for details. Note that the </span>
+<span class="sd">    methods which usually gives better results for quasi-harmonic calculations</span>
+<span class="sd">    are the &quot;BFGS&quot; or Newton-CG&quot;. Default is &quot;BFGS&quot;.</span>
+<span class="sd">    </span>
+<span class="sd">    *minoptions*, a dictionary with additional options for the minimization </span>
+<span class="sd">    procedure, as in the scipy.optimize.minimize. See its documentation for details.</span>
+<span class="sd">    Note the the options are different for different methods.</span>
+<span class="sd">    </span>
+<span class="sd">    *splinesoptions*, determines whether to use or not splines to reduce the noise</span>
+<span class="sd">    on numerical derivatives (thermal expansions). If *splinesoptions*==None, use </span>
+<span class="sd">    finete differences for derivatives, else use splines as implemented in</span>
+<span class="sd">    scipy.interpolate (see documentation). In the latter case, *splinesoptions*</span>
+<span class="sd">    must be a dictionary. This dictionary must contains the keywords *k0*, *s0*,</span>
+<span class="sd">    *k1*, *s1*, *k2*, *s2* which are passed to :py:func:`scipy.interpolate.splrep`, </span>
+<span class="sd">    one couple for each set of thermal expansions (alpha_xx, alpha_yy, alpha_zz).</span>
+<span class="sd">    *k* is the order of the spline (default=3), s a smoothing condition (default=None).</span>
+<span class="sd">    If *splinesoptions=={}* use the default options of :py:func:`scipy.interpolate.splrep`</span>
+<span class="sd">    Note: use this option with care</span>
+<span class="sd">       </span>
 <span class="sd">    &quot;&quot;&quot;</span>
         
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Minimization method: &quot;</span><span class="p">,</span><span class="n">method</span><span class="p">,</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> options: &quot;</span><span class="p">,</span><span class="n">minoptions</span><span class="p">)</span>
+    
     <span class="c1"># Read the Etot at 0 K</span>
     <span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span> <span class="o">=</span> <span class="n">read_Etot</span><span class="p">(</span><span class="n">fEtot</span><span class="p">)</span>
     
@@ -140,7 +171,7 @@
     <span class="c1"># Fit and find the minimun at 0 K</span>
     <span class="n">a0temp</span><span class="p">,</span> <span class="n">chi0</span> <span class="o">=</span> <span class="n">fit_anis</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">typeEtot</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Etot&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">chi0</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
-        <span class="n">min0</span><span class="p">,</span> <span class="n">fmin0</span> <span class="o">=</span> <span class="n">find_min</span><span class="p">(</span><span class="n">a0temp</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">typeEtot</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">defaultguess</span><span class="p">)</span>
+        <span class="n">min0</span><span class="p">,</span> <span class="n">fmin0</span> <span class="o">=</span> <span class="n">find_min</span><span class="p">(</span><span class="n">a0temp</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">typeEtot</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">defaultguess</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span><span class="n">minoptions</span><span class="o">=</span><span class="n">minoptions</span><span class="p">)</span>
      
     <span class="c1"># if a mixed type fitting has been used, expand the vector of polynomial coefficients</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">typeEtot</span><span class="o">==</span><span class="s2">&quot;quadratic&quot;</span> <span class="ow">and</span> <span class="n">typeFvib</span><span class="o">==</span><span class="s2">&quot;quartic&quot;</span><span class="p">):</span>
@@ -153,6 +184,7 @@
     <span class="n">fminT</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nT</span><span class="p">)</span>
     <span class="n">aT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nT</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">a0</span><span class="p">)))</span>
     <span class="n">chiT</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nT</span><span class="p">)</span>
+    <span class="n">minguess</span> <span class="o">=</span> <span class="n">min0</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nT</span><span class="p">):</span> 
         <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;####################################################################&quot;</span><span class="p">)</span>
         <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;T=&quot;</span><span class="p">,</span><span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
@@ -170,13 +202,18 @@
                 <span class="n">typemix</span><span class="o">=</span><span class="n">typeFvib</span>         <span class="c1"># typeFvib and typeFtot are the same</span>
             <span class="n">print_polynomial</span><span class="p">(</span><span class="n">a0</span><span class="o">+</span><span class="n">aT</span><span class="p">[</span><span class="n">i</span><span class="p">,:])</span>
 
-            <span class="n">minT</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span> <span class="n">fminT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">find_min</span><span class="p">(</span><span class="n">a0</span><span class="o">+</span><span class="n">aT</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="n">ibrav</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="n">typemix</span><span class="p">,</span><span class="n">guess</span><span class="o">=</span><span class="n">min0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">50</span><span class="p">):</span>   <span class="c1"># Tests have shown that for temperatures &gt; 50~K  you get better results </span>
+                            <span class="c1"># using as initial guess the minimum at the previous temperature</span>
+                <span class="n">minguess</span><span class="o">=</span><span class="n">minT</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span>
+            <span class="n">minT</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span> <span class="n">fminT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">find_min</span><span class="p">(</span><span class="n">a0</span><span class="o">+</span><span class="n">aT</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="n">ibrav</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="n">typemix</span><span class="p">,</span><span class="n">guess</span><span class="o">=</span><span class="n">minguess</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span><span class="n">minoptions</span><span class="o">=</span><span class="n">minoptions</span><span class="p">)</span>            
 
     <span class="c1"># Calculate the thermal expansion(s)</span>
-    <span class="n">alphaT</span> <span class="o">=</span> <span class="n">compute_alpha</span><span class="p">(</span><span class="n">minT</span><span class="p">,</span><span class="n">ibrav</span><span class="p">)</span>
-    <span class="c1">#alphaT = compute_alpha_splines(TT,minT,ibrav) # tentative</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">splinesoptions</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">alphaT</span> <span class="o">=</span> <span class="n">compute_alpha</span><span class="p">(</span><span class="n">minT</span><span class="p">,</span><span class="n">ibrav</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">alphaT</span> <span class="o">=</span> <span class="n">compute_alpha_splines</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">minT</span><span class="p">,</span><span class="n">ibrav</span><span class="p">,</span><span class="n">splinesoptions</span><span class="p">)</span>
     
-    <span class="k">return</span> <span class="n">T</span><span class="p">,</span> <span class="n">fminT</span><span class="p">,</span> <span class="n">minT</span><span class="p">,</span>  <span class="n">alphaT</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">chi0</span><span class="p">,</span> <span class="n">aT</span><span class="p">,</span> <span class="n">chiT</span></div>
+    <span class="k">return</span> <span class="n">T</span><span class="p">,</span> <span class="n">fminT</span><span class="p">,</span> <span class="n">minT</span><span class="p">,</span> <span class="n">alphaT</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">chi0</span><span class="p">,</span> <span class="n">aT</span><span class="p">,</span> <span class="n">chiT</span></div>
 
 
 <span class="c1">################################################################################</span>

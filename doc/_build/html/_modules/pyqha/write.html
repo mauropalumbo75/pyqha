@@ -72,7 +72,10 @@
           <div class="body" role="main">
             
   <h1>Source code for pyqha.write</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="c1">#encoding: UTF-8</span>
+<span class="c1"># Copyright (C) 2016 Mauro Palumbo</span>
+<span class="c1"># This file is distributed under the terms of the # MIT License. </span>
+<span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -205,32 +208,7 @@
 
 <span class="c1">################################################################################</span>
 
-<div class="viewcode-block" id="write_freq"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_freq">[docs]</a><span class="k">def</span> <span class="nf">write_freq</span><span class="p">(</span><span class="n">qgeo</span><span class="p">,</span><span class="n">freq</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Write frequencies (or Gruneisen parameters) in a file. In this format also q points</span>
-<span class="sd">    coordinates are written but not the weight of each point.</span>
-<span class="sd">    It can be used to write the Gruneisen mode parameters, giving them in input as freq</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">nq</span> <span class="o">=</span> <span class="n">qgeo</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># total number of q points read</span>
-    <span class="n">modes</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># number of frequency modes</span>
-    <span class="n">fout</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
-    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &amp;plot nbnd=   &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">modes</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;, nks= &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">nq</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; /&quot;</span><span class="p">)</span>
-    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">iq</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nq</span><span class="p">):</span>
-        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;              &quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">iqxyz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">):</span>
-            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.6e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">qgeo</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">iq</span><span class="p">][</span><span class="n">iqxyz</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;    &quot;</span><span class="p">)</span>    <span class="c1"># qpoints coordinates</span>
-        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    &quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">ifreq</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">modes</span><span class="p">):</span>
-            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.15e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">freq</span><span class="p">[</span><span class="n">iq</span><span class="p">][</span><span class="n">ifreq</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Gruneisein parameters (one for each mode)</span>
-        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Frequencies (or Gruneisen parameters) written in file &quot;</span><span class="o">+</span><span class="n">filename</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
-
-
-<span class="c1">################################################################################</span>
-
-<div class="viewcode-block" id="write_freq_ext"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_freq_ext">[docs]</a><span class="k">def</span> <span class="nf">write_freq_ext</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">freq</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="write_freq"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_freq">[docs]</a><span class="k">def</span> <span class="nf">write_freq</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">freq</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Write frequencies (or Gruneisen parameters) on an extended mesh in a file.</span>
 <span class="sd">    In this format, q points coordinates are NOT written but the weight of each point yes.</span>
@@ -263,6 +241,34 @@
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">Evib</span><span class="p">)):</span> 
         <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:.10e}</span><span class="se">\t</span><span class="si">{:.10e}</span><span class="se">\t</span><span class="si">{:.10e}</span><span class="se">\t</span><span class="si">{:.10e}</span><span class="se">\t</span><span class="si">{:.10e}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Evib</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Fvib</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Svib</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Cvib</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
     <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<span class="c1">################################################################################</span>
+<span class="c1"># This function may not be necessary, format not used</span>
+
+<div class="viewcode-block" id="write_freq_old"><a class="viewcode-back" href="../../pyqha.html#pyqha.write.write_freq_old">[docs]</a><span class="k">def</span> <span class="nf">write_freq_old</span><span class="p">(</span><span class="n">qgeo</span><span class="p">,</span><span class="n">freq</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write frequencies (or Gruneisen parameters) in a file. In this format also q points</span>
+<span class="sd">    coordinates are written but not the weight of each point.</span>
+<span class="sd">    It can be used to write the Gruneisen mode parameters, giving them in input as freq</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nq</span> <span class="o">=</span> <span class="n">qgeo</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># total number of q points read</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># number of frequency modes</span>
+    <span class="n">fout</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &amp;plot nbnd=   &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">modes</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;, nks= &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">nq</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; /&quot;</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">iq</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nq</span><span class="p">):</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;              &quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">iqxyz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.6e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">qgeo</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">iq</span><span class="p">][</span><span class="n">iqxyz</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;    &quot;</span><span class="p">)</span>    <span class="c1"># qpoints coordinates</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    &quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ifreq</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">modes</span><span class="p">):</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.15e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">freq</span><span class="p">[</span><span class="n">iq</span><span class="p">][</span><span class="n">ifreq</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Gruneisein parameters (one for each mode)</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Frequencies (or Gruneisen parameters) written in file &quot;</span><span class="o">+</span><span class="n">filename</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<span class="c1">################################################################################</span>
 </pre></div>
 
           </div>

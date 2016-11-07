@@ -114,3 +114,43 @@ def fitCT(aC, chiC, T, minT, ibrav=4, typeC="quadratic"):
     return T, CT
 
 
+################################################################################
+
+def fitS(inputfileEtot, inputpathCx, ibrav, typeSx="quadratic"):
+    """
+    An auxiliary function for fitting the elastic compliances elements over a
+    grid of lattice parameters, i.e. over different geometries.
+    """
+    # Read the energies (this is necessary to read the celldmsx)
+    celldmsx, Ex = read_Etot(inputfileEtot)
+
+    ngeo = len(Ex)
+    Cx, Sx = read_elastic_constants_geo(inputpathCx, ngeo)    
+    
+    # This function works for both C and S, here I use it for S 
+    Sxx = rearrange_Cx(Sx,ngeo)
+    write_qha_C(celldmsx, Sxx, ibrav, inputpathCx)	# Write the S as a function of T for reference
+    
+    aS, chiS = fitCxx(celldmsx, Sxx, ibrav, True, typeSx)
+    
+    return aS, chiS
+
+
+def fS(aS,mintemp,typeCx):
+    """
+    An auxiliary function returning the elastic compliances 6x6 tensor at the
+    set of lattice parameters given in input as mintemp. These should be the
+    lattice parameters at a given temperature obtained from the free energy
+    minimization, so that S(T) can be obtained.
+    Before calling this function, the polynomial coefficients resulting from 
+    fitting the elastic compliances over a grid of lattice parameters, i.e. over
+    different geometries, must be obtained and passed as input in aS. 
+    """
+    S = np.zeros((6,6))
+    for i in range(0,6):
+       for j in range(0,6):
+           if typeCx=="quadratic":
+               S[i,j] = fquadratic(mintemp,aS[i,j],ibrav=4)
+           elif typeCx=="quartic":
+               S[i,j] = fquartic(mintemp,aS[i,j],ibrav=4)  
+    return S

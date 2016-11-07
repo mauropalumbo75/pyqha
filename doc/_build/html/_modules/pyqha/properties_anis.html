@@ -72,28 +72,35 @@
           <div class="body" role="main">
             
   <h1>Source code for pyqha.properties_anis</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="c1">#encoding: UTF-8</span>
+<span class="c1"># Copyright (C) 2016 Mauro Palumbo</span>
+<span class="c1"># This file is distributed under the terms of the # MIT License. </span>
+<span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">interpolate</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">interpolate</span> 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="n">RY_KBAR</span>
+<span class="kn">from</span> <span class="nn">fitutils</span> <span class="k">import</span> <span class="n">fit_anis</span>
+<span class="kn">from</span> <span class="nn">minutils</span> <span class="k">import</span> <span class="n">fquadratic</span><span class="p">,</span> <span class="n">fquartic</span>
 
 <span class="c1">################################################################################ </span>
 
 <div class="viewcode-block" id="compute_volume"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_volume">[docs]</a><span class="k">def</span> <span class="nf">compute_volume</span><span class="p">(</span><span class="n">celldms</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the volume given the celldms, only for ibrav=4 for now</span>
+<span class="sd">    Compute the volume given the *celldms*. Only for ibrav=4 for now, else </span>
+<span class="sd">    returns 0.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mf">0.866025404</span><span class="o">*</span><span class="n">celldms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">celldms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">celldms</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="mf">0.866025404</span><span class="o">*</span><span class="n">celldms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">celldms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">celldms</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
+    <span class="k">return</span> <span class="mi">0</span></div>
 
 <span class="c1">################################################################################</span>
 <span class="c1"># </span>
 
 <div class="viewcode-block" id="compute_alpha"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_alpha">[docs]</a><span class="k">def</span> <span class="nf">compute_alpha</span><span class="p">(</span><span class="n">minT</span><span class="p">,</span><span class="n">ibrav</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function calculate the thermal expansion alphaT at different temperatures</span>
+<span class="sd">    This function calculates the thermal expansion alphaT at different temperatures</span>
 <span class="sd">    from the input minT matrix by computing the numerical derivatives with numpy.</span>
 <span class="sd">    The input matrix minT has shape nT*6, where the first index is the temperature </span>
 <span class="sd">    and the second the lattice parameter. For example, minT[i,0] and minT[i,2] are</span>
@@ -118,27 +125,38 @@
 
 <span class="c1">################################################################################</span>
 
-<div class="viewcode-block" id="compute_alpha_splines"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_alpha_splines">[docs]</a><span class="k">def</span> <span class="nf">compute_alpha_splines</span><span class="p">(</span><span class="n">TT</span><span class="p">,</span><span class="n">minT</span><span class="p">,</span><span class="n">ibrav</span><span class="p">):</span>
+<div class="viewcode-block" id="compute_alpha_splines"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_alpha_splines">[docs]</a><span class="k">def</span> <span class="nf">compute_alpha_splines</span><span class="p">(</span><span class="n">TT</span><span class="p">,</span><span class="n">minT</span><span class="p">,</span><span class="n">ibrav</span><span class="p">,</span><span class="n">splinesoptions</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function calculate the thermal expansion alphaT at different temperatures</span>
-<span class="sd">    as the previous function but with splines</span>
+<span class="sd">    This function calculates the thermal expansions alphaT at different temperatures</span>
+<span class="sd">    as the previous function but using spline interpolation as implemented in</span>
+<span class="sd">    scipy.interpolate.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">alphaT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">)</span><span class="o">*</span><span class="mi">6</span><span class="p">)</span>
     <span class="n">alphaT</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">),</span><span class="mi">6</span><span class="p">)</span>
     
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">TT</span><span class="p">)</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">minT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="n">E</span><span class="o">-</span><span class="mi">11</span><span class="p">)</span>
-    <span class="n">ynew</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">y0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">minT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">y1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">minT</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">y2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">minT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
+        
+    <span class="k">if</span> <span class="p">(</span><span class="n">splinesoptions</span><span class="o">==</span><span class="p">{}):</span>
+        <span class="n">tck0</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y0</span><span class="p">)</span>
+        <span class="n">tck1</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y1</span><span class="p">)</span>
+        <span class="n">tck2</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>  
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tck0</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">splinesoptions</span><span class="p">[</span><span class="s1">&#39;k0&#39;</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="n">splinesoptions</span><span class="p">[</span><span class="s1">&#39;s0&#39;</span><span class="p">])</span>
+        <span class="n">tck1</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">splinesoptions</span><span class="p">[</span><span class="s1">&#39;k1&#39;</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="n">splinesoptions</span><span class="p">[</span><span class="s1">&#39;s1&#39;</span><span class="p">])</span>
+        <span class="n">tck2</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">splinesoptions</span><span class="p">[</span><span class="s1">&#39;k2&#39;</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="n">splinesoptions</span><span class="p">[</span><span class="s1">&#39;s2&#39;</span><span class="p">])</span>        
+        
+    <span class="n">ynew0</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck0</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck0</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ynew1</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck1</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck1</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ynew2</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck2</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck2</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     
-    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">minT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
-    <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">2</span><span class="n">E</span><span class="o">-</span><span class="mi">10</span><span class="p">)</span>
-    <span class="n">ynew</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">alphaT</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tck</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    
-    <span class="c1"># now normalize the alpha properly. It must be different for different ibrav</span>
+    <span class="c1"># now normalize the alphaTs properly. It must be different for different ibrav</span>
     <span class="c1"># to avoid a divide by 0 error (minT is zero for lattice parameters not defined</span>
     <span class="c1"># in the system)</span>
     <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
@@ -148,6 +166,83 @@
     <span class="k">return</span> <span class="n">alphaT</span></div>
 
 <span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="compute_S"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_S">[docs]</a><span class="k">def</span> <span class="nf">compute_S</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">T</span><span class="p">,</span><span class="n">Svib</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">typeSvib</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculates the entropy as a function of temperature. By definition</span>
+<span class="sd">    :math:`S = -(dF/dT)_{\epsilon}`. To avoid the numerical derivation, within the quasi-harmonic</span>
+<span class="sd">    approximation it is better to derive it from fitting the harmonic entropy</span>
+<span class="sd">    results on the grid :math:`(a,b,c)` at the equilibrium lattic parameters given</span>
+<span class="sd">    in *min0*. *celldms* is the grid :math:`(a,b,c)`, *Svib* are the harmonic </span>
+<span class="sd">    entropies on the grid.</span>
+<span class="sd">    The procedure is the same as the for the :math:`E_{tot}+F_{vib}` in the quasi-harmonic</span>
+<span class="sd">    calculation but without the minimization step.</span>
+<span class="sd">    </span>
+<span class="sd">    Note: a better way would be to do a full harmonic calculation at exactly *min0*.</span>
+<span class="sd">    The difference with the above way is usually negligible.</span>
+<span class="sd">    </span>
+<span class="sd">    **Important**: the above procedure relies on the quasi-harmonic approximation,</span>
+<span class="sd">    i.e. on the fact that anharmonic contribution are only due to the change of</span>
+<span class="sd">    phonon frequencies with the lattice parameters. In reality, this is not the </span>
+<span class="sd">    case and the entropy so obtained can only be taken as an approximation of the</span>
+<span class="sd">    real one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">))</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">iT</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">)):</span> 
+            <span class="c1"># Fit Svib with a quadratic or quartic polynomial, as for Fvib</span>
+            <span class="n">aTtemp</span><span class="p">,</span> <span class="n">chiTtemp</span> <span class="o">=</span> <span class="n">fit_anis</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">Svib</span><span class="p">[</span><span class="n">iT</span><span class="p">],</span><span class="n">ibrav</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="n">typeSvib</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Svib&quot;</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">typeSvib</span><span class="o">==</span><span class="s2">&quot;quadratic&quot;</span><span class="p">:</span>
+                <span class="n">S</span><span class="p">[</span><span class="n">iT</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquadratic</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">aTtemp</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">typeSvib</span><span class="o">==</span><span class="s2">&quot;quartic&quot;</span><span class="p">:</span>
+                <span class="n">S</span><span class="p">[</span><span class="n">iT</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquartic</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">aTtemp</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">S</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="compute_Ceps"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_Ceps">[docs]</a><span class="k">def</span> <span class="nf">compute_Ceps</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">T</span><span class="p">,</span><span class="n">Cvib</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">typeCvib</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculates the constant strain heat capacity :math:`C_{\epsilon}`</span>
+<span class="sd">    as a function of temperature. </span>
+<span class="sd">    By definition :math:`C_{\epsilon} = -T(dS/dT)_{\epsilon}=-T(d^2F/dT^2)_{\epsilon}`. </span>
+<span class="sd">    To avoid the numerical derivation, within the quasi-harmonic</span>
+<span class="sd">    approximation it is better to derive it from fitting the harmonic heat capacities</span>
+<span class="sd">    results on the grid :math:`(a,b,c)` at the equilibrium lattic parameters given</span>
+<span class="sd">    in *min0*. *celldms* is the grid :math:`(a,b,c)`, *Cvib* are the harmonic </span>
+<span class="sd">    heat capacity on the grid.</span>
+<span class="sd">    The procedure is the same as the for the :math:`E_{tot}+F_{vib}` in the quasi-harmonic</span>
+<span class="sd">    calculation but without the minimization step.</span>
+<span class="sd">    </span>
+<span class="sd">    Note: a better way would be to do a full harmonic calculation at exactly *min0*.</span>
+<span class="sd">    The difference with the above way is usually negligible.</span>
+<span class="sd">    </span>
+<span class="sd">    **Important**: the above procedure relies on the quasi-harmonic approximation,</span>
+<span class="sd">    i.e. on the fact that anharmonic contribution are only due to the change of</span>
+<span class="sd">    phonon frequencies with the lattice parameters. In reality, this is not the </span>
+<span class="sd">    case and the entropy so obtained can only be taken as an approximation of the</span>
+<span class="sd">    real one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">Ceps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">))</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">iT</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">)):</span> 
+            <span class="c1"># Fit Svib with a quadratic or quartic polynomial, as for Fvib</span>
+            <span class="n">aTtemp</span><span class="p">,</span> <span class="n">chiTtemp</span> <span class="o">=</span> <span class="n">fit_anis</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">Cvib</span><span class="p">[</span><span class="n">iT</span><span class="p">],</span><span class="n">ibrav</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="n">typeCvib</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Ceps&quot;</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">typeCvib</span><span class="o">==</span><span class="s2">&quot;quadratic&quot;</span><span class="p">:</span>
+                <span class="n">Ceps</span><span class="p">[</span><span class="n">iT</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquadratic</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">aTtemp</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">typeCvib</span><span class="o">==</span><span class="s2">&quot;quartic&quot;</span><span class="p">:</span>
+                <span class="n">Ceps</span><span class="p">[</span><span class="n">iT</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquartic</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">aTtemp</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">Ceps</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
 
 <div class="viewcode-block" id="compute_heat_capacity"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_heat_capacity">[docs]</a><span class="k">def</span> <span class="nf">compute_heat_capacity</span><span class="p">(</span><span class="n">TT</span><span class="p">,</span><span class="n">minT</span><span class="p">,</span><span class="n">alphaT</span><span class="p">,</span><span class="n">C</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -165,6 +260,45 @@
         <span class="n">CT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">V</span> <span class="o">*</span> <span class="n">TT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">temp</span>    <span class="c1"># this is C_sigma-C_epsilon at a given T</span>
   
     <span class="k">return</span> <span class="n">CT</span></div>
+
+
+<div class="viewcode-block" id="compute_Csigma"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_Csigma">[docs]</a><span class="k">def</span> <span class="nf">compute_Csigma</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">T</span><span class="p">,</span><span class="n">Cvib</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">typeCvib</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function calculates the constant strain heat capacity :math:`C_{\sigma}`</span>
+<span class="sd">    as a function of temperature. </span>
+<span class="sd">    By definition :math:`C_{\sigma} = -T(dS/dT)_{\sigma}=-T(d^2F/dT^2)_{\epsilon,\sigma}`. </span>
+<span class="sd">    To avoid the numerical derivation, within the quasi-harmonic</span>
+<span class="sd">    approximation it is better to derive it from fitting the harmonic heat capacities</span>
+<span class="sd">    results on the grid :math:`(a,b,c)` at the equilibrium lattic parameters given</span>
+<span class="sd">    in *min0*. *celldms* is the grid :math:`(a,b,c)`, *Cvib* are the harmonic </span>
+<span class="sd">    heat capacity on the grid.</span>
+<span class="sd">    The procedure is the same as the for the :math:`E_{tot}+F_{vib}` in the quasi-harmonic</span>
+<span class="sd">    calculation but without the minimization step.</span>
+<span class="sd">    </span>
+<span class="sd">    Note: a better way would be to do a full harmonic calculation at exactly *min0*.</span>
+<span class="sd">    The difference with the above way is usually negligible.</span>
+<span class="sd">    </span>
+<span class="sd">    **Important**: the above procedure relies on the quasi-harmonic approximation,</span>
+<span class="sd">    i.e. on the fact that anharmonic contribution are only due to the change of</span>
+<span class="sd">    phonon frequencies with the lattice parameters. In reality, this is not the </span>
+<span class="sd">    case and the entropy so obtained can only be taken as an approximation of the</span>
+<span class="sd">    real one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">Ceps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">))</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">iT</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">)):</span> 
+            <span class="c1"># Fit Svib with a quadratic or quartic polynomial, as for Fvib</span>
+            <span class="n">aTtemp</span><span class="p">,</span> <span class="n">chiTtemp</span> <span class="o">=</span> <span class="n">fit_anis</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">Cvib</span><span class="p">[</span><span class="n">iT</span><span class="p">],</span><span class="n">ibrav</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="n">typeCvib</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Ceps&quot;</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">typeCvib</span><span class="o">==</span><span class="s2">&quot;quadratic&quot;</span><span class="p">:</span>
+                <span class="n">Ceps</span><span class="p">[</span><span class="n">iT</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquadratic</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">aTtemp</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">typeCvib</span><span class="o">==</span><span class="s2">&quot;quartic&quot;</span><span class="p">:</span>
+                <span class="n">Ceps</span><span class="p">[</span><span class="n">iT</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquartic</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">aTtemp</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">Ceps</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 </pre></div>
 
           </div>

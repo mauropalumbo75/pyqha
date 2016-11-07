@@ -22,10 +22,15 @@ if __name__ == "__main__":
     
     from pyqha import simple_plot_xy, multiple_plot_xy
     # plot the original phonon DOS
-    simple_plot_xy(E,dos,xlabel="E (Ryd/cell)",ylabel="phonon DOS (Ry/cell)^{-1}")
+    fig1 = simple_plot_xy(E,dos,xlabel="E (Ryd/cell)",ylabel="phonon DOS (Ry/cell)^{-1}")
+    fig1.savefig("figure_1.png")
     # create several plots for the thermodynamic quantities computed
-    simple_plot_xy(T,Evib,xlabel="T (K)",ylabel="Evib (Ry/cell)")
-    simple_plot_xy(T,Fvib,xlabel="T (K)",ylabel="Fvib (Ry/cell)")
-    simple_plot_xy(T,Svib,xlabel="T (K)",ylabel="Svib (Ry/cell/K)")
-    simple_plot_xy(T,Cvib,xlabel="T (K)",ylabel="Cvib (Ry/cell/K)")
+    fig2 = simple_plot_xy(T,Evib,xlabel="T (K)",ylabel="Evib (Ry/cell)")
+    fig2.savefig("figure_2.png")
+    fig3 = simple_plot_xy(T,Fvib,xlabel="T (K)",ylabel="Fvib (Ry/cell)")
+    fig3.savefig("figure_3.png")
+    fig4 = simple_plot_xy(T,Svib,xlabel="T (K)",ylabel="Svib (Ry/cell/K)")
+    fig4.savefig("figure_4.png")
+    fig5 = simple_plot_xy(T,Cvib,xlabel="T (K)",ylabel="Cvib (Ry/cell/K)")
+    fig5.savefig("figure_5.png")
 

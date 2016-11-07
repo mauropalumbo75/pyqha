@@ -72,7 +72,10 @@
           <div class="body" role="main">
             
   <h1>Source code for pyqha.minutils</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="c1">#encoding: UTF-8</span>
+<span class="c1"># Copyright (C) 2016 Mauro Palumbo</span>
+<span class="c1"># This file is distributed under the terms of the # MIT License. </span>
+<span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="k">import</span> <span class="n">minimize</span>
@@ -192,15 +195,15 @@
     
 <span class="c1">################################################################################</span>
 
-<div class="viewcode-block" id="find_min"><a class="viewcode-back" href="../../pyqha.html#pyqha.minutils.find_min">[docs]</a><span class="k">def</span> <span class="nf">find_min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">ibrav</span><span class="p">,</span><span class="nb">type</span><span class="p">,</span><span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="find_min"><a class="viewcode-back" href="../../pyqha.html#pyqha.minutils.find_min">[docs]</a><span class="k">def</span> <span class="nf">find_min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">ibrav</span><span class="p">,</span><span class="nb">type</span><span class="p">,</span><span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;BFGS&quot;</span><span class="p">,</span><span class="n">minoptions</span><span class="o">=</span><span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An auxiliary function for handling the minimum search    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="o">==</span><span class="s2">&quot;quadratic&quot;</span><span class="p">:</span>
-        <span class="n">xmin</span><span class="o">=</span><span class="n">find_min_quadratic</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">ibrav</span><span class="p">,</span><span class="n">guess</span><span class="p">)</span>
+        <span class="n">xmin</span><span class="o">=</span><span class="n">find_min_quadratic</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">ibrav</span><span class="p">,</span><span class="n">guess</span><span class="p">,</span><span class="n">method</span><span class="p">,</span><span class="n">minoptions</span><span class="p">)</span>
         <span class="n">fmin</span><span class="o">=</span><span class="n">fquadratic</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">type</span><span class="o">==</span><span class="s2">&quot;quartic&quot;</span><span class="p">:</span>
-        <span class="n">xmin</span><span class="o">=</span><span class="n">find_min_quartic</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">ibrav</span><span class="p">,</span><span class="n">guess</span><span class="p">)</span>
+        <span class="n">xmin</span><span class="o">=</span><span class="n">find_min_quartic</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">ibrav</span><span class="p">,</span><span class="n">guess</span><span class="p">,</span><span class="n">method</span><span class="p">,</span><span class="n">minoptions</span><span class="p">)</span>
         <span class="n">fmin</span><span class="o">=</span><span class="n">fquartic</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -210,7 +213,7 @@
 
 <span class="c1">################################################################################</span>
 
-<div class="viewcode-block" id="find_min_quadratic"><a class="viewcode-back" href="../../pyqha.html#pyqha.minutils.find_min_quadratic">[docs]</a><span class="k">def</span> <span class="nf">find_min_quadratic</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="find_min_quadratic"><a class="viewcode-back" href="../../pyqha.html#pyqha.minutils.find_min_quadratic">[docs]</a><span class="k">def</span> <span class="nf">find_min_quadratic</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">ibrav</span><span class="p">,</span><span class="n">guess</span><span class="p">,</span><span class="n">method</span><span class="p">,</span><span class="n">minoptions</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the function for finding the minimum of the quadratic polynomial</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -247,11 +250,9 @@
     <span class="c1">#  Find the minimun using minimize from scipy.optimize with the gradient</span>
     <span class="c1">#  whatever algorithm with the gradient is more stable and I recommend using it </span>
     <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
-        <span class="c1">#res_quadratic = minimize(fquadratic4,x_in,jac=fquadratic_der4)</span>
-        <span class="n">res_quadratic</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">fquadratic4</span><span class="p">,</span><span class="n">x_in</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;BFGS&quot;</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">fquadratic_der4</span><span class="p">,</span>  <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;gtol&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">5</span><span class="p">})</span>
+        <span class="n">res_quadratic</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">fquadratic4</span><span class="p">,</span><span class="n">x_in</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">fquadratic_der4</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">minoptions</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">res_quadratic</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">fquadratic</span><span class="p">,</span><span class="n">x_in</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">fquadratic_der</span><span class="p">)</span>
-        <span class="c1">#res_quadratic = minimize(fquadratic,x_in, method=&quot;BFGS&quot;, jac=fquadratic_der,  options={&#39;gtol&#39;: 1e-12}) </span>
+        <span class="n">res_quadratic</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">fquadratic</span><span class="p">,</span><span class="n">x_in</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">fquadratic_der</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">minoptions</span><span class="p">)</span>
   
     <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">res_quadratic</span><span class="o">.</span><span class="n">success</span><span class="p">):</span>
         <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;WARNING! Problems in extremum finding: &quot;</span><span class="p">,</span><span class="n">res_quadratic</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
@@ -261,7 +262,7 @@
 
 <span class="c1">################################################################################</span>
 
-<div class="viewcode-block" id="find_min_quartic"><a class="viewcode-back" href="../../pyqha.html#pyqha.minutils.find_min_quartic">[docs]</a><span class="k">def</span> <span class="nf">find_min_quartic</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="find_min_quartic"><a class="viewcode-back" href="../../pyqha.html#pyqha.minutils.find_min_quartic">[docs]</a><span class="k">def</span> <span class="nf">find_min_quartic</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">ibrav</span><span class="p">,</span><span class="n">guess</span><span class="p">,</span><span class="n">method</span><span class="p">,</span><span class="n">minoptions</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the function for finding the minimum of the quartic polynomial</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -299,13 +300,7 @@
     <span class="c1">#  Find the minimun using minimize from scipy.optimize with the gradient</span>
     <span class="c1">#  whatever algorithm with the gradient is more stable and I recommend using it </span>
     <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
-        <span class="c1">#res_quartic = minimize(fquartic4,x_in,jac=fquartic_der4)</span>
-        <span class="c1">#res_quartic = minimize(fquartic4,x_in,method=&quot;BFGS&quot;, jac=fquartic_der4,  options={&#39;gtol&#39;: 1e-7})</span>
-        <span class="c1">#print (res_quartic.hess_inv)</span>
-        <span class="c1">#print (fquartic_der2_4(res_quartic.x))</span>
-        <span class="c1">#res_quartic = minimize(fquartic4,x_in,method=&quot;CG&quot;, jac=fquartic_der4,  options={&#39;gtol&#39;: 1e-8})</span>
-        <span class="n">res_quartic</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">fquartic4</span><span class="p">,</span><span class="n">x_in</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;Newton-CG&quot;</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">fquartic_der4</span><span class="p">,</span> <span class="n">hess</span><span class="o">=</span><span class="n">fquartic_der2_4</span><span class="p">,</span>  <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;xtol&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">8</span><span class="p">})</span>
-        <span class="c1">#res_quartic = minimize(fquartic4,x_in,method=&quot;dogleg&quot;, jac=fquartic_der4, hess=fquartic_der2_4,  options={&#39;gtol&#39;: 1e-8})</span>
+        <span class="n">res_quartic</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">fquartic4</span><span class="p">,</span><span class="n">x_in</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">fquartic_der4</span><span class="p">,</span> <span class="n">hess</span><span class="o">=</span><span class="n">fquartic_der2_4</span><span class="p">,</span>  <span class="n">options</span><span class="o">=</span><span class="n">minoptions</span><span class="p">)</span>
 <span class="c1">#    else:</span>
 <span class="c1">#        res_quartic = minimize(fquartic,x_in,jac=fquartic_der)        </span>
   

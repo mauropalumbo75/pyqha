@@ -6,10 +6,10 @@
 import sys
 import time
 import numpy as np
-from read import read_Etot, read_freq_ext_geo
+from read import read_Etot, read_freq_geo
 from fitutils import fit_anis, print_polynomial
 from minutils import fquadratic, fquartic, fquadratic_der, fquartic_der, find_min
-from write import write_freq_ext
+from write import write_freq
 
 
 
@@ -17,12 +17,14 @@ from write import write_freq_ext
 
 def rearrange_freqx(freqx):
     """
-    This function rearrange the input numpy matrix freqx into an equivalent matrix freqxx
-    for the subsequent fitting.
-    freqx is a ngeo*nq*modes matrix, each freqx[i] is the nq*modes freq matrix for a given geometry (i)
-    freqxx is a nq*modes*ngeo matrix, each freqxx[i][j] is a vector with all values for different
-    geometries of the frequencies at point q=i and mode=j. For example, freqxx[0][0]
-    is the vector with ngeo values of the frequencies at the first q-point and first mode so on.
+    This function rearranges the input numpy matrix *freqx* into an equivalent 
+    matrix *freqxx* for the subsequent fitting.
+    *freqx* is a :math:`ngeo*nq*modes` matrix, each *freqx[i]* is the :math:`nq*modes`
+    frequency matrix for a given geometry *i*.
+    freqxx is a :math:`nq*modes*ngeo` matrix, each *freqxx[i,j]* is a vector with
+    all values for different geometries of the frequencies at point *q=i* and *mode=j*.
+    For example, *freqxx[0,0]* is the vector with ngeo values of the frequencies
+    at the first q-point and first mode so on.
     """
     ngeo=freqx.shape[0]
     nq=freqx.shape[1]
@@ -45,11 +47,11 @@ def rearrange_freqx(freqx):
 def fitfreqxx(celldmsx,freqxx,ibrav,out,typefreq):
     """
     This function fits the frequencies in freqxx as a function of the
-    grid of lattice parameters.
+    grid of lattice parameters :math:`(a,b,c)`.
 
-    It returns a nq*modes matrix, whose element [i,j] is the set of coefficients of the 
-    polynomial fit and another nq*modes matrix, whose element [i,j] is the corresponding
-    chi squared. If the chi squared is zero, the fitting procedure was NOT succesful
+    It returns a :math:`nq*modes` matrix, whose element [i,j] is the set of coefficients of the 
+    polynomial fit and another :math:`nq*modes` matrix, whose element [i,j] is the corresponding
+    :math:`\chi^2`. If the :math:`\chi^2=0`, the fitting procedure was NOT succesful
     """    
     freqa = []
     freqchi = []
@@ -83,10 +85,12 @@ def fitfreqxx(celldmsx,freqxx,ibrav,out,typefreq):
 #
 def freqmin(afreq, min0, nq, modes, ibrav, typefreq):
     """
-    This function calculate the frequencies from the fitted polynomials at the 
-    minimun point min0. afreq contains the fitted polynomial coefficients. 
+    This function calculates the frequencies from the fitted polynomials coeffients (one
+    for each q point and mode) at the minimun point *min0* given in input. 
+    *afreq* is a :math:`nq*modes` numpy matrix containing the fitted polynomial coefficients.
+    It can be obtained from :py:func:`fitfreqxx`.
 
-    It returns a nq*modes matrix, whose element [i,j] is the fitted frequency 
+    It returns a :math:`nq*modes` matrix, each element [i,j] being the fitted frequency 
     """
     f = np.zeros((nq,modes))
     for i in range(0,nq):
@@ -102,16 +106,18 @@ def freqmin(afreq, min0, nq, modes, ibrav, typefreq):
 
 def freqmingrun(afreq, min0, nq, modes, ibrav, typefreq):
     """
-    This function calculate the frequencies and the gruneisen parameters 
-    from the fitted polynomials at the minimun point min0. afreq contains the 
-    fitted polynomial coefficients. 
+    This function calculates the frequencies and the Gruneisen parameters
+    from the fitted polynomials coeffients (one
+    for each q point and mode) at the minimun point *min0* given in input. 
+    *afreq* is a :math:`nq*modes` numpy matrix containing the fitted polynomial coefficients.
+    It can be obtained from :py:func:`fitfreqxx`.
 
-    It returns a nq*modes matrix, whose element [i,j] is the fitted frequency 
-    In addition, it returns a nq*modes*6 with the Gruneisein parameters.
-    Each element [i,j,k] is the the Gruneisein parameter at nq=i, mode=j and direction
-    k (for example, in hex systems k=0 is a direction, k=2 is c direction, other are zero)
+    It returns a :math:`nq*modes` matrix, each element [i,j] being the fitted frequency 
+    In addition, it returns a :math:`nq*modes*6` with the Gruneisein parameters.
+    Each element [i,j,k] is the the Gruneisein parameter at *nq=i*, *mode=j* and direction
+    *k* (for example, in hex systems *k=0* is *a* direction, *k=2* is *c* direction, others are zero)
 
-    Note that the Gruneisein parameters are not multiplied for the lattice parameters 
+    Note that the Gruneisein parameters are not multiplied for the lattice parameters. 
     """
     #nq = 10 # for testing quickly
     f = np.zeros((nq,modes))
@@ -136,15 +142,26 @@ def freqmingrun(afreq, min0, nq, modes, ibrav, typefreq):
 
 ################################################################################
  
-def fitfreq(celldmsx, min0, inputfilefreq, ibrav=4, typefreq="quadratic", compute_grun=False):
+def fitfreq(celldmsx, min0, filefreq, ibrav=4, typefreq="quadratic", compute_grun=False):
     """
-    An auxiliary function for fitting the frequencies. It returns a matrix of nq*modes
-    frequencies obtained for the fitted polynomial (quadratic or quartic) at the 
-    minimun point min0. It also returns the weigths of each q point where the 
+    An auxiliary function for fitting the frequencies. 
+    
+    *celldmsx* is the matrix of lattice parameters :math:`(a,b,c)` where the total
+    energies where computed. *min0* is the a set of :math:`(a,b,c)`. *filefreq*
+    defines the input files (*filefreq1*, *filefreq2*, etc.) containing the 
+    frequencies for different geometries. The number of geometries is determined
+    from the size of *celldmsx*. *ibrav* is the usual Bravais lattice. 
+    *typefreq* can be "quadratic" (default) or "quartic", i.e. the kind of 
+    polynomial to be used for fitting. *compute_grun* defines if the Gruneisen
+    parameters must be calculated (True) or not (False, default). 
+    
+    It returns a matrix of :math:`nq*modes` frequencies obtained for the fitted 
+    polynomial coefficients (quadratic or quartic) at the 
+    minimun point *min0*. It also returns the weigths of each q-point where the 
     frequencies are available.
     """
     # get the weigths and the frequencies from files 
-    weightsx, freqx = read_freq_ext_geo(inputfilefreq,range(1,celldmsx.shape[0]+1))
+    weightsx, freqx = read_freq_geo(filefreq,celldmsx.shape[0])
         
     print ("Rearranging frequencies...")
     freqxx = rearrange_freqx(freqx)
@@ -191,9 +208,9 @@ if __name__ == "__main__":
     # fit the frequencies over the grid of lattice parameters and get the fitted
     # ones at the minimum point from Etot (min0)
     weights, f, grun = fitfreq(celldmsx, min0, inputfilefreq, ibrav, typefreq="quadratic", compute_grun=True)
-    write_freq_ext(weights,f,"average_freqPython")
-    write_freq_ext(weights,grun[0],"output_grun_along_a_ext3Dfit")
-    write_freq_ext(weights,grun[2],"output_grun_along_c_ext3Dfit")
+    write_freq(weights,f,"average_freqPython")
+    write_freq(weights,grun[0],"output_grun_along_a_ext3Dfit")
+    write_freq(weights,grun[2],"output_grun_along_c_ext3Dfit")
 
     end_time = time.time()
     elapsed_time = end_time - start_time

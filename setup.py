@@ -34,7 +34,7 @@ setup (
 
     # Declare your packages' dependencies here, for eg:
     install_requires=[
-        'numpy', 'scipy', 'matplotlib', # 'wx'
+        'numpy', 'scipy', 'matplotlib', 'multiprocessing', # 'wx'
     ],
 
     # Fill in these to make your Egg ready for upload to

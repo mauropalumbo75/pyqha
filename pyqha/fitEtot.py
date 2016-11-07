@@ -28,7 +28,7 @@ def fitEtotV(fin,fout=None):
     return V, E, a, chi
     
 
-def fitEtot(fin, out=True, ibrav=4,fittype="quadratic",guess=None):
+def fitEtot(fin, out=True, ibrav=4,fittype="quadratic",guess=None,method="BFGS",minoptions={}):
     """
     This function reads the file *fin* containing the energies as a function
     of the lattice parameters :math:`E(a,b,c)` and fits them with a quartic (*fittype="quartic"*) or 
@@ -36,13 +36,24 @@ def fitEtot(fin, out=True, ibrav=4,fittype="quadratic",guess=None):
     and the corresponding lattice parameters. 
     ibrav is the Bravais lattice, guess is an initial guess for the minimization.
     Depending on ibrav, a different number of lattice parameters is considered.
-    It prints fitting results on the screen (which can be redericted to *stdout*)
+    It prints fitting results on the screen (which can be redirected to *stdout*)
     if *out=True*.
     It returns the lattice parameters and energies as in the input file *fin*,
     the fitted coefficients of the polynomial, the corresponding :math:`\chi^2`,
     the lattice parameters at the minimum and the minimun energy.
     
     Note: for cubic systems use fitEtotV instead.
+    
+    Advanced input parameters:
+    
+    *guess*, an initial guess for the minimization. It is a 6 elements list 
+    [a,b,c,0,0,0]. 
+    
+    *method*, the method to be used in the minimization procedure, as in the
+    scipy.optimize.minimize. See its documentation for details.
+    
+    *minoptions*, a dictionary with additional options for the minimization 
+    procedure, as in the scipy.optimize.minimize. See its documentation for details.
     """
     
     # Read the energies 
@@ -51,7 +62,7 @@ def fitEtot(fin, out=True, ibrav=4,fittype="quadratic",guess=None):
     # Fit and find the minimun at 0 K
     a0, chia0 = fit_anis(celldmsx, Ex, ibrav, out, type=fittype)
     if chia0!=None:
-        mincelldms, fmin = find_min(a0, ibrav, type=fittype, guess=guess)
+        mincelldms, fmin = find_min(a0, ibrav, type=fittype, guess=guess,method="BFGS",minoptions={})
         
     return celldmsx, Ex, a0, chia0, mincelldms, fmin 
 

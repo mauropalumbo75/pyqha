@@ -154,7 +154,6 @@ def compute_Cv(T,Vmin,V,Cvib):
     and *V* is the array of volumes used for it.
     Returns *Cv(T)*.
     
-    Not implemented yet.
     """
     Cv = np.zeros(len(T))
     for iT in range(0,len(T)):

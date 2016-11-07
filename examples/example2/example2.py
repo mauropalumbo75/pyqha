@@ -17,9 +17,12 @@ if __name__ == "__main__":
     celldmsx, Ex, a0, chia0, mincelldms, fmin = fitEtot(fin,fittype="quartic",guess=[5.12374914,0.0,8.19314311,0.0,0.0,0.0])
     
     # 3D plot only with fitted energy
-    plot_Etot(celldmsx,Ex=None,n=(5,0,5),nmesh=(50,0,50),fittype="quartic",ibrav=4,a=a0)
+    fig1 = plot_Etot(celldmsx,Ex=None,n=(5,0,5),nmesh=(50,0,50),fittype="quartic",ibrav=4,a=a0)
+    fig1.savefig("figure_1.png")
     # 3D plot fitted energy and points
-    plot_Etot(celldmsx,Ex,n=(5,0,5),nmesh=(50,0,50),fittype="quartic",ibrav=4,a=a0)
+    fig2 = plot_Etot(celldmsx,Ex,n=(5,0,5),nmesh=(50,0,50),fittype="quartic",ibrav=4,a=a0)
+    fig2.savefig("figure_2.png")
     # 2D contour plot with fitted energy 
-    plot_Etot_contour(celldmsx,nmesh=(50,0,50),fittype="quartic",ibrav=4,a=a0)
+    fig3 = plot_Etot_contour(celldmsx,nmesh=(50,0,50),fittype="quartic",ibrav=4,a=a0)
+    fig3.savefig("figure_3.png")
     

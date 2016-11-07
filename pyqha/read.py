@@ -197,68 +197,32 @@ def read_thermo(fname, ngeo=1):
 
 
 ################################################################################
-
-def read_freq(filename):
-    """
-    This funcstion reads the phonon frequencies at each *q* point from a frequency file.  
-    Input file has the following format (to be done).
-
-    Returning values are a nq*3 matrix q, each q[i] being a q point (vector of 3 elements)
-    and a nq*modes matrix freq, each element freq[i] being the phonon frequencies
-    (vector of modes elements)
-    """
-    
-    q=[]
-    freq=[]
-    count=0
-    print ("Reading file of frequencies "+filename+"...")
-    with open(filename) as lines:
-        for line in lines:
-            linesplit=line.split()
-            if linesplit[0]=="&plot" and count==0:   # read first line with modes and total number of q points
-                modes=int(linesplit[2].strip(","))
-                nq=int(linesplit[4])
-                count = count + 1
-            elif count==1:  # it's a q point line
-                q.append([float(linesplit[0]),float(linesplit[1]),float(linesplit[2])])
-                count = count + 1
-            elif count==2:  # it's a frequency line
-                frequencies=[]
-                for i in range(0,modes):
-                    frequencies.append(float(linesplit[i]))   # list of frequencies in this line (for a given q point), 3*modes
-                freq.append(frequencies)
-                count = 1
-    return np.array(q), np.array(freq)
-
-
-################################################################################
  
 
-def read_freq_ext(filename):
+def read_freq(fname):
     """
-    Read the phonon frequencies at each q point from a frequency file. The format 
-    of this file is different from the one read by the function read_freq and
-    contains usually more frequencies, each with a weight, but no qpoint coordinates.
-    Input file has the following format:
+    Read the phonon frequencies at each q point from a frequency file *fname*.
+    The format of this file is different from the one read by the :py:func:`read_freq` and
+    contains usually more frequencies, each with a weight, but no q-point coordinates.
+    
+    The input frequency file is expected to have the following format:
+    1st line contains the number of atoms in the unit cell, the q-point grid 
+    :math:`(nqx, nqy, nqz)` and the total number of q-points listed *nq*.
+    2nd line not read.   
+    For the 3rd line on, the following scheme is repeated:
+    1st line: the *weight* of the q-point (they can be different because of simmetry)
+    n modes lines, each with the corresponding phonon frequency
 
-    First line contains n. atoms, nqx, nqy, nqz, nq total.
-    Second line not read.
-    Third line: weight of the first qpoint
-    Following lines: phonon frequencies (their number is modes=3*n. atoms), one per line
-    then again: weight of the next qpoint, phonon frequencies (3*modes), one per line, etc.
-
-    Weights are diffent because of simmetry
-
-    Returning values are a nq vector weights, each weights[i] being the weight of a q point 
-    and a nq*modes matrix freq, each element freq[i] being the phonon frequencies
-    (vector of modes elements) at the qpoint i
+    Returning values are a *nq* vector of weights, each *weights[i]* being the weight of given q-point 
+    and a :math:`nq*modes` matrix *freq*, each element *freq[i]* being the phonon frequencies
+    (vector of modes elements) at the q-point *i*
     """
     countline=0 
     weights=[]
     freq=[]
     frequencies=[]
-    print ("Reading file of frequencies "+filename+"...")
-    with open(filename, "r") as lines:
+    print ("Reading file of frequencies "+fname+"...")
+    with open(fname, "r") as lines:
         for line in lines:
             linesplit=line.split()
             if countline==0:                            # this is the very first line with natoms and nq
@@ -281,45 +245,15 @@ def read_freq_ext(filename):
     return np.array(weights), np.array(freq)
 
 
-################################################################################ 
-
-def read_freq_geo(inputfilefreq,rangegeo):
+def read_freq_geo(fname,ngeo=1):
     """
-    Read the frequencies for all geometries where the gruneisen parameters must be
-    calculated. Start, stop, step must be given accordingly. It can be used to read
-    the frequencies only at some geometries from a larger set, if necessary, 
-    providing the proper start, stop and step values.
-
-    Notes:
-    nq = qgeo.shape[1] -> total number of q points read
-    modes = freqgeo.shape[2] -> number of frequency modes
-    """
-    qgeo=[]
-    freqgeo=[]
-    for i in rangegeo:
-        q, freq = read_freq(inputfilefreq+str(i))
-        qgeo.append(q)
-        freqgeo.append(freq)  
-        
-    return np.array(qgeo), np.array(freqgeo)
-
-
-################################################################################
-
-
-def read_freq_ext_geo(inputfilefreq,rangegeo):
-    """
-    Read the frequencies for all geometries where the gruneisen parameters must be
-    calculated. 
-
-    Notes:
-    nq = qgeo.shape[1] -> total number of q points read
-    modes = freqgeo.shape[2] -> number of frequency modes
+    Read the frequencies as in :py:func:`read_freq` but for *ngeo* geometries.
+    Input files are *fname1*, *fname2*, *fname3*, etc.
     """
     weightsgeo=[]
     freqgeo=[]
-    for i in rangegeo:
-        weights, freq = read_freq_ext(inputfilefreq+str(i))
+    for i in range(0,ngeo):
+        weights, freq = read_freq(fname+str(i+1))
         weightsgeo.append(weights)
         freqgeo.append(freq)  
         
@@ -376,6 +310,62 @@ def read_dos_geo(fin,ngeo):
 ################################################################################
 ################################################################################
 # Work in progress from here... These routines are not ready yet to be used.
+
+################################################################################
+
+def read_freq_old(filename):
+    """
+    This function reads the phonon frequencies at each q-point from a frequency file.  
+    Input file has the following format (to be done).
+
+    Returning values are a nq*3 matrix q, each q[i] being a q point (vector of 3 elements)
+    and a nq*modes matrix freq, each element freq[i] being the phonon frequencies
+    (vector of modes elements)
+    """
+    
+    q=[]
+    freq=[]
+    count=0
+    print ("Reading file of frequencies "+filename+"...")
+    with open(filename) as lines:
+        for line in lines:
+            linesplit=line.split()
+            if linesplit[0]=="&plot" and count==0:   # read first line with modes and total number of q points
+                modes=int(linesplit[2].strip(","))
+                nq=int(linesplit[4])
+                count = count + 1
+            elif count==1:  # it's a q point line
+                q.append([float(linesplit[0]),float(linesplit[1]),float(linesplit[2])])
+                count = count + 1
+            elif count==2:  # it's a frequency line
+                frequencies=[]
+                for i in range(0,modes):
+                    frequencies.append(float(linesplit[i]))   # list of frequencies in this line (for a given q point), 3*modes
+                freq.append(frequencies)
+                count = 1
+    return np.array(q), np.array(freq)
+
+
+
+def read_freq_geo_old(inputfilefreq,rangegeo):
+    """
+    Read the frequencies for all geometries where the gruneisen parameters must be
+    calculated. Start, stop, step must be given accordingly. It can be used to read
+    the frequencies only at some geometries from a larger set, if necessary, 
+    providing the proper start, stop and step values.
+
+    Notes:
+    nq = qgeo.shape[1] -> total number of q points read
+    modes = freqgeo.shape[2] -> number of frequency modes
+    """
+    qgeo=[]
+    freqgeo=[]
+    for i in rangegeo:
+        q, freq = read_freq(inputfilefreq+str(i))
+        qgeo.append(q)
+        freqgeo.append(freq)  
+        
+    return np.array(qgeo), np.array(freqgeo)
 
 
 def read_celldmt_hex(filename):

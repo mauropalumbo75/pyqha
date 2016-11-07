@@ -14,5 +14,6 @@ if __name__ == "__main__":
     V, E, a, chi2 = fitEtotV(fin)    	# fits the E(V) data, returns the coefficients a and
                                     	# the chi squared chi2
     
-    plot_EV(V,E,a)                  	# plot the E(V) data and the fitting line
+    fig1 = plot_EV(V,E,a)                  	# plot the E(V) data and the fitting line
+    fig1.savefig("figure_1.png")
 

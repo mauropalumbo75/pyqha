@@ -18,7 +18,8 @@ from plotutils import simple_plot_xy, multiple_plot_xy
 
 ################################################################################
 
-def fitFvib(fEtot,thermodata,ibrav=4,typeEtot="quadratic",typeFvib="quadratic",defaultguess=[0.0,0.0,0.0,0.0,0.0,0.0]):
+def fitFvib(fEtot,thermodata,ibrav=4,typeEtot="quadratic",typeFvib="quadratic",defaultguess=[0.0,0.0,0.0,0.0,0.0,0.0],\
+    method="BFGS",minoptions={},splinesoptions=None):
     """
     
     This function computes quasi-harmonic quantities from the 
@@ -56,8 +57,36 @@ def fitFvib(fEtot,thermodata,ibrav=4,typeEtot="quadratic",typeFvib="quadratic",d
        the thermodynamic data in *thermodata* is the same!  See also *example6* and 
        the tutorial.
        
+        
+    Advanced input parameters:
+    
+    *guess*, an initial guess for the minimization. It is a 6 elements list 
+    [a,b,c,0,0,0]. 
+    
+    *method*, the method to be used in the minimization procedure, as in the
+    scipy.optimize.minimize. See its documentation for details. Note that the 
+    methods which usually gives better results for quasi-harmonic calculations
+    are the "BFGS" or Newton-CG". Default is "BFGS".
+    
+    *minoptions*, a dictionary with additional options for the minimization 
+    procedure, as in the scipy.optimize.minimize. See its documentation for details.
+    Note the the options are different for different methods.
+    
+    *splinesoptions*, determines whether to use or not splines to reduce the noise
+    on numerical derivatives (thermal expansions). If *splinesoptions*==None, use 
+    finete differences for derivatives, else use splines as implemented in
+    scipy.interpolate (see documentation). In the latter case, *splinesoptions*
+    must be a dictionary. This dictionary must contains the keywords *k0*, *s0*,
+    *k1*, *s1*, *k2*, *s2* which are passed to :py:func:`scipy.interpolate.splrep`, 
+    one couple for each set of thermal expansions (alpha_xx, alpha_yy, alpha_zz).
+    *k* is the order of the spline (default=3), s a smoothing condition (default=None).
+    If *splinesoptions=={}* use the default options of :py:func:`scipy.interpolate.splrep`
+    Note: use this option with care
+       
     """
         
+    print ("Minimization method: ",method,"\t options: ",minoptions)
+    
     # Read the Etot at 0 K
     celldmsx, Ex = read_Etot(fEtot)
     
@@ -68,7 +97,7 @@ def fitFvib(fEtot,thermodata,ibrav=4,typeEtot="quadratic",typeFvib="quadratic",d
     # Fit and find the minimun at 0 K
     a0temp, chi0 = fit_anis(celldmsx, Ex, ibrav, out=True, type=typeEtot, ylabel="Etot")
     if chi0!=None:
-        min0, fmin0 = find_min(a0temp, ibrav, type=typeEtot, guess=defaultguess)
+        min0, fmin0 = find_min(a0temp, ibrav, type=typeEtot, guess=defaultguess, method=method,minoptions=minoptions)
      
     # if a mixed type fitting has been used, expand the vector of polynomial coefficients
     if (typeEtot=="quadratic" and typeFvib=="quartic"):
@@ -81,6 +110,7 @@ def fitFvib(fEtot,thermodata,ibrav=4,typeEtot="quadratic",typeFvib="quadratic",d
     fminT= np.zeros(nT)
     aT = np.zeros((nT,len(a0)))
     chiT= np.zeros(nT)
+    minguess = min0
     for i in range(0,nT): 
         print ("####################################################################")
         print ("T=",T[i])
@@ -98,13 +128,18 @@ def fitFvib(fEtot,thermodata,ibrav=4,typeEtot="quadratic",typeFvib="quadratic",d
                 typemix=typeFvib         # typeFvib and typeFtot are the same
             print_polynomial(a0+aT[i,:])
 
-            minT[i,:], fminT[i] = find_min(a0+aT[i,:],ibrav,type=typemix,guess=min0)
+            if (T[i]>50):   # Tests have shown that for temperatures > 50~K  you get better results 
+                            # using as initial guess the minimum at the previous temperature
+                minguess=minT[i-1,:]
+            minT[i,:], fminT[i] = find_min(a0+aT[i,:],ibrav,type=typemix,guess=minguess,method=method,minoptions=minoptions)            
 
     # Calculate the thermal expansion(s)
-    alphaT = compute_alpha(minT,ibrav)
-    #alphaT = compute_alpha_splines(TT,minT,ibrav) # tentative
+    if (splinesoptions==None):
+        alphaT = compute_alpha(minT,ibrav)
+    else:
+        alphaT = compute_alpha_splines(T,minT,ibrav,splinesoptions)
     
-    return T, fminT, minT,  alphaT, a0, chi0, aT, chiT
+    return T, fminT, minT, alphaT, a0, chi0, aT, chiT
 
 
 ################################################################################

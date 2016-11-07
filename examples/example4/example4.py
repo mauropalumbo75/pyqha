@@ -19,7 +19,8 @@ if __name__ == "__main__":
 
 
     # plot the first 5 phonon dos    
-    multiple_plot_xy(gE[:,0:5],gdos[:,0:5],xlabel="E (Ryd/cell)",ylabel="phonon DOS (cell/Ryd)")
+    fig1 = multiple_plot_xy(gE[:,0:5],gdos[:,0:5],xlabel="E (Ryd/cell)",ylabel="phonon DOS (cell/Ryd)")
+    fig1.savefig("figure_1.png")
 
     TT =gen_TT(1,1000)	# generate the numpy array of temperatures for which the properties will be calculated
 
@@ -27,11 +28,14 @@ if __name__ == "__main__":
     T, ggEvib, ggFvib, ggSvib, ggCvib, ggZPE, ggmodes = compute_thermo_geo(fin,fout,ngeo,TT)
     
     # plot the vibrational Helmholtz energy for the first 5 phonon dos    
-    multiple_plot_xy(T,ggFvib[:,0:5],xlabel="T (K)",ylabel="Cvib (Ry/cell/K")
+    fig2 = multiple_plot_xy(T,ggFvib[:,0:5],xlabel="T (K)",ylabel="Cvib (Ry/cell/K")
+    fig2.savefig("figure_2.png")
 
     # plot the vibrational entropy for the first 5 phonon dos    
-    multiple_plot_xy(T,ggSvib[:,0:5],xlabel="T (K)",ylabel="Cvib (Ry/cell/K")
+    fig3 = multiple_plot_xy(T,ggSvib[:,0:5],xlabel="T (K)",ylabel="Cvib (Ry/cell/K")
+    fig3.savefig("figure_3.png")
 
     # plot the vibrational heat capacity for the first 5 phonon dos    
-    multiple_plot_xy(T,ggCvib[:,0:5],xlabel="T (K)",ylabel="Cvib (Ry/cell/K")
+    fig4 = multiple_plot_xy(T,ggCvib[:,0:5],xlabel="T (K)",ylabel="Cvib (Ry/cell/K")
+    fig4.savefig("figure_4.png")
 

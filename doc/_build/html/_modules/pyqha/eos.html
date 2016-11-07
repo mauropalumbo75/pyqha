@@ -73,6 +73,9 @@
             
   <h1>Source code for pyqha.eos</h1><div class="highlight"><pre>
 <span></span><span class="c1">#encoding: UTF-8</span>
+<span class="c1"># Copyright (C) 2016 Mauro Palumbo</span>
+<span class="c1"># This file is distributed under the terms of the # MIT License. </span>
+<span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="n">RY_KBAR</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="nb">pow</span>
@@ -225,7 +228,6 @@
 <span class="sd">    and *V* is the array of volumes used for it.</span>
 <span class="sd">    Returns *Cv(T)*.</span>
 <span class="sd">    </span>
-<span class="sd">    Not implemented yet.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Cv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">iT</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">)):</span>

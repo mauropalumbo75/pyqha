@@ -34,7 +34,7 @@
 
 
 \title{pyqha Documentation}
-\date{Oct 23, 2016}
+\date{Oct 26, 2016}
 \release{0.1}
 \author{Mauro Palumbo}
 \newcommand{\sphinxlogo}{}
@@ -179,6 +179,11 @@ A quasi-harmonic calculation for an hexagonal (anisotropic) system  using a quad
 &
 A quasi-static calculation for the elastic tensor of an hexagonal (anisotropic) system  using a quadratic polynomial
 \\
+\hline
+8
+&
+Numerical issues in quasi-harmonic calculations
+\\
 \hline\end{tabulary}
 
 
@@ -201,7 +206,8 @@ Let's start with the simpler case where we want to fit \(E_{tot}(V)\). This is t
 \PYG{n}{V}\PYG{p}{,} \PYG{n}{E}\PYG{p}{,} \PYG{n}{a}\PYG{p}{,} \PYG{n}{chi2} \PYG{o}{=} \PYG{n}{fitEtotV}\PYG{p}{(}\PYG{n}{fin}\PYG{p}{)}    	\PYG{c+c1}{\PYGZsh{} fits the E(V) data, returns the coefficients a and}
                                 	\PYG{c+c1}{\PYGZsh{} the chi squared chi2}
 
-\PYG{n}{plot\PYGZus{}EV}\PYG{p}{(}\PYG{n}{V}\PYG{p}{,}\PYG{n}{E}\PYG{p}{,}\PYG{n}{a}\PYG{p}{)}                  	\PYG{c+c1}{\PYGZsh{} plot the E(V) data and the fitting line}
+\PYG{n}{fig1} \PYG{o}{=} \PYG{n}{plot\PYGZus{}EV}\PYG{p}{(}\PYG{n}{V}\PYG{p}{,}\PYG{n}{E}\PYG{p}{,}\PYG{n}{a}\PYG{p}{)}                  	\PYG{c+c1}{\PYGZsh{} plot the E(V) data and the fitting line}
+\PYG{n}{fig1}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}1.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 
 \end{sphinxVerbatim}
 
@@ -209,7 +215,7 @@ The \sphinxcode{fitEtotV()} needs in input a file with two columns: the first wi
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{c+c1}{\PYGZsh{} Murnaghan EOS 		 chi squared= 6.3052568895e\PYGZhy{}09}
-\PYG{c+c1}{\PYGZsh{} E0= 1.9256061524e+02 Ry	 V0= 1.9256061524e+02 a.u.\PYGZca{}3	 B0= 3.9507615923e+03 kbar	 dB0/dV= 4.7879823925e+00}
+\PYG{c+c1}{\PYGZsh{} Etotmin= \PYGZhy{}1.6668753460e+03 Ry	 Vmin= 1.9256061524e+02 a.u.\PYGZca{}3	 B0= 3.9507615923e+03 kbar	 dB0/dV= 4.7879823925e+00}
 \PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
 \PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{\PYGZsh{} V *a.u.\PYGZca{}3)}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+se}{\PYGZbs{}t}\PYG{l+s+se}{\PYGZbs{}t}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Etot}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{ (Ry)}\PYG{l+s+se}{\PYGZbs{}t}\PYG{l+s+se}{\PYGZbs{}t}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Etotfit}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{ (Ry)}\PYG{l+s+se}{\PYGZbs{}t}\PYG{l+s+se}{\PYGZbs{}t}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Etot\PYGZhy{}Etotfit (Ry)}\PYG{l+s+se}{\PYGZbs{}t}\PYG{l+s+s1}{P (kbar)}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
 \PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{1.7119697047e+02}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+se}{\PYGZbs{}t}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{\PYGZhy{}1.6668351807e+03}\PYG{l+s+se}{\PYGZbs{}t}\PYG{l+s+s1}{ \PYGZhy{}1.6668351587e+03}\PYG{l+s+se}{\PYGZbs{}t}\PYG{l+s+s1}{ \PYGZhy{}2.2057946126e\PYGZhy{}05}\PYG{l+s+se}{\PYGZbs{}t}\PYG{l+s+s1}{ 6.2382144794e+02}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
@@ -239,11 +245,14 @@ The \sphinxcode{fitEtot()} reads the input file and perform the fit using either
 \PYG{n}{celldmsx}\PYG{p}{,} \PYG{n}{Ex}\PYG{p}{,} \PYG{n}{a0}\PYG{p}{,} \PYG{n}{chia0}\PYG{p}{,} \PYG{n}{mincelldms}\PYG{p}{,} \PYG{n}{fmin} \PYG{o}{=} \PYG{n}{fitEtot}\PYG{p}{(}\PYG{n}{fin}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{guess}\PYG{o}{=}\PYG{p}{[}\PYG{l+m+mf}{5.12374914}\PYG{p}{,}\PYG{l+m+mf}{0.0}\PYG{p}{,}\PYG{l+m+mf}{8.19314311}\PYG{p}{,}\PYG{l+m+mf}{0.0}\PYG{p}{,}\PYG{l+m+mf}{0.0}\PYG{p}{,}\PYG{l+m+mf}{0.0}\PYG{p}{]}\PYG{p}{)}
 
 \PYG{c+c1}{\PYGZsh{} 3D plot only with fitted energy}
-\PYG{n}{plot\PYGZus{}Etot}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{Ex}\PYG{o}{=}\PYG{n+nb+bp}{None}\PYG{p}{,}\PYG{n}{n}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{a0}\PYG{p}{)}
+\PYG{n}{fig1} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{Ex}\PYG{o}{=}\PYG{n+nb+bp}{None}\PYG{p}{,}\PYG{n}{n}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{a0}\PYG{p}{)}
+\PYG{n}{fig1}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}1.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 \PYG{c+c1}{\PYGZsh{} 3D plot fitted energy and points}
-\PYG{n}{plot\PYGZus{}Etot}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{Ex}\PYG{p}{,}\PYG{n}{n}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{a0}\PYG{p}{)}
+\PYG{n}{fig2} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{Ex}\PYG{p}{,}\PYG{n}{n}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{a0}\PYG{p}{)}
+\PYG{n}{fig2}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}2.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 \PYG{c+c1}{\PYGZsh{} 2D contour plot with fitted energy }
-\PYG{n}{plot\PYGZus{}Etot\PYGZus{}contour}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{a0}\PYG{p}{)}
+\PYG{n}{fig3} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot\PYGZus{}contour}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{a0}\PYG{p}{)}
+\PYG{n}{fig3}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}3.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 
 \end{sphinxVerbatim}
 
@@ -286,7 +295,7 @@ p(x1,x2) = \PYGZhy{}1291.10429456 + \PYGZhy{}184.969221276 * x1 + 42.2676103527 
 0.0705006802514 *x1\PYGZca{}3*x2
 
 (\PYGZsq{}Chi squared: \PYGZsq{}, 9.8189738184091843e\PYGZhy{}12, \PYGZsq{}\PYGZbs{}n\PYGZsq{})
-(\PYGZsq{}Minimun quartic: \PYGZsq{}, array([ 5.20422739,  0.        ,  8.20917812,  0.        ,  0.        ,  0.        ]), \PYGZsq{}\PYGZbs{}tEnergy at the minimum: \PYGZhy{}1.66687537646403052349e+03\PYGZbs{}n\PYGZsq{})
+(\PYGZsq{}Minimun quartic: \PYGZsq{}, array([ 5.20422334,  0.        ,  8.20918742,  0.        ,  0.        ,  0.        ]), \PYGZsq{}\PYGZbs{}tEnergy at the minimum: \PYGZhy{}1.66687537646402097380e+03\PYGZbs{}n\PYGZsq{})
 \end{sphinxVerbatim}
 
 Optionally, you can use the functions \sphinxcode{plot\_Etot()}, \sphinxcode{plot\_Etot\_contour()} to create 3D or contour plots of the fitted energy over the grid \((a,c)\), including or not the original energy points:
@@ -317,12 +326,17 @@ Optionally, you can use the functions \sphinxcode{plot\_Etot()}, \sphinxcode{plo
 
 \PYG{k+kn}{from} \PYG{n+nn}{pyqha} \PYG{k+kn}{import} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{,} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}
 \PYG{c+c1}{\PYGZsh{} plot the original phonon DOS}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{E}\PYG{p}{,}\PYG{n}{dos}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{E (Ryd/cell)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{phonon DOS (Ry/cell)\PYGZca{}\PYGZob{}\PYGZhy{}1\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig1} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{E}\PYG{p}{,}\PYG{n}{dos}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{E (Ryd/cell)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{phonon DOS (Ry/cell)\PYGZca{}\PYGZob{}\PYGZhy{}1\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig1}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}1.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 \PYG{c+c1}{\PYGZsh{} create several plots for the thermodynamic quantities computed}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{Evib}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Evib (Ry/cell)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{Fvib}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Fvib (Ry/cell)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{Svib}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Svib (Ry/cell/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{Cvib}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cvib (Ry/cell/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig2} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{Evib}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Evib (Ry/cell)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig2}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}2.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig3} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{Fvib}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Fvib (Ry/cell)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig3}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}3.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig4} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{Svib}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Svib (Ry/cell/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig4}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}4.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig5} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{Cvib}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cvib (Ry/cell/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig5}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}5.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 
 \end{sphinxVerbatim}
 
@@ -402,7 +416,8 @@ The following code (example4) shows how multiple dos files can be handled, a ste
 
 
 \PYG{c+c1}{\PYGZsh{} plot the first 5 phonon dos    }
-\PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{gE}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{5}\PYG{p}{]}\PYG{p}{,}\PYG{n}{gdos}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{5}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{E (Ryd/cell)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{phonon DOS (cell/Ryd)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig1} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{gE}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{5}\PYG{p}{]}\PYG{p}{,}\PYG{n}{gdos}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{5}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{E (Ryd/cell)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{phonon DOS (cell/Ryd)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig1}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}1.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 
 \PYG{n}{TT} \PYG{o}{=}\PYG{n}{gen\PYGZus{}TT}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{l+m+mi}{1000}\PYG{p}{)}	\PYG{c+c1}{\PYGZsh{} generate the numpy array of temperatures for which the properties will be calculated}
 
@@ -410,13 +425,16 @@ The following code (example4) shows how multiple dos files can be handled, a ste
 \PYG{n}{T}\PYG{p}{,} \PYG{n}{ggEvib}\PYG{p}{,} \PYG{n}{ggFvib}\PYG{p}{,} \PYG{n}{ggSvib}\PYG{p}{,} \PYG{n}{ggCvib}\PYG{p}{,} \PYG{n}{ggZPE}\PYG{p}{,} \PYG{n}{ggmodes} \PYG{o}{=} \PYG{n}{compute\PYGZus{}thermo\PYGZus{}geo}\PYG{p}{(}\PYG{n}{fin}\PYG{p}{,}\PYG{n}{fout}\PYG{p}{,}\PYG{n}{ngeo}\PYG{p}{,}\PYG{n}{TT}\PYG{p}{)}
 
 \PYG{c+c1}{\PYGZsh{} plot the vibrational Helmholtz energy for the first 5 phonon dos    }
-\PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{ggFvib}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{5}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cvib (Ry/cell/K}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig2} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{ggFvib}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{5}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cvib (Ry/cell/K}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig2}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}2.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 
 \PYG{c+c1}{\PYGZsh{} plot the vibrational entropy for the first 5 phonon dos    }
-\PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{ggSvib}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{5}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cvib (Ry/cell/K}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig3} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{ggSvib}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{5}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cvib (Ry/cell/K}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig3}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}3.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 
 \PYG{c+c1}{\PYGZsh{} plot the vibrational heat capacity for the first 5 phonon dos    }
-\PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{ggCvib}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{5}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cvib (Ry/cell/K}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig4} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{ggCvib}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{5}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cvib (Ry/cell/K}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig4}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}4.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 
 \end{sphinxVerbatim}
 
@@ -465,11 +483,16 @@ Here is the code in the Murnaghan case:
 \PYG{n}{thermodata} \PYG{o}{=} \PYG{n}{nT}\PYG{p}{,} \PYG{n}{T}\PYG{p}{,} \PYG{n}{Evib}\PYG{p}{,} \PYG{n}{Fvib}\PYG{p}{,} \PYG{n}{Svib}\PYG{p}{,} \PYG{n}{Cvib} 
 \PYG{n}{TT}\PYG{p}{,} \PYG{n}{Fmin}\PYG{p}{,} \PYG{n}{Vmin}\PYG{p}{,} \PYG{n}{B0}\PYG{p}{,} \PYG{n}{betaT}\PYG{p}{,} \PYG{n}{Cv}\PYG{p}{,} \PYG{n}{Cp}\PYG{p}{,} \PYG{n}{aT}\PYG{p}{,} \PYG{n}{chi} \PYG{o}{=} \PYG{n}{fitFvibV}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{)}
 
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{Fmin}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Fmin (Ry/cell)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{Vmin}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Vmin (a.u.\PYGZca{}3)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{B0}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{B0 (kbar)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{betaT}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{beta}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{Cp}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cp (Ry/cell/K}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig1} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{Fmin}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Fmin (Ry/cell)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig2} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{Vmin}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Vmin (a.u.\PYGZca{}3)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig3} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{B0}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{B0 (kbar)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig4} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{betaT}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{beta}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig5} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{Cp}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cp (Ry/cell/K}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig1}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}1.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig2}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}2.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig3}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}3.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig4}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}4.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig5}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}5.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}    
 
 \PYG{c+c1}{\PYGZsh{} save the results in a file if you want...}
 \PYG{n}{write\PYGZus{}xy}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Fmin.dat}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{T}\PYG{p}{,}\PYG{n}{Fmin}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Fmin (Ryd/cell)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
@@ -481,7 +504,8 @@ Here is the code in the Murnaghan case:
 \PYG{n}{CvCp} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{(}\PYG{p}{(}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{T}\PYG{p}{)}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{)}\PYG{p}{)}
 \PYG{n}{CvCp}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{Cv}
 \PYG{n}{CvCp}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{Cp}
-\PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{CvCp}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cv/Cp (Ry/cell/K}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig6} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{CvCp}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cv/Cp (Ry/cell/K}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig6}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}6.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 
 \PYG{n}{print\PYGZus{}eos\PYGZus{}data}\PYG{p}{(}\PYG{n}{V}\PYG{p}{,}\PYG{n}{E}\PYG{o}{+}\PYG{n}{Fvib}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]}\PYG{p}{,}\PYG{n}{a}\PYG{p}{,}\PYG{n}{chi}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{E}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}  \PYG{c+c1}{\PYGZsh{} print full detail at each T}
 
@@ -519,26 +543,26 @@ In the following we show the code for a similar example of an hexagonal (anisotr
 
 \PYG{n}{ngeo} \PYG{o}{=} \PYG{l+m+mi}{25}	\PYG{c+c1}{\PYGZsh{} this is the number of volumes for which a dos has been calculated			}
 
-\PYG{n}{TT} \PYG{o}{=}\PYG{n}{gen\PYGZus{}TT}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{l+m+mi}{1000}\PYG{p}{)}	\PYG{c+c1}{\PYGZsh{} generate the numpy array of temperatures for which the properties will be calculated}
-\PYG{n}{T}\PYG{p}{,} \PYG{n}{Evib}\PYG{p}{,} \PYG{n}{Fvib}\PYG{p}{,} \PYG{n}{Svib}\PYG{p}{,} \PYG{n}{Cvib}\PYG{p}{,} \PYG{n}{ZPE}\PYG{p}{,} \PYG{n}{modes} \PYG{o}{=} \PYG{n}{compute\PYGZus{}thermo\PYGZus{}geo}\PYG{p}{(}\PYG{n}{fdos}\PYG{p}{,}\PYG{n}{fthermo}\PYG{p}{,}\PYG{n}{ngeo}\PYG{p}{,}\PYG{n}{TT}\PYG{p}{)}
-\PYG{n}{nT} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{T}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{}TT =gen\PYGZus{}TT(1,1000)	\PYGZsh{} generate the numpy array of temperatures for which the properties will be calculated}
+\PYG{c+c1}{\PYGZsh{}T, Evib, Fvib, Svib, Cvib, ZPE, modes = compute\PYGZus{}thermo\PYGZus{}geo(fdos,fthermo,ngeo,TT)}
+\PYG{c+c1}{\PYGZsh{}nT = len(T)}
 
 \PYG{c+c1}{\PYGZsh{} Alternatively, read the thermodynamic data from files if you have already}
 \PYG{c+c1}{\PYGZsh{} done the calculations}
-\PYG{c+c1}{\PYGZsh{}T1, Evib1, Fvib1, Svib1, Cvib1 = read\PYGZus{}thermo( fthermo, ngeo )}
-\PYG{c+c1}{\PYGZsh{}nT, T, Evib, Fvib, Svib, Cvib = rearrange\PYGZus{}thermo( T1, Evib1, Fvib1, Svib1, Cvib1, ngeo )    }
+\PYG{n}{T1}\PYG{p}{,} \PYG{n}{Evib1}\PYG{p}{,} \PYG{n}{Fvib1}\PYG{p}{,} \PYG{n}{Svib1}\PYG{p}{,} \PYG{n}{Cvib1} \PYG{o}{=} \PYG{n}{read\PYGZus{}thermo}\PYG{p}{(} \PYG{n}{fthermo}\PYG{p}{,} \PYG{n}{ngeo} \PYG{p}{)}
+\PYG{n}{nT}\PYG{p}{,} \PYG{n}{T}\PYG{p}{,} \PYG{n}{Evib}\PYG{p}{,} \PYG{n}{Fvib}\PYG{p}{,} \PYG{n}{Svib}\PYG{p}{,} \PYG{n}{Cvib} \PYG{o}{=} \PYG{n}{rearrange\PYGZus{}thermo}\PYG{p}{(} \PYG{n}{T1}\PYG{p}{,} \PYG{n}{Evib1}\PYG{p}{,} \PYG{n}{Fvib1}\PYG{p}{,} \PYG{n}{Svib1}\PYG{p}{,} \PYG{n}{Cvib1}\PYG{p}{,} \PYG{n}{ngeo} \PYG{p}{)}    
 
 
 \PYG{n}{fEtot} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{./Etot.dat}\PYG{l+s+s2}{\PYGZdq{}}
 \PYG{n}{thermodata} \PYG{o}{=} \PYG{n}{nT}\PYG{p}{,} \PYG{n}{T}\PYG{p}{,} \PYG{n}{Evib}\PYG{p}{,} \PYG{n}{Fvib}\PYG{p}{,} \PYG{n}{Svib}\PYG{p}{,} \PYG{n}{Cvib} 
-\PYG{n}{TT}\PYG{p}{,} \PYG{n}{Fmin}\PYG{p}{,} \PYG{n}{celldmsminT}\PYG{p}{,} \PYG{n}{alphaT}\PYG{p}{,} \PYG{n}{a0}\PYG{p}{,} \PYG{n}{chi}\PYG{p}{,} \PYG{n}{aT}\PYG{p}{,} \PYG{n}{chi} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{)}
+\PYG{n}{TT}\PYG{p}{,} \PYG{n}{Fmin}\PYG{p}{,} \PYG{n}{celldmsminT}\PYG{p}{,} \PYG{n}{alphaT}\PYG{p}{,} \PYG{n}{a0}\PYG{p}{,} \PYG{n}{chi}\PYG{p}{,} \PYG{n}{aT}\PYG{p}{,} \PYG{n}{chi} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
 
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{Fmin}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Fmin (Ry/cell)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{celldmsminT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{a\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{celldmsminT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{c\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{celldmsminT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{o}{/}\PYG{n}{celldmsminT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{c/a }\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}    
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{alphaT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}xx (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{alphaT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}zz (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig1} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{Fmin}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Fmin (Ry/cell)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig2} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{celldmsminT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{a\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig3} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{celldmsminT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{c\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig4} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{celldmsminT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{o}{/}\PYG{n}{celldmsminT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{c/a }\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}    
+\PYG{n}{fig5} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{alphaT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}xx (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig6} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{alphaT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}zz (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 
 \PYG{c+c1}{\PYGZsh{} write a(T) and c(T) on a file}
 \PYG{n}{write\PYGZus{}celldmsT}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{celldmminT}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{T}\PYG{p}{,}\PYG{n}{celldmsminT}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{)}
@@ -550,15 +574,28 @@ In the following we show the code for a similar example of an hexagonal (anisotr
 \PYG{n}{iT}\PYG{o}{=}\PYG{l+m+mi}{998}                  \PYG{c+c1}{\PYGZsh{} this is the index of the temperatures array, not the temperature itself}
 \PYG{k}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T= }\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{TT}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{ (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 \PYG{c+c1}{\PYGZsh{} 3D plot only with fitted energy (Etot+Fvib)}
-\PYG{n}{plot\PYGZus{}Etot}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{Ex}\PYG{o}{=}\PYG{n+nb+bp}{None}\PYG{p}{,}\PYG{n}{n}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quadratic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{a0}\PYG{o}{+}\PYG{n}{aT}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{fig7} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{Ex}\PYG{o}{=}\PYG{n+nb+bp}{None}\PYG{p}{,}\PYG{n}{n}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quadratic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{a0}\PYG{o}{+}\PYG{n}{aT}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)}
 \PYG{c+c1}{\PYGZsh{} 3D plot fitted energy and points}
-\PYG{n}{plot\PYGZus{}Etot}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{Ex}\PYG{o}{+}\PYG{n}{Fvib}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{,}\PYG{n}{n}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quadratic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{a0}\PYG{o}{+}\PYG{n}{aT}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{fig8} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{Ex}\PYG{o}{+}\PYG{n}{Fvib}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{,}\PYG{n}{n}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quadratic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{a0}\PYG{o}{+}\PYG{n}{aT}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)}
 \PYG{c+c1}{\PYGZsh{} 3D plot with fitted energy Fvib only}
-\PYG{n}{plot\PYGZus{}Etot}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{Ex}\PYG{o}{=}\PYG{n+nb+bp}{None}\PYG{p}{,}\PYG{n}{n}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quadratic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{aT}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{fig9} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{Ex}\PYG{o}{=}\PYG{n+nb+bp}{None}\PYG{p}{,}\PYG{n}{n}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quadratic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{aT}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)}
 \PYG{c+c1}{\PYGZsh{} 2D contour plot with fitted energy (Etot+Fvib)}
-\PYG{n}{plot\PYGZus{}Etot\PYGZus{}contour}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quadratic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{a0}\PYG{o}{+}\PYG{n}{aT}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{fig10} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot\PYGZus{}contour}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quadratic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{a0}\PYG{o}{+}\PYG{n}{aT}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)}
 \PYG{c+c1}{\PYGZsh{} 2D contour plot with fitted energy Fvib only}
-\PYG{n}{plot\PYGZus{}Etot\PYGZus{}contour}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quadratic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{aT}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)}   
+\PYG{n}{fig11} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot\PYGZus{}contour}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quadratic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{aT}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)}   
+
+\PYG{c+c1}{\PYGZsh{} Save all plots}
+\PYG{n}{fig1}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}1.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig2}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}2.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig3}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}3.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig4}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}4.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig5}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}5.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}    
+\PYG{n}{fig6}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}6.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}      
+\PYG{n}{fig7}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}7.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)} 
+\PYG{n}{fig8}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}8.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig9}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}9.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig10}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}10.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig11}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}11.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 
 \end{sphinxVerbatim}
 
@@ -577,8 +614,8 @@ If everything went well,  you should get the following plots:
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_61}.png}
 
 
-\section{Computing quasi-static elastic constant}
-\label{tutorial:computing-quasi-static-elastic-constant}
+\section{Computing quasi-static elastic constants}
+\label{tutorial:computing-quasi-static-elastic-constants}
 The following code example shows how to do a calculation of a quasi-static elastic tensor as a function of temperature for an hexagonal system. This kind of calculation requires that a quasi-harmonic calculation has already be done (as in example 6). Besides, the elastic constants for different \((a,c)\) values must be available. To compute these elastic constants you can use for example the thermo\_pw code \footnote[1]{\sphinxAtStartFootnote
 \url{http://qeforge.qe-forge.org/gf/project/thermo\_pw/}
 }.
@@ -629,10 +666,15 @@ The following code example shows how to do a calculation of a quasi-static elast
        
 \PYG{n}{write\PYGZus{}CT}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{CT}\PYG{p}{,}\PYG{n}{fCout}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{./elastic\PYGZus{}constants/}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{CT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{C11 (kbar)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{CT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{C12 (kbar)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{CT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{C13 (kbar)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{CT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{C33 (kbar)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig1} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{CT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{C11 (kbar)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig2} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{CT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{C12 (kbar)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig3} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{CT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{C13 (kbar)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig4} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{TT}\PYG{p}{,}\PYG{n}{CT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{C33 (kbar)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig1}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}1.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig2}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}2.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig3}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}3.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig4}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}4.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
 
 \PYG{c+c1}{\PYGZsh{} plot now 4 elastic constants in the same plot}
 \PYG{k+kn}{import} \PYG{n+nn}{numpy} \PYG{k+kn}{as} \PYG{n+nn}{np}
@@ -642,7 +684,8 @@ The following code example shows how to do a calculation of a quasi-static elast
 \PYG{n}{pCxx}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{CT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
 \PYG{n}{pCxx}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{3}\PYG{p}{]} \PYG{o}{=} \PYG{n}{CT}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
 \PYG{n}{Clabels} \PYG{o}{=} \PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{C11}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{C12}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{C13}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{C33}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}
-\PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{pCxx}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cxx (kbar)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{n}{Clabels}\PYG{p}{)}
+\PYG{n}{fig5} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{T}\PYG{p}{,}\PYG{n}{pCxx}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Cxx (kbar)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{n}{Clabels}\PYG{p}{)}
+\PYG{n}{fig5}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}5.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}    
 
 \end{sphinxVerbatim}
 
@@ -657,6 +700,209 @@ The following code example shows how to do a calculation of a quasi-static elast
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_53}.png}
 
 
+\section{Numerical issues}
+\label{tutorial:numerical-issues}
+It is important to realize that the practical application of the quasi-harmonic approximation relies on fitting and minimizing the free energy as a function of volume, lattice parameters and temperature, ultimately on numerical methods. \sphinxcode{pyqha} uses numpy and scipy functions to this aim. The user must select the best methods/options for the specific system under investigation and it is always better to test, test, test...
+
+The following example shows how different methods/options may lead to different sets of results. Sometimes the differences are within the target numerical precision. Sometimes the results are simply wrong because of an improper choice of the methods/options.
+
+First, lets compute some example results for a hypotetical hexagonal system, using total energy and phonon DOS for different values of \((a,c)\) lattice parameters. We use all default values of the function \sphinxcode{fitFvib()}, i.e. a quadratic polynomial for fitting the total energies, a quadratic polynomial for fitting the vibrational energies, BFGS algorithm for minimization with default options (see the documentation of scipy.optimize.minimize for more details).
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{from} \PYG{n+nn}{pyqha} \PYG{k+kn}{import} \PYG{n}{RY\PYGZus{}KBAR}
+\PYG{k+kn}{from} \PYG{n+nn}{pyqha} \PYG{k+kn}{import} \PYG{n}{gen\PYGZus{}TT}\PYG{p}{,} \PYG{n}{read\PYGZus{}Etot}\PYG{p}{,} \PYG{n}{read\PYGZus{}dos\PYGZus{}geo}\PYG{p}{,} \PYG{n}{compute\PYGZus{}thermo\PYGZus{}geo}\PYG{p}{,} \PYG{n}{read\PYGZus{}thermo}\PYG{p}{,} \PYG{n}{rearrange\PYGZus{}thermo}\PYG{p}{,} \PYG{n}{fitFvib}\PYG{p}{,} \PYG{n}{write\PYGZus{}celldmsT}\PYG{p}{,} \PYG{n}{write\PYGZus{}alphaT}
+\PYG{k+kn}{from} \PYG{n+nn}{pyqha} \PYG{k+kn}{import} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{,} \PYG{n}{plot\PYGZus{}Etot}\PYG{p}{,} \PYG{n}{plot\PYGZus{}Etot\PYGZus{}contour}\PYG{p}{,} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}
+\PYG{k+kn}{import} \PYG{n+nn}{numpy} \PYG{k+kn}{as} \PYG{n+nn}{np}
+
+\PYG{c+c1}{\PYGZsh{} this part is for calculating the thermodynamic properties from the dos}
+\PYG{n}{fdos}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{dos\PYGZus{}files/output\PYGZus{}dos.dat.g}\PYG{l+s+s2}{\PYGZdq{}}	\PYG{c+c1}{\PYGZsh{} base name for the dos files (numbers will be added as postfix)}
+\PYG{n}{fthermo} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{thermo}\PYG{l+s+s2}{\PYGZdq{}}		\PYG{c+c1}{\PYGZsh{} base name for the output files (numbers will be added as postfix)}
+
+\PYG{n}{ngeo} \PYG{o}{=} \PYG{l+m+mi}{25}	\PYG{c+c1}{\PYGZsh{} this is the number of volumes for which a dos has been calculated			}
+
+\PYG{c+c1}{\PYGZsh{}TT =gen\PYGZus{}TT(1,2000)	\PYGZsh{} generate the numpy array of temperatures for which the properties will be calculated}
+\PYG{c+c1}{\PYGZsh{}T, Evib, Fvib, Svib, Cvib, ZPE, modes = compute\PYGZus{}thermo\PYGZus{}geo(fdos,fthermo,ngeo,TT)}
+\PYG{c+c1}{\PYGZsh{}nT = len(T)}
+
+\PYG{c+c1}{\PYGZsh{} Alternatively, read the thermodynamic data from files if you have already}
+\PYG{c+c1}{\PYGZsh{} done the calculations}
+\PYG{n}{T1}\PYG{p}{,} \PYG{n}{Evib1}\PYG{p}{,} \PYG{n}{Fvib1}\PYG{p}{,} \PYG{n}{Svib1}\PYG{p}{,} \PYG{n}{Cvib1} \PYG{o}{=} \PYG{n}{read\PYGZus{}thermo}\PYG{p}{(} \PYG{n}{fthermo}\PYG{p}{,} \PYG{n}{ngeo} \PYG{p}{)}
+\PYG{n}{nT}\PYG{p}{,} \PYG{n}{T}\PYG{p}{,} \PYG{n}{Evib}\PYG{p}{,} \PYG{n}{Fvib}\PYG{p}{,} \PYG{n}{Svib}\PYG{p}{,} \PYG{n}{Cvib} \PYG{o}{=} \PYG{n}{rearrange\PYGZus{}thermo}\PYG{p}{(} \PYG{n}{T1}\PYG{p}{,} \PYG{n}{Evib1}\PYG{p}{,} \PYG{n}{Fvib1}\PYG{p}{,} \PYG{n}{Svib1}\PYG{p}{,} \PYG{n}{Cvib1}\PYG{p}{,} \PYG{n}{ngeo} \PYG{p}{)}    
+
+
+\PYG{n}{fEtot} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{./Etot.dat}\PYG{l+s+s2}{\PYGZdq{}}
+\PYG{n}{thermodata} \PYG{o}{=} \PYG{n}{nT}\PYG{p}{,} \PYG{n}{T}\PYG{p}{,} \PYG{n}{Evib}\PYG{p}{,} \PYG{n}{Fvib}\PYG{p}{,} \PYG{n}{Svib}\PYG{p}{,} \PYG{n}{Cvib} 
+
+\PYG{c+c1}{\PYGZsh{} Fit and minimize with default options, quadratic polynomials for both Etot and Fvib, minimization method=\PYGZdq{}BFGS\PYGZdq{}, minoptions=\PYGZob{}\PYGZsq{}gtol\PYGZsq{}: 1e\PYGZhy{}5\PYGZcb{}}
+\PYG{c+c1}{\PYGZsh{}TT, Fmin, celldmsminT, alphaT, a0, chi, aT, chiT = fitFvib(fEtot,thermodata)}
+\PYG{n}{res1} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{)}
+\PYG{n}{fig1} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{a\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig2} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{c\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig3} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}xx (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig4} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}zz (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\end{sphinxVerbatim}
+
+Running the above code and observing the results (not shown here), you should notice that the thermal expansions present some spikes. These quantities are obtained as numerical derivatives of the lattice parameters and are thus more sensitive to any numerical noise.
+
+Let's see what happens if we use different polynomial forms for fitting, but the same minimization method.
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{res2} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Fit the quartic polynomial for Etot and quadratic for Fvib, default minimization method=\PYGZdq{}BFGS\PYGZdq{}, minoptions=\PYGZob{}\PYGZsq{}gtol\PYGZsq{}: 1e\PYGZhy{}5\PYGZcb{}}
+\PYG{n}{res3} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{typeEtot}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Fit the quartic polynomial for Etot and quartic for Fvib, default minimization method=\PYGZdq{}BFGS\PYGZdq{}, minoptions=\PYGZob{}\PYGZsq{}gtol\PYGZsq{}: 1e\PYGZhy{}5\PYGZcb{}}
+\PYG{n}{res4} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{typeEtot}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{typeFvib}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} plot together the 3 resulting lattice parameters and thermal expansions}
+\PYG{n}{y} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{(}\PYG{p}{(}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{)}\PYG{p}{,}\PYG{l+m+mi}{3}\PYG{p}{)}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res4}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{fig5} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{a\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quad+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quart fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res4}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{fig6} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{c\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quad+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quart fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res4}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{fig7} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}xx (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quad+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quart fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res4}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\end{sphinxVerbatim}
+
+The results of the above code are shown here:
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_17}.png}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_26}.png}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_36}.png}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_45}.png}
+
+You can see that the fit with quadratic polynomials for both Etot and Fvib (quad+quad) gives a slightly different result at 0 K, with a difference of the order of 0.2\%. Some differences remain even when using quadratic/quartic or quartic/quartic polynomials. In general, a quartic polynomial is expected to provide a better fit, but care must be paid to avoid overfitting and the best choice also depends on the shape of your energy surface.
+
+Next, you try to minimize with gtol=1e-3 (gradient norm must be less than gtol before successful termination, see the documentation of scipy.optimize.minimize), same method.
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{fig8} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}zz (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quad+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quart fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+
+
+\PYG{n}{res5} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{method}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{BFGS}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+
+\PYG{n}{res6} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{method}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{BFGS}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}8}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+
+\end{sphinxVerbatim}
+
+As you can see in the following figures, this leads to wrong results:
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_54}.png}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_62}.png}
+
+If on the contrary you increase the default gtol=1e-5 value, you can the following results:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} plot together the 3 resulting thermal expansions}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res5}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res6}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{fig13} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{a\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}6}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}7}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res5}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res6}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{fig14} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{c\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}6}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}7}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res5}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res6}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{fig15} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}xx (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}6}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}7}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res5}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res6}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{fig16} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}zz (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}6}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+
+
+\PYG{c+c1}{\PYGZsh{} The minimum shifts with temperatue, so does the quality of the fit (for example the chi\PYGZca{}2)}
+\PYG{n}{celldmsx}\PYG{p}{,} \PYG{n}{Ex} \PYG{o}{=} \PYG{n}{read\PYGZus{}Etot}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{)}  \PYG{c+c1}{\PYGZsh{} since the fitFvib does not return Etot data, you must read them from the original file}
+\end{sphinxVerbatim}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_7}.png}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_8}.png}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_9}.png}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_10}.png}
+
+The difference in the lattice parameters is very limited and can hardly be seen, but it is more evident in the thermal expansions. In the latters, notice how the spikes are reduced when decreasing gtol.
+
+Let's try now a different minimization algorithm, the common coniugate-gradient method (CG) as implemented in scipy.optimize.minimize, with default options and quadratic polynomial for fitting.
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} 2D contour plot with fitted energy (Etot+Fvib)}
+\PYG{n}{fig21} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot\PYGZus{}contour}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{4}\PYG{p}{]}\PYG{o}{+}\PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{6}\PYG{p}{]}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)} 
+\PYG{n}{iT}\PYG{o}{=}\PYG{l+m+mi}{1998}                  \PYG{c+c1}{\PYGZsh{} this is the index of the temperatures array, not the temperature itself}
+\PYG{k}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T= }\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{ (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} 2D contour plot with fitted energy (Etot+Fvib)}
+\PYG{n}{fig22} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot\PYGZus{}contour}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{4}\PYG{p}{]}\PYG{o}{+}\PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{6}\PYG{p}{]}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)} 
+\end{sphinxVerbatim}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_111}.png}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_121}.png}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_131}.png}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_141}.png}
+
+In this case the thermal expansions show much more noise than previously. It is thus clear that care must be paid to properly choose the fitting/minimizations methods and options.
+
+Finally, let's see another numerical issue in quasi-harmonic calculations which is illustrated in the following code and figure:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+
+
+\PYG{c+c1}{\PYGZsh{} Save all plots}
+\PYG{n}{fig1}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}1.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig2}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}2.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig3}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}3.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig4}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}4.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig5}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}5.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig6}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}6.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig7}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}7.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig8}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}8.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig9}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}9.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig10}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}10.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig11}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}11.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig12}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}12.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig13}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}13.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig14}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}14.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig15}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}15.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig16}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}16.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig17}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}17.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig18}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}18.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig19}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}19.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig20}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}20.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)} 
+\PYG{n}{fig21}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}21.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig22}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}22.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{fig23}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}23.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\end{sphinxVerbatim}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_151}.png}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_161}.png}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_171}.png}
+
+The first two figures above show iso-contour lines for the \(E_{tot}(a,c)+F_{vib}(a,c)\) surface at T=1 K and T=1999 K. You can see that the minimum is shifting as expected because of thermal expansion (usually positive) and as a consequence it becomes closer to the boundary of the chosen \((a,c)\) grid. It is important to check that the minimun does not get too close to the boundary in order to avoid a serious decrease of the fit accuracy. In any case, the \(\chi^2\) of the fitting procedure is always slightly changing (usually increasing) with temperature, as shown in the last figure.
+
+
 \chapter{pyqha package}
 \label{pyqha:pyqha-package}\label{pyqha::doc}
 
@@ -666,20 +912,31 @@ The following functions are available from \sphinxcode{pyqha} module and are the
 \phantomsection\label{pyqha:module-pyqha.fitEtot}\index{pyqha.fitEtot (module)}\index{fitEtot() (in module pyqha.fitEtot)}
 
 \begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.fitEtot.fitEtot}\pysiglinewithargsret{\sphinxcode{pyqha.fitEtot.}\sphinxbfcode{fitEtot}}{\emph{fin}, \emph{out=True}, \emph{ibrav=4}, \emph{fittype='quadratic'}, \emph{guess=None}}{}
+\phantomsection\label{pyqha:pyqha.fitEtot.fitEtot}\pysiglinewithargsret{\sphinxcode{pyqha.fitEtot.}\sphinxbfcode{fitEtot}}{\emph{fin}, \emph{out=True}, \emph{ibrav=4}, \emph{fittype='quadratic'}, \emph{guess=None}, \emph{method='BFGS'}, \emph{minoptions=\{\}}}{}
 This function reads the file \sphinxstyleemphasis{fin} containing the energies as a function
 of the lattice parameters \(E(a,b,c)\) and fits them with a quartic (\sphinxstyleemphasis{fittype=''quartic''}) or 
 quadratic (\sphinxstyleemphasis{fittype=''quadratic''}) polynomial. Then it finds the minimun energy
 and the corresponding lattice parameters. 
 ibrav is the Bravais lattice, guess is an initial guess for the minimization.
 Depending on ibrav, a different number of lattice parameters is considered.
-It prints fitting results on the screen (which can be redericted to \sphinxstyleemphasis{stdout})
+It prints fitting results on the screen (which can be redirected to \sphinxstyleemphasis{stdout})
 if \sphinxstyleemphasis{out=True}.
 It returns the lattice parameters and energies as in the input file \sphinxstyleemphasis{fin},
 the fitted coefficients of the polynomial, the corresponding \(\chi^2\),
 the lattice parameters at the minimum and the minimun energy.
 
 Note: for cubic systems use fitEtotV instead.
+
+Advanced input parameters:
+
+\sphinxstyleemphasis{guess}, an initial guess for the minimization. It is a 6 elements list 
+{[}a,b,c,0,0,0{]}.
+
+\sphinxstyleemphasis{method}, the method to be used in the minimization procedure, as in the
+scipy.optimize.minimize. See its documentation for details.
+
+\sphinxstyleemphasis{minoptions}, a dictionary with additional options for the minimization 
+procedure, as in the scipy.optimize.minimize. See its documentation for details.
 
 \end{fulllineitems}
 
@@ -793,7 +1050,7 @@ geometry, \sphinxstyleemphasis{X{[}0,1{]}} the second geometry and so on.
 \phantomsection\label{pyqha:module-pyqha.fitFvib}\index{pyqha.fitFvib (module)}\index{fitFvib() (in module pyqha.fitFvib)}
 
 \begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.fitFvib.fitFvib}\pysiglinewithargsret{\sphinxcode{pyqha.fitFvib.}\sphinxbfcode{fitFvib}}{\emph{fEtot, thermodata, ibrav=4, typeEtot='quadratic', typeFvib='quadratic', defaultguess={[}0.0, 0.0, 0.0, 0.0, 0.0, 0.0{]}}}{}
+\phantomsection\label{pyqha:pyqha.fitFvib.fitFvib}\pysiglinewithargsret{\sphinxcode{pyqha.fitFvib.}\sphinxbfcode{fitFvib}}{\emph{fEtot, thermodata, ibrav=4, typeEtot='quadratic', typeFvib='quadratic', defaultguess={[}0.0, 0.0, 0.0, 0.0, 0.0, 0.0{]}, method='BFGS', minoptions=\{\}, splinesoptions=None}}{}
 This function computes quasi-harmonic quantities from the 
 \(E_{tot}(a,b,c)+F_{vib}(a,b,c,T)\) as a function of temperature with Murnaghan's
 EOS. \(E_{tot}(a,b,c)\) is read from the \sphinxstyleemphasis{fin} file. \(F_{vib}(a,b,c,T)\)
@@ -829,6 +1086,31 @@ important that the order in the total energy file \sphinxstyleemphasis{fin} and 
 the thermodynamic data in \sphinxstyleemphasis{thermodata} is the same!  See also \sphinxstyleemphasis{example6} and 
 the tutorial.
 \end{sphinxadmonition}
+
+Advanced input parameters:
+
+\sphinxstyleemphasis{guess}, an initial guess for the minimization. It is a 6 elements list 
+{[}a,b,c,0,0,0{]}.
+
+\sphinxstyleemphasis{method}, the method to be used in the minimization procedure, as in the
+scipy.optimize.minimize. See its documentation for details. Note that the 
+methods which usually gives better results for quasi-harmonic calculations
+are the ``BFGS'' or Newton-CG''. Default is ``BFGS''.
+
+\sphinxstyleemphasis{minoptions}, a dictionary with additional options for the minimization 
+procedure, as in the scipy.optimize.minimize. See its documentation for details.
+Note the the options are different for different methods.
+
+\sphinxstyleemphasis{splinesoptions}, determines whether to use or not splines to reduce the noise
+on numerical derivatives (thermal expansions). If \sphinxstyleemphasis{splinesoptions*==None, use 
+finete differences for derivatives, else use splines as implemented in
+scipy.interpolate (see documentation). In the latter case, *splinesoptions}
+must be a dictionary. This dictionary must contains the keywords \sphinxstyleemphasis{k0}, \sphinxstyleemphasis{s0},
+\sphinxstyleemphasis{k1}, \sphinxstyleemphasis{s1}, \sphinxstyleemphasis{k2}, \sphinxstyleemphasis{s2} which are passed to \sphinxcode{scipy.interpolate.splrep()}, 
+one couple for each set of thermal expansions (alpha\_xx, alpha\_yy, alpha\_zz).
+\sphinxstyleemphasis{k} is the order of the spline (default=3), s a smoothing condition (default=None).
+If \sphinxstyleemphasis{splinesoptions==\{\}} use the default options of \sphinxcode{scipy.interpolate.splrep()}
+Note: use this option with care
 
 \end{fulllineitems}
 
@@ -1120,20 +1402,31 @@ is the vector with ngeo values of the \sphinxstyleemphasis{C11} elastic constant
 \label{pyqha:pyqha-fitetot-module}\label{pyqha:module-pyqha.fitEtot}\index{pyqha.fitEtot (module)}\index{fitEtot() (in module pyqha.fitEtot)}
 
 \begin{fulllineitems}
-\pysiglinewithargsret{\sphinxcode{pyqha.fitEtot.}\sphinxbfcode{fitEtot}}{\emph{fin}, \emph{out=True}, \emph{ibrav=4}, \emph{fittype='quadratic'}, \emph{guess=None}}{}
+\pysiglinewithargsret{\sphinxcode{pyqha.fitEtot.}\sphinxbfcode{fitEtot}}{\emph{fin}, \emph{out=True}, \emph{ibrav=4}, \emph{fittype='quadratic'}, \emph{guess=None}, \emph{method='BFGS'}, \emph{minoptions=\{\}}}{}
 This function reads the file \sphinxstyleemphasis{fin} containing the energies as a function
 of the lattice parameters \(E(a,b,c)\) and fits them with a quartic (\sphinxstyleemphasis{fittype=''quartic''}) or 
 quadratic (\sphinxstyleemphasis{fittype=''quadratic''}) polynomial. Then it finds the minimun energy
 and the corresponding lattice parameters. 
 ibrav is the Bravais lattice, guess is an initial guess for the minimization.
 Depending on ibrav, a different number of lattice parameters is considered.
-It prints fitting results on the screen (which can be redericted to \sphinxstyleemphasis{stdout})
+It prints fitting results on the screen (which can be redirected to \sphinxstyleemphasis{stdout})
 if \sphinxstyleemphasis{out=True}.
 It returns the lattice parameters and energies as in the input file \sphinxstyleemphasis{fin},
 the fitted coefficients of the polynomial, the corresponding \(\chi^2\),
 the lattice parameters at the minimum and the minimun energy.
 
 Note: for cubic systems use fitEtotV instead.
+
+Advanced input parameters:
+
+\sphinxstyleemphasis{guess}, an initial guess for the minimization. It is a 6 elements list 
+{[}a,b,c,0,0,0{]}.
+
+\sphinxstyleemphasis{method}, the method to be used in the minimization procedure, as in the
+scipy.optimize.minimize. See its documentation for details.
+
+\sphinxstyleemphasis{minoptions}, a dictionary with additional options for the minimization 
+procedure, as in the scipy.optimize.minimize. See its documentation for details.
 
 \end{fulllineitems}
 
@@ -1154,7 +1447,7 @@ of the EOS and the corresponding \(\chi^2\).
 \label{pyqha:pyqha-fitfvib-module}\label{pyqha:module-pyqha.fitFvib}\index{pyqha.fitFvib (module)}\index{fitFvib() (in module pyqha.fitFvib)}
 
 \begin{fulllineitems}
-\pysiglinewithargsret{\sphinxcode{pyqha.fitFvib.}\sphinxbfcode{fitFvib}}{\emph{fEtot, thermodata, ibrav=4, typeEtot='quadratic', typeFvib='quadratic', defaultguess={[}0.0, 0.0, 0.0, 0.0, 0.0, 0.0{]}}}{}
+\pysiglinewithargsret{\sphinxcode{pyqha.fitFvib.}\sphinxbfcode{fitFvib}}{\emph{fEtot, thermodata, ibrav=4, typeEtot='quadratic', typeFvib='quadratic', defaultguess={[}0.0, 0.0, 0.0, 0.0, 0.0, 0.0{]}, method='BFGS', minoptions=\{\}, splinesoptions=None}}{}
 This function computes quasi-harmonic quantities from the 
 \(E_{tot}(a,b,c)+F_{vib}(a,b,c,T)\) as a function of temperature with Murnaghan's
 EOS. \(E_{tot}(a,b,c)\) is read from the \sphinxstyleemphasis{fin} file. \(F_{vib}(a,b,c,T)\)
@@ -1190,6 +1483,31 @@ important that the order in the total energy file \sphinxstyleemphasis{fin} and 
 the thermodynamic data in \sphinxstyleemphasis{thermodata} is the same!  See also \sphinxstyleemphasis{example6} and 
 the tutorial.
 \end{sphinxadmonition}
+
+Advanced input parameters:
+
+\sphinxstyleemphasis{guess}, an initial guess for the minimization. It is a 6 elements list 
+{[}a,b,c,0,0,0{]}.
+
+\sphinxstyleemphasis{method}, the method to be used in the minimization procedure, as in the
+scipy.optimize.minimize. See its documentation for details. Note that the 
+methods which usually gives better results for quasi-harmonic calculations
+are the ``BFGS'' or Newton-CG''. Default is ``BFGS''.
+
+\sphinxstyleemphasis{minoptions}, a dictionary with additional options for the minimization 
+procedure, as in the scipy.optimize.minimize. See its documentation for details.
+Note the the options are different for different methods.
+
+\sphinxstyleemphasis{splinesoptions}, determines whether to use or not splines to reduce the noise
+on numerical derivatives (thermal expansions). If \sphinxstyleemphasis{splinesoptions*==None, use 
+finete differences for derivatives, else use splines as implemented in
+scipy.interpolate (see documentation). In the latter case, *splinesoptions}
+must be a dictionary. This dictionary must contains the keywords \sphinxstyleemphasis{k0}, \sphinxstyleemphasis{s0},
+\sphinxstyleemphasis{k1}, \sphinxstyleemphasis{s1}, \sphinxstyleemphasis{k2}, \sphinxstyleemphasis{s2} which are passed to \sphinxcode{scipy.interpolate.splrep()}, 
+one couple for each set of thermal expansions (alpha\_xx, alpha\_yy, alpha\_zz).
+\sphinxstyleemphasis{k} is the order of the spline (default=3), s a smoothing condition (default=None).
+If \sphinxstyleemphasis{splinesoptions==\{\}} use the default options of \sphinxcode{scipy.interpolate.splrep()}
+Note: use this option with care
 
 \end{fulllineitems}
 
@@ -1303,7 +1621,7 @@ is the vector with ngeo values of the frequencies at the first q-point and first
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.fitutils.expand_quadratic_to_quartic}\pysiglinewithargsret{\sphinxcode{pyqha.fitutils.}\sphinxbfcode{expand\_quadratic\_to\_quartic}}{\emph{a}}{}
 This function gets a vector of coefficients from a quadratic fit and turns it
-into a vector of coeffients as from a quartic fit (extra coeffients are set to zero)
+into a vector of coeffients as from a quartic fit (extra coeffients are set to zero).
 
 \end{fulllineitems}
 
@@ -1349,371 +1667,6 @@ This is the function for fitting with a quartic polynomial
 
 The most general fitting multidimensional quadratic polynomial for a triclinic
 system is:
-\begin{description}
-\item[{a1 + a2  x1 + a3  x1\textasciicircum{}2 + a4  x1\textasciicircum{}3 + a5 x1\textasciicircum{}4        }] \leavevmode\begin{itemize}
-\item {} 
-a6  x2 + a7  x2\textasciicircum{}2 + a8  x2\textasciicircum{}3 + a9 x2\textasciicircum{}4
-
-\item {} \begin{description}
-\item[{a10 x1*x2 + a11 x1*x2\textasciicircum{}2 + a12  x1*x2\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a13 x1\textasciicircum{}2*x2 + a14  x1\textasciicircum{}2*x2\textasciicircum{}2
-
-\item {} 
-a15 x1\textasciicircum{}3*x2
-
-\end{itemize}
-
-\end{description}
-
-\item {} 
-a16 x3 + a17 x3\textasciicircum{}2 + a18 x3\textasciicircum{}3 + a19 x3\textasciicircum{}4
-
-\item {} \begin{description}
-\item[{a20 x1*x3 + a21 x1*x3\textasciicircum{}2 + a22  x1*x3\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a23 x1\textasciicircum{}2*x3 + a24  x1\textasciicircum{}2*x3\textasciicircum{}2
-
-\item {} 
-a25 x1\textasciicircum{}3*x3
-
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{a26 x2*x3 + a27 x2*x3\textasciicircum{}2 + a28  x2*x3\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a29 x2\textasciicircum{}2*x3 + a30  x2\textasciicircum{}2*x3\textasciicircum{}2
-
-\item {} 
-a31 x2\textasciicircum{}3*x3
-
-\end{itemize}
-
-\end{description}
-
-\item {} 
-a32 x1 * x2 * x3 + a33 x1 * x2\textasciicircum{}2 * x3
-
-\item {} 
-a34 x1 * x2 * x3\textasciicircum{}2 + a35 x1\textasciicircum{}2 * x2 * x3
-
-\item {} 
-a36 x4 + a37 x4\textasciicircum{}2 + a38 x4\textasciicircum{}3 + a39 x4\textasciicircum{}4
-
-\item {} \begin{description}
-\item[{a40 x1*x4 + a41 x1*x4\textasciicircum{}2 + a42  x1*x4\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a43 x1\textasciicircum{}2*x4 + a44  x1\textasciicircum{}2*x4\textasciicircum{}2
-
-\item {} 
-a45 x1\textasciicircum{}3*x4
-
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{a46 x2*x4 + a47 x2*x4\textasciicircum{}2 + a48  x2*x4\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a49 x2\textasciicircum{}2*x4 + a50  x2\textasciicircum{}2*x4\textasciicircum{}2
-
-\item {} 
-a51 x2\textasciicircum{}3*x4
-
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{a52 x3*x4 + a53 x3*x4\textasciicircum{}2 + a54  x3*x4\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a55 x3\textasciicircum{}2*x4 + a56  x3\textasciicircum{}2*x4\textasciicircum{}2
-
-\item {} 
-a57 x3\textasciicircum{}3*x4
-
-\end{itemize}
-
-\end{description}
-
-\item {} 
-a58 x1 * x2 * x4 + a59 x1 * x2\textasciicircum{}2 * x4
-
-\item {} 
-a60 x1 * x2 * x4\textasciicircum{}2 + a61 x1\textasciicircum{}2 * x2 * x4
-
-\item {} 
-a62 x1 * x3 * x4 + a63 x1 * x3\textasciicircum{}2 * x4
-
-\item {} 
-a64 x1 * x3 * x4\textasciicircum{}2 + a65 x1\textasciicircum{}2 * x3 * x4
-
-\item {} 
-a66 x2 * x3 * x4 + a67 x2 * x3\textasciicircum{}2 * x4
-
-\item {} 
-a68 x2 * x3 * x4\textasciicircum{}2 + a69 x2\textasciicircum{}2 * x3 * x4
-
-\item {} 
-a70 x1 * x2 * x3 * x4
-
-\item {} 
-a71 x5 + a72 x5\textasciicircum{}2 + a73 x5\textasciicircum{}3 + a74 x5\textasciicircum{}4
-
-\item {} \begin{description}
-\item[{a75 x1*x5 + a76 x1*x5\textasciicircum{}2 + a77 x1*x5\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a78 x1\textasciicircum{}2*x5 + a79 x1\textasciicircum{}2*x5\textasciicircum{}2
-
-\item {} 
-a80 x1\textasciicircum{}3*x5
-
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{a81 x2*x5 + a82 x2*x5\textasciicircum{}2 + a83 x2*x5\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a84 x2\textasciicircum{}2*x5 + a85 x2\textasciicircum{}2*x5\textasciicircum{}2
-
-\item {} 
-a86 x2\textasciicircum{}3*x5
-
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{a87 x3*x5 + a88 x3*x5\textasciicircum{}2 + a89 x3*x5\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a90 x3\textasciicircum{}2*x5 + a91 x3\textasciicircum{}2*x5\textasciicircum{}2
-
-\item {} 
-a92 x3\textasciicircum{}3*x5
-
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{a93 x4*x5 + a94 x4*x5\textasciicircum{}2 + a95 x4*x5\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a96 x4\textasciicircum{}2*x5 + a97 x4\textasciicircum{}2*x5\textasciicircum{}2
-
-\item {} 
-a98 x4\textasciicircum{}3*x5
-
-\end{itemize}
-
-\end{description}
-
-\item {} 
-a99  x1 * x2 * x5 + a100 x1 * x2\textasciicircum{}2 * x5
-
-\item {} 
-a101 x1 * x2 * x5\textasciicircum{}2 + a102 x1\textasciicircum{}2 * x2 * x5
-
-\item {} 
-a103 x1 * x3 * x5 + a104 x1 * x3\textasciicircum{}2 * x5
-
-\item {} 
-a105 x1 * x3 * x5\textasciicircum{}2 + a106 x1\textasciicircum{}2 * x3 * x5
-
-\item {} 
-a107 x1 * x4 * x5 + a108 x1 * x4\textasciicircum{}2 * x5
-
-\item {} 
-a109 x1 * x4 * x5\textasciicircum{}2 + a110 x1\textasciicircum{}2 * x4 * x5
-
-\item {} 
-a111 x2 * x3 * x5 + a112 x2 * x3\textasciicircum{}2 * x5
-
-\item {} 
-a113 x2 * x3 * x5\textasciicircum{}2 + a114 x2\textasciicircum{}2 * x3 * x5
-
-\item {} 
-a115 x2 * x4 * x5 + a116 x2 * x4\textasciicircum{}2 * x5
-
-\item {} 
-a117 x2 * x4 * x5\textasciicircum{}2 + a118 x2\textasciicircum{}2 * x4 * x5
-
-\item {} 
-a119 x3 * x4 * x5 + a120 x3 * x4\textasciicircum{}2 * x5
-
-\item {} 
-a121 x3 * x4 * x5\textasciicircum{}2 + a122 x3\textasciicircum{}2 * x4 * x5
-
-\item {} 
-a123 x1 * x2 * x3 * x5
-
-\item {} 
-a124 x1 * x2 * x4 * x5
-
-\item {} 
-a125 x1 * x3 * x4 * x5
-
-\item {} 
-a126 x2 * x3 * x4 * x5
-
-\item {} 
-a127 x6 + a128 x6\textasciicircum{}2 + a129 x6\textasciicircum{}3 + a130 x6\textasciicircum{}4
-
-\item {} \begin{description}
-\item[{a131 x1*x6 + a132 x1*x6\textasciicircum{}2 + a133 x1*x6\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a134 x1\textasciicircum{}2*x6 + a135 x1\textasciicircum{}2*x6\textasciicircum{}2
-
-\item {} 
-a136 x1\textasciicircum{}3*x6
-
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{a137 x2*x6 + a138 x2*x6\textasciicircum{}2 + a139 x2*x6\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a140 x2\textasciicircum{}2*x6 + a141 x2\textasciicircum{}2*x6\textasciicircum{}2
-
-\item {} 
-a142 x2\textasciicircum{}3*x6
-
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{a143 x3*x6 + a144 x3*x6\textasciicircum{}2 + a145 x3*x6\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a146 x3\textasciicircum{}2*x6 + a147 x3\textasciicircum{}2*x6\textasciicircum{}2
-
-\item {} 
-a148 x3\textasciicircum{}3*x6
-
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{a149 x4*x6 + a150 x4*x6\textasciicircum{}2 + a151 x4*x6\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a152 x4\textasciicircum{}2*x6 + a153 x4\textasciicircum{}2*x6\textasciicircum{}2
-
-\item {} 
-a154 x4\textasciicircum{}3*x6
-
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{a155 x5*x6 + a156 x5*x6\textasciicircum{}2 + a157 x5*x6\textasciicircum{}3}] \leavevmode\begin{itemize}
-\item {} 
-a158 x5\textasciicircum{}2*x6 + a159 x5\textasciicircum{}2*x6\textasciicircum{}2
-
-\item {} 
-a160 x5\textasciicircum{}3*x6
-
-\end{itemize}
-
-\end{description}
-
-\item {} 
-a161 x1 * x2 * x6 + a162 x1 * x2\textasciicircum{}2 * x6
-
-\item {} 
-a163 x1 * x2 * x6\textasciicircum{}2 + a164 x1\textasciicircum{}2 * x2 * x6
-
-\item {} 
-a165 x1 * x3 * x6 + a166 x1 * x3\textasciicircum{}2 * x6
-
-\item {} 
-a167 x1 * x3 * x6\textasciicircum{}2 + a168 x1\textasciicircum{}2 * x3 * x6
-
-\item {} 
-a169 x1 * x4 * x6 + a170 x1 * x4\textasciicircum{}2 * x6
-
-\item {} 
-a171 x1 * x4 * x6\textasciicircum{}2 + a172 x1\textasciicircum{}2 * x4 * x6
-
-\item {} 
-a173 x1 * x5 * x6 + a174 x1 * x5\textasciicircum{}2 * x6
-
-\item {} 
-a175 x1 * x5 * x6\textasciicircum{}2 + a176 x1\textasciicircum{}2 * x5 * x6
-
-\item {} 
-a177 x2 * x3 * x6 + a178 x2 * x3\textasciicircum{}2 * x6
-
-\item {} 
-a179 x2 * x3 * x6\textasciicircum{}2 + a180 x2\textasciicircum{}2 * x3 * x6
-
-\item {} 
-a181 x2 * x4 * x6 + a182 x2 * x4\textasciicircum{}2 * x6
-
-\item {} 
-a183 x2 * x4 * x6\textasciicircum{}2 + a184 x2\textasciicircum{}2 * x4 * x6
-
-\item {} 
-a185 x2 * x5 * x6 + a186 x2 * x5\textasciicircum{}2 * x6
-
-\item {} 
-a187 x2 * x5 * x6\textasciicircum{}2 + a188 x2\textasciicircum{}2 * x5 * x6
-
-\item {} 
-a189 x3 * x4 * x6 + a190 x3 * x4\textasciicircum{}2 * x6
-
-\item {} 
-a191 x3 * x4 * x6\textasciicircum{}2 + a192 x3\textasciicircum{}2 * x4 * x6
-
-\item {} 
-a193 x3 * x5 * x6 + a194 x3 * x5\textasciicircum{}2 * x6
-
-\item {} 
-a195 x3 * x5 * x6\textasciicircum{}2 + a196 x3\textasciicircum{}2 * x5 * x6
-
-\item {} 
-a197 x4 * x5 * x6 + a198 x4 * x5\textasciicircum{}2 * x6
-
-\item {} 
-a199 x4 * x5 * x6\textasciicircum{}2 + a200 x4\textasciicircum{}2 * x5 * x6
-
-\item {} 
-a201 x1 * x2 * x3 * x6
-
-\item {} 
-a202 x1 * x2 * x4 * x6
-
-\item {} 
-a203 x1 * x2 * x5 * x6
-
-\item {} 
-a204 x1 * x3 * x4 * x6
-
-\item {} 
-a205 x1 * x3 * x5 * x6
-
-\item {} 
-a206 x1 * x4 * x5 * x6
-
-\item {} 
-a207 x2 * x3 * x4 * x6
-
-\item {} 
-a208 x2 * x3 * x5 * x6
-
-\item {} 
-a209 x2 * x4 * x5 * x6
-
-\item {} 
-a210 x3 * x4 * x5 * x6
-
-\end{itemize}
-
-\end{description}
 
 ONLY THE HEXAGONAL CASE IS IMPLEMENTED, more to be done
 
@@ -1815,7 +1768,7 @@ Note: not all ibrav are implemented yet
 \index{find\_min() (in module pyqha.minutils)}
 
 \begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.minutils.find_min}\pysiglinewithargsret{\sphinxcode{pyqha.minutils.}\sphinxbfcode{find\_min}}{\emph{a}, \emph{ibrav}, \emph{type}, \emph{guess=None}}{}
+\phantomsection\label{pyqha:pyqha.minutils.find_min}\pysiglinewithargsret{\sphinxcode{pyqha.minutils.}\sphinxbfcode{find\_min}}{\emph{a}, \emph{ibrav}, \emph{type}, \emph{guess=None}, \emph{method='BFGS'}, \emph{minoptions=\{\}}}{}
 An auxiliary function for handling the minimum search
 
 \end{fulllineitems}
@@ -1823,7 +1776,7 @@ An auxiliary function for handling the minimum search
 \index{find\_min\_quadratic() (in module pyqha.minutils)}
 
 \begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.minutils.find_min_quadratic}\pysiglinewithargsret{\sphinxcode{pyqha.minutils.}\sphinxbfcode{find\_min\_quadratic}}{\emph{a}, \emph{ibrav=4}, \emph{guess=None}}{}
+\phantomsection\label{pyqha:pyqha.minutils.find_min_quadratic}\pysiglinewithargsret{\sphinxcode{pyqha.minutils.}\sphinxbfcode{find\_min\_quadratic}}{\emph{a}, \emph{ibrav}, \emph{guess}, \emph{method}, \emph{minoptions}}{}
 This is the function for finding the minimum of the quadratic polynomial
 
 \end{fulllineitems}
@@ -1831,7 +1784,7 @@ This is the function for finding the minimum of the quadratic polynomial
 \index{find\_min\_quartic() (in module pyqha.minutils)}
 
 \begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.minutils.find_min_quartic}\pysiglinewithargsret{\sphinxcode{pyqha.minutils.}\sphinxbfcode{find\_min\_quartic}}{\emph{a}, \emph{ibrav=4}, \emph{guess=None}}{}
+\phantomsection\label{pyqha:pyqha.minutils.find_min_quartic}\pysiglinewithargsret{\sphinxcode{pyqha.minutils.}\sphinxbfcode{find\_min\_quartic}}{\emph{a}, \emph{ibrav}, \emph{guess}, \emph{method}, \emph{minoptions}}{}
 This is the function for finding the minimum of the quartic polynomial
 
 \end{fulllineitems}
@@ -1932,9 +1885,10 @@ More ibrav types must be implemented
 \index{compute\_alpha\_splines() (in module pyqha.properties\_anis)}
 
 \begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.properties_anis.compute_alpha_splines}\pysiglinewithargsret{\sphinxcode{pyqha.properties\_anis.}\sphinxbfcode{compute\_alpha\_splines}}{\emph{TT}, \emph{minT}, \emph{ibrav}}{}
-This function calculate the thermal expansion alphaT at different temperatures
-as the previous function but with splines
+\phantomsection\label{pyqha:pyqha.properties_anis.compute_alpha_splines}\pysiglinewithargsret{\sphinxcode{pyqha.properties\_anis.}\sphinxbfcode{compute\_alpha\_splines}}{\emph{TT}, \emph{minT}, \emph{ibrav}, \emph{splinesoptions}}{}
+This function calculates the thermal expansions alphaT at different temperatures
+as the previous function but using spline interpolation as implemented in
+scipy.interpolate.
 
 \end{fulllineitems}
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.4.10)  23 OCT 2016 17:08
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.4.10)  26 OCT 2016 17:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1014,239 +1014,387 @@ LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <9> not available
  [2]
 Chapter 2.
 LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <9> not available
-(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 200.
+(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 205.
+
+Overfull \vbox (8.69223pt too high) detected at line 212
+ []
+
 [3
 
 ]
-LaTeX Font Info:    Try loading font information for TS1+pcr on input line 214.
+LaTeX Font Info:    Try loading font information for TS1+pcr on input line 220.
 
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1pcr.fd
 File: ts1pcr.fd 2001/06/04 font definitions for TS1/pcr.
 )
-<figure_1.png, id=208, 586.8324pt x 442.2924pt>
+<figure_1.png, id=213, 586.8324pt x 442.2924pt>
 File: figure_1.png Graphic file (type png)
  <use figure_1.png>
-Package pdftex.def Info: figure_1.png used on input line 228.
+Package pdftex.def Info: figure_1.png used on input line 234.
 (pdftex.def)             Requested size: 376.40381pt x 283.70056pt.
- [4] [5 <./figure_1.png>] [6] <figure_11.png, id=224, 586.8324pt x 442.2924pt>
-File: figure_11.png Graphic file (type png)
-
-<use figure_11.png>
-Package pdftex.def Info: figure_11.png used on input line 294.
-(pdftex.def)             Requested size: 376.40381pt x 283.70056pt.
- <figure_2.png, id=225, 586.8324pt x 442.2924pt>
-File: figure_2.png Graphic file (type png)
-
-<use figure_2.png>
-Package pdftex.def Info: figure_2.png used on input line 296.
-(pdftex.def)             Requested size: 376.40381pt x 283.70056pt.
- <figure_3.png, id=226, 586.8324pt x 442.2924pt>
-File: figure_3.png Graphic file (type png)
-
-<use figure_3.png>
-Package pdftex.def Info: figure_3.png used on input line 298.
-(pdftex.def)             Requested size: 376.40381pt x 283.70056pt.
- [7 <./figure_11.png> <./figure_2.png>] [8 <./figure_3.png>]
-Overfull \vbox (13.56999pt too high) detected at line 372
+ [4] [5 <./figure_1.png>]
+Underfull \vbox (badness 10000) detected at line 299
  []
 
-[9] <figure_12.png, id=244, 586.8324pt x 442.2924pt>
-File: figure_12.png Graphic file (type png)
- <use figure_12.png>
-Package pdftex.def Info: figure_12.png used on input line 378.
+
+Underfull \vbox (badness 10000) detected at line 299
+ []
+
+[6] <figure_11.png, id=229, 586.8324pt x 442.2924pt>
+File: figure_11.png Graphic file (type png)
+ <use figure_11.png>
+Package pdftex.def Info: figure_11.png used on input line 303.
 (pdftex.def)             Requested size: 376.40381pt x 283.70056pt.
 
-<figure_21.png, id=245, 586.8324pt x 442.2924pt>
+<figure_2.png, id=230, 586.8324pt x 442.2924pt>
+File: figure_2.png Graphic file (type png)
+ <use figure_2.png>
+Package pdftex.def Info: figure_2.png used on input line 305.
+(pdftex.def)             Requested size: 376.40381pt x 283.70056pt.
+ [7 <./figure_11.png>] <figure_3.png, id=236, 586.8324pt x 442.2924pt>
+File: figure_3.png Graphic file (type png)
+ <use figure_3.png>
+Package pdftex.def Info: figure_3.png used on input line 307.
+(pdftex.def)             Requested size: 376.40381pt x 283.70056pt.
+
+[8 <./figure_2.png> <./figure_3.png>]
+Underfull \vbox (badness 10000) detected at line 386
+ []
+
+[9] <figure_12.png, id=249, 586.8324pt x 442.2924pt>
+File: figure_12.png Graphic file (type png)
+ <use figure_12.png>
+Package pdftex.def Info: figure_12.png used on input line 392.
+(pdftex.def)             Requested size: 376.40381pt x 283.70056pt.
+
+[10] <figure_21.png, id=254, 586.8324pt x 442.2924pt>
 File: figure_21.png Graphic file (type png)
  <use figure_21.png>
-Package pdftex.def Info: figure_21.png used on input line 382.
+Package pdftex.def Info: figure_21.png used on input line 396.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
- [10 <./figure_12.png>] <figure_31.png, id=251, 586.8324pt x 442.2924pt>
-File: figure_31.png Graphic file (type png)
 
-<use figure_31.png>
-Package pdftex.def Info: figure_31.png used on input line 384.
+<figure_31.png, id=255, 586.8324pt x 442.2924pt>
+File: figure_31.png Graphic file (type png)
+ <use figure_31.png>
+Package pdftex.def Info: figure_31.png used on input line 398.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
- <figure_4.png, id=252, 586.8324pt x 442.2924pt>
+ [11 <./figure_12.png> <./figure_21.png>] <figure_4.png, id=262, 586.8324pt x 4
+42.2924pt>
 File: figure_4.png Graphic file (type png)
 
 <use figure_4.png>
-Package pdftex.def Info: figure_4.png used on input line 386.
+Package pdftex.def Info: figure_4.png used on input line 400.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
- [11 <./figure_21.png> <./figure_31.png>]
-<figure_5.png, id=259, 586.8324pt x 442.2924pt>
+ <figure_5.png, id=263, 586.8324pt x 442.2924pt>
 File: figure_5.png Graphic file (type png)
- <use figure_5.png>
-Package pdftex.def Info: figure_5.png used on input line 388.
+
+<use figure_5.png>
+Package pdftex.def Info: figure_5.png used on input line 402.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
- [12 <./figure_4.png> <./figure_5.png>] <figure_13.png, id=266, 586.8324pt x 44
-2.2924pt>
+ [12 <./figure_31.png> <./figure_4.png>]
+Underfull \vbox (badness 1253) detected at line 439
+ []
+
+[13 <./figure_5.png>] <figure_13.png, id=275, 586.8324pt x 442.2924pt>
 File: figure_13.png Graphic file (type png)
 
 <use figure_13.png>
-Package pdftex.def Info: figure_13.png used on input line 425.
+Package pdftex.def Info: figure_13.png used on input line 443.
 (pdftex.def)             Requested size: 376.40381pt x 283.70056pt.
- <figure_22.png, id=267, 586.8324pt x 442.2924pt>
+ <figure_22.png, id=276, 586.8324pt x 442.2924pt>
 File: figure_22.png Graphic file (type png)
 
 <use figure_22.png>
-Package pdftex.def Info: figure_22.png used on input line 429.
+Package pdftex.def Info: figure_22.png used on input line 447.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
- [13 <./figure_13.png>]
-<figure_32.png, id=273, 586.8324pt x 442.2924pt>
+ <figure_32.png, id=277, 586.8324pt x 442.2924pt>
 File: figure_32.png Graphic file (type png)
- <use figure_32.png>
-Package pdftex.def Info: figure_32.png used on input line 431.
-(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
 
-<figure_41.png, id=274, 586.8324pt x 442.2924pt>
+<use figure_32.png>
+Package pdftex.def Info: figure_32.png used on input line 449.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ [14 <./figure_13.png> <./figure_22.png>]
+<figure_41.png, id=284, 586.8324pt x 442.2924pt>
 File: figure_41.png Graphic file (type png)
  <use figure_41.png>
-Package pdftex.def Info: figure_41.png used on input line 433.
-(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
- [14 <./figure_22.png> <./figure_32.png>] [15 <./figure_41.png>]
-<figure_14.png, id=287, 586.8324pt x 442.2924pt>
-File: figure_14.png Graphic file (type png)
- <use figure_14.png>
-Package pdftex.def Info: figure_14.png used on input line 497.
-(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
- [16]
-<figure_23.png, id=292, 586.8324pt x 442.2924pt>
-File: figure_23.png Graphic file (type png)
- <use figure_23.png>
-Package pdftex.def Info: figure_23.png used on input line 499.
+Package pdftex.def Info: figure_41.png used on input line 451.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
 
-<figure_33.png, id=293, 586.8324pt x 442.2924pt>
-File: figure_33.png Graphic file (type png)
- <use figure_33.png>
-Package pdftex.def Info: figure_33.png used on input line 501.
-(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
- [17 <./figure_14.png> <./figure_23.png>]
-<figure_42.png, id=300, 586.8324pt x 442.2924pt>
-File: figure_42.png Graphic file (type png)
- <use figure_42.png>
-Package pdftex.def Info: figure_42.png used on input line 503.
-(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
-
-<figure_51.png, id=301, 586.8324pt x 442.2924pt>
-File: figure_51.png Graphic file (type png)
- <use figure_51.png>
-Package pdftex.def Info: figure_51.png used on input line 505.
-(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
- [18 <./figure_33.png> <./figure_42.png>] <figure_6.png, id=308, 586.8324pt x 4
-42.2924pt>
-File: figure_6.png Graphic file (type png)
-
-<use figure_6.png>
-Package pdftex.def Info: figure_6.png used on input line 507.
-(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
-
-Underfull \vbox (badness 2707) detected at line 563
+Overfull \vbox (0.99356pt too high) detected at line 512
  []
 
-[19 <./figure_51.png> <./figure_6.png>]
-<figure_15.png, id=315, 586.8324pt x 442.2924pt>
-File: figure_15.png Graphic file (type png)
- <use figure_15.png>
-Package pdftex.def Info: figure_15.png used on input line 567.
-(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
- [20]
-<figure_24.png, id=320, 586.8324pt x 442.2924pt>
-File: figure_24.png Graphic file (type png)
- <use figure_24.png>
-Package pdftex.def Info: figure_24.png used on input line 569.
+[15 <./figure_32.png> <./figure_41.png>] [16]
+<figure_14.png, id=296, 586.8324pt x 442.2924pt>
+File: figure_14.png Graphic file (type png)
+ <use figure_14.png>
+Package pdftex.def Info: figure_14.png used on input line 521.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
 
-<figure_34.png, id=321, 586.8324pt x 442.2924pt>
+<figure_23.png, id=297, 586.8324pt x 442.2924pt>
+File: figure_23.png Graphic file (type png)
+ <use figure_23.png>
+Package pdftex.def Info: figure_23.png used on input line 523.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+
+<figure_33.png, id=298, 586.8324pt x 442.2924pt>
+File: figure_33.png Graphic file (type png)
+ <use figure_33.png>
+Package pdftex.def Info: figure_33.png used on input line 525.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ [17 <./figure_14.png> <./figure_23.png>]
+<figure_42.png, id=305, 586.8324pt x 442.2924pt>
+File: figure_42.png Graphic file (type png)
+ <use figure_42.png>
+Package pdftex.def Info: figure_42.png used on input line 527.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+
+<figure_51.png, id=306, 753.7761pt x 442.2924pt>
+File: figure_51.png Graphic file (type png)
+ <use figure_51.png>
+Package pdftex.def Info: figure_51.png used on input line 529.
+(pdftex.def)             Requested size: 301.12305pt x 176.69112pt.
+
+<figure_6.png, id=307, 686.565pt x 442.2924pt>
+File: figure_6.png Graphic file (type png)
+ <use figure_6.png>
+Package pdftex.def Info: figure_6.png used on input line 531.
+(pdftex.def)             Requested size: 301.12305pt x 193.98161pt.
+ [18 <./figure_33.png> <./figure_42.png> <./figure_51.png>]
+Underfull \vbox (badness 1237) detected at line 600
+ []
+
+[19 <./figure_6.png>] <figure_15.png, id=320, 586.8324pt x 442.2924pt>
+File: figure_15.png Graphic file (type png)
+
+<use figure_15.png>
+Package pdftex.def Info: figure_15.png used on input line 604.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ [20] <figure_24.png, id=325, 586.8324pt x 442.2924pt>
+File: figure_24.png Graphic file (type png)
+
+<use figure_24.png>
+Package pdftex.def Info: figure_24.png used on input line 606.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ <figure_34.png, id=326, 586.8324pt x 442.2924pt>
 File: figure_34.png Graphic file (type png)
- <use figure_34.png>
-Package pdftex.def Info: figure_34.png used on input line 571.
+
+<use figure_34.png>
+Package pdftex.def Info: figure_34.png used on input line 608.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
  [21 <./figure_15.png> <./figure_24.png>]
-<figure_43.png, id=329, 586.8324pt x 442.2924pt>
+<figure_43.png, id=334, 586.8324pt x 442.2924pt>
 File: figure_43.png Graphic file (type png)
  <use figure_43.png>
-Package pdftex.def Info: figure_43.png used on input line 573.
+Package pdftex.def Info: figure_43.png used on input line 610.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
 
-<figure_52.png, id=330, 586.8324pt x 442.2924pt>
+<figure_52.png, id=335, 586.8324pt x 442.2924pt>
 File: figure_52.png Graphic file (type png)
  <use figure_52.png>
-Package pdftex.def Info: figure_52.png used on input line 575.
+Package pdftex.def Info: figure_52.png used on input line 612.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
  [22 <./figure_34.png> <./figure_43.png>]
-<figure_61.png, id=337, 586.8324pt x 442.2924pt>
+<figure_61.png, id=342, 586.8324pt x 442.2924pt>
 File: figure_61.png Graphic file (type png)
  <use figure_61.png>
-Package pdftex.def Info: figure_61.png used on input line 577.
+Package pdftex.def Info: figure_61.png used on input line 614.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
 
-Overfull \vbox (12.08144pt too high) detected at line 647
+Overfull \vbox (12.08144pt too high) detected at line 690
  []
 
 [23 <./figure_52.png> <./figure_61.png>]
-Underfull \vbox (badness 10000) detected at line 647
+Underfull \vbox (badness 10000) detected at line 690
  []
 
 
-Underfull \vbox (badness 10000) detected at line 647
+Underfull \vbox (badness 10000) detected at line 690
  []
 
-[24] <figure_16.png, id=351, 586.8324pt x 442.2924pt>
+[24] <figure_16.png, id=356, 586.8324pt x 442.2924pt>
 File: figure_16.png Graphic file (type png)
  <use figure_16.png>
-Package pdftex.def Info: figure_16.png used on input line 649.
+Package pdftex.def Info: figure_16.png used on input line 692.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
 
-<figure_25.png, id=352, 586.8324pt x 442.2924pt>
+<figure_25.png, id=357, 586.8324pt x 442.2924pt>
 File: figure_25.png Graphic file (type png)
  <use figure_25.png>
-Package pdftex.def Info: figure_25.png used on input line 651.
+Package pdftex.def Info: figure_25.png used on input line 694.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
 
-<figure_35.png, id=353, 586.8324pt x 442.2924pt>
+<figure_35.png, id=358, 586.8324pt x 442.2924pt>
 File: figure_35.png Graphic file (type png)
  <use figure_35.png>
-Package pdftex.def Info: figure_35.png used on input line 653.
+Package pdftex.def Info: figure_35.png used on input line 696.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
  [25 <./figure_16.png> <./figure_25.png>]
-<figure_44.png, id=360, 586.8324pt x 442.2924pt>
+<figure_44.png, id=366, 586.8324pt x 442.2924pt>
 File: figure_44.png Graphic file (type png)
  <use figure_44.png>
-Package pdftex.def Info: figure_44.png used on input line 655.
+Package pdftex.def Info: figure_44.png used on input line 698.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
 
-<figure_53.png, id=361, 586.8324pt x 442.2924pt>
+<figure_53.png, id=367, 586.8324pt x 442.2924pt>
 File: figure_53.png Graphic file (type png)
  <use figure_53.png>
-Package pdftex.def Info: figure_53.png used on input line 657.
+Package pdftex.def Info: figure_53.png used on input line 700.
 (pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
- [26 <./figure_35.png> <./figure_44.png>] [27 <./figure_53.png>] [28
+ [26 <./figure_35.png> <./figure_44.png>]
+LaTeX Font Info:    Font shape `TS1/pcr/m/it' in size <9> not available
+(Font)              Font shape `TS1/pcr/m/sl' tried instead on input line 736.
+ [27 <./figure_53.png>] [28]
+<figure_17.png, id=384, 586.8324pt x 442.2924pt>
+File: figure_17.png Graphic file (type png)
+ <use figure_17.png>
+Package pdftex.def Info: figure_17.png used on input line 780.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+
+<figure_26.png, id=385, 586.8324pt x 442.2924pt>
+File: figure_26.png Graphic file (type png)
+ <use figure_26.png>
+Package pdftex.def Info: figure_26.png used on input line 782.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+
+<figure_36.png, id=386, 586.8324pt x 442.2924pt>
+File: figure_36.png Graphic file (type png)
+ <use figure_36.png>
+Package pdftex.def Info: figure_36.png used on input line 784.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ [29 <./figure_17.png> <./figure_26.png>]
+<figure_45.png, id=393, 586.8324pt x 442.2924pt>
+File: figure_45.png Graphic file (type png)
+ <use figure_45.png>
+Package pdftex.def Info: figure_45.png used on input line 786.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ [30 <./figure_36.png> <./figure_45.png>]
+<figure_54.png, id=400, 586.8324pt x 442.2924pt>
+File: figure_54.png Graphic file (type png)
+ <use figure_54.png>
+Package pdftex.def Info: figure_54.png used on input line 804.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+
+<figure_62.png, id=401, 586.8324pt x 442.2924pt>
+File: figure_62.png Graphic file (type png)
+ <use figure_62.png>
+Package pdftex.def Info: figure_62.png used on input line 806.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ [31 <./figure_54.png> <./figure_62.png>]
+<figure_7.png, id=408, 1686.0591pt x 919.9971pt>
+File: figure_7.png Graphic file (type png)
+ <use figure_7.png>
+Package pdftex.def Info: figure_7.png used on input line 834.
+(pdftex.def)             Requested size: 301.12305pt x 164.30083pt.
+
+<figure_8.png, id=409, 586.8324pt x 442.2924pt>
+File: figure_8.png Graphic file (type png)
+ <use figure_8.png>
+Package pdftex.def Info: figure_8.png used on input line 836.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+
+<figure_9.png, id=410, 586.8324pt x 442.2924pt>
+File: figure_9.png Graphic file (type png)
+ <use figure_9.png>
+Package pdftex.def Info: figure_9.png used on input line 838.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ [32 <./figure_7.png> <./figure_8.png>] <figure_10.png, id=417, 586.8324pt x 44
+2.2924pt>
+File: figure_10.png Graphic file (type png)
+
+<use figure_10.png>
+Package pdftex.def Info: figure_10.png used on input line 840.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ <figure_111.png, id=418, 586.8324pt x 442.2924pt>
+File: figure_111.png Graphic file (type png)
+
+<use figure_111.png>
+Package pdftex.def Info: figure_111.png used on input line 855.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ [33 <./figure_9.png> <./figure_10.png>]
+<figure_121.png, id=426, 586.8324pt x 442.2924pt>
+File: figure_121.png Graphic file (type png)
+ <use figure_121.png>
+Package pdftex.def Info: figure_121.png used on input line 857.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+
+<figure_131.png, id=427, 586.8324pt x 442.2924pt>
+File: figure_131.png Graphic file (type png)
+ <use figure_131.png>
+Package pdftex.def Info: figure_131.png used on input line 859.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ [34 <./figure_111.png> <./figure_121.png>]
+<figure_141.png, id=434, 586.8324pt x 442.2924pt>
+File: figure_141.png Graphic file (type png)
+ <use figure_141.png>
+Package pdftex.def Info: figure_141.png used on input line 861.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ [35 <./figure_131.png> <./figure_141.png>]
+<figure_151.png, id=441, 586.8324pt x 442.2924pt>
+File: figure_151.png Graphic file (type png)
+ <use figure_151.png>
+Package pdftex.def Info: figure_151.png used on input line 897.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+
+<figure_161.png, id=442, 586.8324pt x 442.2924pt>
+File: figure_161.png Graphic file (type png)
+ <use figure_161.png>
+Package pdftex.def Info: figure_161.png used on input line 899.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ [36 <./figure_151.png>] <figure_171.png, id=448, 586.8324pt x 442.2924pt>
+File: figure_171.png Graphic file (type png)
+
+<use figure_171.png>
+Package pdftex.def Info: figure_171.png used on input line 901.
+(pdftex.def)             Requested size: 301.12305pt x 226.95639pt.
+ [37 <./figure_161.png> <./figure_171.png>] [38
 
 ]
 Chapter 3.
 LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <10> not available
 (Font)              Font shape `T1/pcr/b/n' tried instead on input line 1.
-[29] [30]
+
+Underfull \hbox (badness 10000) in paragraph at lines 938--940
+[]\T1/ptm/m/it/10 minoptions\T1/ptm/m/n/10 , a dic-tio-nary with ad-di-tional o
+p-tions for the min-i-miza-tion pro-ce-dure, as in the
+ []
+
+[39] [40]
+Underfull \hbox (badness 10000) in paragraph at lines 1100--1103
+[]\T1/ptm/m/it/10 minoptions\T1/ptm/m/n/10 , a dic-tio-nary with ad-di-tional o
+p-tions for the min-i-miza-tion pro-ce-dure, as in the
+ []
+
+[41]
 LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <10> not available
 (Font)              Font shape `T1/pcr/m/sl' tried instead on input line 1.
- [31] [32] [33] [34] [35] [36] [37] [38]
-Underfull \hbox (badness 10000) in paragraph at lines 1789--1789
+ [42] [43]
+Underfull \hbox (badness 10000) in paragraph at lines 1428--1430
+[]\T1/ptm/m/it/10 minoptions\T1/ptm/m/n/10 , a dic-tio-nary with ad-di-tional o
+p-tions for the min-i-miza-tion pro-ce-dure, as in the
+ []
+
+[44]
+Underfull \hbox (badness 10000) in paragraph at lines 1497--1500
+[]\T1/ptm/m/it/10 minoptions\T1/ptm/m/n/10 , a dic-tio-nary with ad-di-tional o
+p-tions for the min-i-miza-tion pro-ce-dure, as in the
+ []
+
+[45] [46]
+Underfull \hbox (badness 10000) in paragraph at lines 1742--1742
 []\T1/ptm/m/it/10 celldmsx\T1/ptm/m/n/10 , \T1/ptm/m/it/10 nmesh\T1/ptm/m/n/10 
 , \T1/ptm/m/it/10 fit-type='quadratic'\T1/ptm/m/n/10 ,
  []
 
-[39] [40] [41] [42] [43] [44
+[47] [48] [49] [50] [51] [52
 
 ]
 Chapter 4.
-[45] [46
+[53] [54
 
-] [47
+] [55
 
 
-] (./pyqha.ind [48
+] (./pyqha.ind [56
 
 
 ]
@@ -1269,33 +1417,33 @@ Underfull \hbox (badness 10000) in paragraph at lines 14--15
 []\T1/ptm/m/n/10 compute_heat_capacity() (in mod-ule
  []
 
-[49
+[57
 
-] [50
+] [58
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2401.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 2401.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2355.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 2355.
  (./pyqha.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2401.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2401.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2355.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2355.
 
 Package rerunfilecheck Info: File `pyqha.out' has not changed.
-(rerunfilecheck)             Checksum: D8930EF8BCBD33B4A57A03315677131B;4238.
+(rerunfilecheck)             Checksum: 13E4E5F2C9A022FF967C5EA2D14F45FD;4381.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2401.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2355.
  ) 
 Here is how much of TeX's memory you used:
- 13507 strings out of 495028
- 185546 string characters out of 6181497
- 368614 words of memory out of 5000000
- 16187 multiletter control sequences out of 15000+600000
- 69083 words of font info for 97 fonts, out of 8000000 for 9000
+ 13606 strings out of 495028
+ 187137 string characters out of 6181497
+ 365751 words of memory out of 5000000
+ 16259 multiletter control sequences out of 15000+600000
+ 69395 words of font info for 98 fonts, out of 8000000 for 9000
  15 hyphenation exceptions out of 8191
- 36i,15n,45p,968b,607s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,15n,45p,968b,469s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/
@@ -1313,10 +1461,10 @@ tic/uhvbo8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.
 pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share
 /texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-
 dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on pyqha.pdf (54 pages, 1408092 bytes).
+Output written on pyqha.pdf (62 pages, 2067231 bytes).
 PDF statistics:
- 783 PDF objects out of 1000 (max. 8388607)
- 637 compressed objects within 7 object streams
- 174 named destinations out of 1000 (max. 500000)
- 387 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 859 PDF objects out of 1000 (max. 8388607)
+ 671 compressed objects within 7 object streams
+ 183 named destinations out of 1000 (max. 500000)
+ 480 words of extra memory for PDF output out of 10000 (max. 10000000)
 

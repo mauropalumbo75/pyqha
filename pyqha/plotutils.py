@@ -14,17 +14,21 @@ import matplotlib.pyplot as plt
     
 import numpy as np
 
+
 def simple_plot_xy(x,y,xlabel="",ylabel=""):
     """
     This function generates a simple xy plot with matplotlib.
     """
-        
-    plt.plot(x, y, 'r')
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)  # create an axes object in the figure
+    ax.plot(x, y, 'r')
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
     plt.show()
-
     
+    return fig
+
+   
 def multiple_plot_xy(x,y,xlabel="",ylabel="",labels=""):
     """
     This function generates a simple xy plot with matplotlib overlapping several
@@ -38,26 +42,30 @@ def multiple_plot_xy(x,y,xlabel="",ylabel="",labels=""):
     
     colors = ['k','r','b','g','c','m','y']
     
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)  # create an axes object in the figure
     if (labels==""):     
         try:    # try if there are multiple data on x axis
             for i in range(0,len(y[0,:])):
-                plt.plot(x[:,i], y[:,i], colors[i])
+                ax.plot(x[:,i], y[:,i], colors[i])
         except: # if not use a single x axis
             for i in range(0,len(y[0,:])):
-                plt.plot(x, y[:,i], colors[i])
+                ax.plot(x, y[:,i], colors[i])
     else:
         try:    # try if there are multiple data on x axis
             for i in range(0,len(y[0,:])):
-                plt.plot(x[:,i], y[:,i], colors[i],label=labels[i])
+                ax.plot(x[:,i], y[:,i], colors[i],label=labels[i])
         except: # if not use a single x axis
             for i in range(0,len(y[0,:])):
-                plt.plot(x, y[:,i], colors[i],label=labels[i])       
-        plt.legend() 
+                ax.plot(x, y[:,i], colors[i],label=labels[i])       
+        ax.legend() 
         
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
 
     plt.show()
+    
+    return fig
     
 
 def plot_EV(V,E,a=None,labely="Etot"):
@@ -68,15 +76,19 @@ def plot_EV(V,E,a=None,labely="Etot"):
     
     from eos import calculate_fitted_points
     
-    plt.plot(V, E, 'o', label=labely+" data", markersize=10)
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)  # create an axes object in the figure
+    
+    ax.plot(V, E, 'o', label=labely+" data", markersize=10)
     if (a!=None):
         Vdense, Edensefitted = calculate_fitted_points(V,a)
-        plt.plot(Vdense, Edensefitted, 'r', label='Fitted EOS')
-    plt.legend()
-    plt.xlabel('V (a.u.^3)')
-    plt.ylabel('E (Ry)')
+        ax.plot(Vdense, Edensefitted, 'r', label='Fitted EOS')
+    ax.legend()
+    ax.set_xlabel('V (a.u.^3)')
+    ax.set_ylabel('E (Ry)')
     plt.show()
-    
+ 
+    return fig
     
     
 def plot_Etot(celldmsx,Ex,n,nmesh=(50,50,50),fittype="quadratic",ibrav=4,a=None):
@@ -92,8 +104,9 @@ def plot_Etot(celldmsx,Ex,n,nmesh=(50,50,50),fittype="quadratic",ibrav=4,a=None)
     if (Ex==None) and (a==None):
         return
     
+    fig = plt.figure() 
     if (ibrav==4):  # hex case
-        fig = plt.figure() 
+
         ax = fig.gca(projection='3d')       
         
         if (Ex!=None):
@@ -103,9 +116,9 @@ def plot_Etot(celldmsx,Ex,n,nmesh=(50,50,50),fittype="quadratic",ibrav=4,a=None)
             Y = np.zeros((na,nc))
             Z = np.zeros((na,nc))
 
-            for i in range(0,na):
-                for j in range(0,nc): 
-                    index = i*na+j
+            for j in range(0,nc):
+                for i in range(0,na): 
+                    index = j*na+i
                     X[i,j] = celldmsx[index,0]
                     Y[i,j] = celldmsx[index,2]
                     Z[i,j] = Ex[index]
@@ -140,7 +153,7 @@ def plot_Etot(celldmsx,Ex,n,nmesh=(50,50,50),fittype="quadratic",ibrav=4,a=None)
         ax.set_zlabel("Etot (Ry)")
         plt.show()
     
-    return
+    return fig
 
 
 def plot_Etot_contour(celldmsx,nmesh=(50,50,50),fittype="quadratic",ibrav=4,a=None):
@@ -153,7 +166,10 @@ def plot_Etot_contour(celldmsx,nmesh=(50,50,50),fittype="quadratic",ibrav=4,a=No
     
     if a==None:
         return
-  
+    
+    fig = plt.figure() 
+    ax = fig.add_subplot(1, 1, 1)  # create an axes object in the figure
+    
     if (ibrav==4):
         celldmsxdense, Edensefitted = calculate_fitted_points_anis(celldmsx,nmesh,fittype,ibrav,a)
         Xd = np.zeros((nmesh[0],nmesh[2]))
@@ -166,13 +182,11 @@ def plot_Etot_contour(celldmsx,nmesh=(50,50,50),fittype="quadratic",ibrav=4,a=No
                 Yd[i,j] = celldmsxdense[index,2]
                 Zd[i,j] = Edensefitted[index]
 
-        plt.figure()
-        CS = plt.contour(Xd, Yd, Zd)
+        CS = ax.contour(Xd, Yd, Zd)
         plt.clabel(CS, inline=1, fontsize=10)
-        #plt.title('Simplest default with labels')
         
         CS.ax.set_xlabel("a (a.u.)")
         CS.ax.set_ylabel("c (a.u.)")
         plt.show()
     
-    return
+    return fig

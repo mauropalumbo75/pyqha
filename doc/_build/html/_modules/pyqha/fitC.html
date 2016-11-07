@@ -72,8 +72,10 @@
           <div class="body" role="main">
             
   <h1>Source code for pyqha.fitC</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="c1">#encoding: UTF-8</span>
+<span></span><span class="c1">#encoding: UTF-8</span>
+<span class="c1"># Copyright (C) 2016 Mauro Palumbo</span>
+<span class="c1"># This file is distributed under the terms of the # MIT License. </span>
+<span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -186,6 +188,46 @@
     <span class="k">return</span> <span class="n">T</span><span class="p">,</span> <span class="n">CT</span></div>
 
 
+<span class="c1">################################################################################</span>
+
+<div class="viewcode-block" id="fitS"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitC.fitS">[docs]</a><span class="k">def</span> <span class="nf">fitS</span><span class="p">(</span><span class="n">inputfileEtot</span><span class="p">,</span> <span class="n">inputpathCx</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">typeSx</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An auxiliary function for fitting the elastic compliances elements over a</span>
+<span class="sd">    grid of lattice parameters, i.e. over different geometries.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Read the energies (this is necessary to read the celldmsx)</span>
+    <span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span> <span class="o">=</span> <span class="n">read_Etot</span><span class="p">(</span><span class="n">inputfileEtot</span><span class="p">)</span>
+
+    <span class="n">ngeo</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ex</span><span class="p">)</span>
+    <span class="n">Cx</span><span class="p">,</span> <span class="n">Sx</span> <span class="o">=</span> <span class="n">read_elastic_constants_geo</span><span class="p">(</span><span class="n">inputpathCx</span><span class="p">,</span> <span class="n">ngeo</span><span class="p">)</span>    
+    
+    <span class="c1"># This function works for both C and S, here I use it for S </span>
+    <span class="n">Sxx</span> <span class="o">=</span> <span class="n">rearrange_Cx</span><span class="p">(</span><span class="n">Sx</span><span class="p">,</span><span class="n">ngeo</span><span class="p">)</span>
+    <span class="n">write_qha_C</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">Sxx</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">inputpathCx</span><span class="p">)</span>	<span class="c1"># Write the S as a function of T for reference</span>
+    
+    <span class="n">aS</span><span class="p">,</span> <span class="n">chiS</span> <span class="o">=</span> <span class="n">fitCxx</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">Sxx</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">typeSx</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">aS</span><span class="p">,</span> <span class="n">chiS</span></div>
+
+
+<div class="viewcode-block" id="fS"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitC.fS">[docs]</a><span class="k">def</span> <span class="nf">fS</span><span class="p">(</span><span class="n">aS</span><span class="p">,</span><span class="n">mintemp</span><span class="p">,</span><span class="n">typeCx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An auxiliary function returning the elastic compliances 6x6 tensor at the</span>
+<span class="sd">    set of lattice parameters given in input as mintemp. These should be the</span>
+<span class="sd">    lattice parameters at a given temperature obtained from the free energy</span>
+<span class="sd">    minimization, so that S(T) can be obtained.</span>
+<span class="sd">    Before calling this function, the polynomial coefficients resulting from </span>
+<span class="sd">    fitting the elastic compliances over a grid of lattice parameters, i.e. over</span>
+<span class="sd">    different geometries, must be obtained and passed as input in aS. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+       <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+           <span class="k">if</span> <span class="n">typeCx</span><span class="o">==</span><span class="s2">&quot;quadratic&quot;</span><span class="p">:</span>
+               <span class="n">S</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquadratic</span><span class="p">(</span><span class="n">mintemp</span><span class="p">,</span><span class="n">aS</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+           <span class="k">elif</span> <span class="n">typeCx</span><span class="o">==</span><span class="s2">&quot;quartic&quot;</span><span class="p">:</span>
+               <span class="n">S</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">fquartic</span><span class="p">(</span><span class="n">mintemp</span><span class="p">,</span><span class="n">aS</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>  
+    <span class="k">return</span> <span class="n">S</span></div>
 </pre></div>
 
           </div>

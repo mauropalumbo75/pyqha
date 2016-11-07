@@ -72,8 +72,10 @@
           <div class="body" role="main">
             
   <h1>Source code for pyqha.fitEtot</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="c1">#encoding: UTF-8</span>
+<span></span><span class="c1">#encoding: UTF-8</span>
+<span class="c1"># Copyright (C) 2016 Mauro Palumbo</span>
+<span class="c1"># This file is distributed under the terms of the # MIT License. </span>
+<span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -100,7 +102,7 @@
     <span class="k">return</span> <span class="n">V</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">chi</span></div>
     
 
-<div class="viewcode-block" id="fitEtot"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitEtot.fitEtot">[docs]</a><span class="k">def</span> <span class="nf">fitEtot</span><span class="p">(</span><span class="n">fin</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">fittype</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span><span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="fitEtot"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitEtot.fitEtot">[docs]</a><span class="k">def</span> <span class="nf">fitEtot</span><span class="p">(</span><span class="n">fin</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">fittype</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span><span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;BFGS&quot;</span><span class="p">,</span><span class="n">minoptions</span><span class="o">=</span><span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function reads the file *fin* containing the energies as a function</span>
 <span class="sd">    of the lattice parameters :math:`E(a,b,c)` and fits them with a quartic (*fittype=&quot;quartic&quot;*) or </span>
@@ -108,13 +110,24 @@
 <span class="sd">    and the corresponding lattice parameters. </span>
 <span class="sd">    ibrav is the Bravais lattice, guess is an initial guess for the minimization.</span>
 <span class="sd">    Depending on ibrav, a different number of lattice parameters is considered.</span>
-<span class="sd">    It prints fitting results on the screen (which can be redericted to *stdout*)</span>
+<span class="sd">    It prints fitting results on the screen (which can be redirected to *stdout*)</span>
 <span class="sd">    if *out=True*.</span>
 <span class="sd">    It returns the lattice parameters and energies as in the input file *fin*,</span>
 <span class="sd">    the fitted coefficients of the polynomial, the corresponding :math:`\chi^2`,</span>
 <span class="sd">    the lattice parameters at the minimum and the minimun energy.</span>
 <span class="sd">    </span>
 <span class="sd">    Note: for cubic systems use fitEtotV instead.</span>
+<span class="sd">    </span>
+<span class="sd">    Advanced input parameters:</span>
+<span class="sd">    </span>
+<span class="sd">    *guess*, an initial guess for the minimization. It is a 6 elements list </span>
+<span class="sd">    [a,b,c,0,0,0]. </span>
+<span class="sd">    </span>
+<span class="sd">    *method*, the method to be used in the minimization procedure, as in the</span>
+<span class="sd">    scipy.optimize.minimize. See its documentation for details.</span>
+<span class="sd">    </span>
+<span class="sd">    *minoptions*, a dictionary with additional options for the minimization </span>
+<span class="sd">    procedure, as in the scipy.optimize.minimize. See its documentation for details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="c1"># Read the energies </span>
@@ -123,7 +136,7 @@
     <span class="c1"># Fit and find the minimun at 0 K</span>
     <span class="n">a0</span><span class="p">,</span> <span class="n">chia0</span> <span class="o">=</span> <span class="n">fit_anis</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">fittype</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">chia0</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
-        <span class="n">mincelldms</span><span class="p">,</span> <span class="n">fmin</span> <span class="o">=</span> <span class="n">find_min</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">fittype</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">)</span>
+        <span class="n">mincelldms</span><span class="p">,</span> <span class="n">fmin</span> <span class="o">=</span> <span class="n">find_min</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">fittype</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;BFGS&quot;</span><span class="p">,</span><span class="n">minoptions</span><span class="o">=</span><span class="p">{})</span>
         
     <span class="k">return</span> <span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">chia0</span><span class="p">,</span> <span class="n">mincelldms</span><span class="p">,</span> <span class="n">fmin</span> </div>
 

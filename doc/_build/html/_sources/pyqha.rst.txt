@@ -72,12 +72,20 @@ pyqha.fitFvib module
     :undoc-members:
     :show-inheritance:
 
+pyqha.alphagruneisenp module
+---------------------------------
+
+.. automodule:: pyqha.alphagruneisenp
+    :members:
+    :undoc-members: 
+    :show-inheritance:
+
 pyqha.fitfreqgrun module
 ------------------------
 
 .. automodule:: pyqha.fitfreqgrun
     :members:
-    :undoc-members:
+    :undoc-members: read_freq_old, read_freq_geo_old
     :show-inheritance:
 
 pyqha.fitutils module
@@ -88,13 +96,14 @@ pyqha.fitutils module
     :undoc-members:
     :show-inheritance:
 
-pyqha.gruneisen1D module
-------------------------
+..
+   pyqha.gruneisen1D module
+   ------------------------
 
-.. automodule:: pyqha.gruneisen1D
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   .. automodule:: pyqha.gruneisen1D
+       :members:
+       :undoc-members:
+       :show-inheritance:
 
 pyqha.minutils module
 ---------------------

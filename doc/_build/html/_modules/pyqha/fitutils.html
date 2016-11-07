@@ -72,8 +72,10 @@
           <div class="body" role="main">
             
   <h1>Source code for pyqha.fitutils</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-
+<span></span><span class="c1">#encoding: UTF-8</span>
+<span class="c1"># Copyright (C) 2016 Mauro Palumbo</span>
+<span class="c1"># This file is distributed under the terms of the # MIT License. </span>
+<span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="k">import</span> <span class="n">minimize</span>
 
@@ -233,115 +235,7 @@
 <span class="sd">    The most general fitting multidimensional quadratic polynomial for a triclinic</span>
 <span class="sd">    system is:</span>
 
-<span class="sd">    a1 + a2  x1 + a3  x1^2 + a4  x1^3 + a5 x1^4        </span>
-<span class="sd">      + a6  x2 + a7  x2^2 + a8  x2^3 + a9 x2^4       </span>
-<span class="sd">      + a10 x1*x2 + a11 x1*x2^2 + a12  x1*x2^3</span>
-<span class="sd">                           + a13 x1^2*x2 + a14  x1^2*x2^2 </span>
-<span class="sd">                           + a15 x1^3*x2 </span>
-<span class="sd">      + a16 x3 + a17 x3^2 + a18 x3^3 + a19 x3^4       </span>
-<span class="sd">      + a20 x1*x3 + a21 x1*x3^2 + a22  x1*x3^3</span>
-<span class="sd">                           + a23 x1^2*x3 + a24  x1^2*x3^2 </span>
-<span class="sd">                           + a25 x1^3*x3 </span>
-<span class="sd">      + a26 x2*x3 + a27 x2*x3^2 + a28  x2*x3^3</span>
-<span class="sd">                           + a29 x2^2*x3 + a30  x2^2*x3^2 </span>
-<span class="sd">                           + a31 x2^3*x3 </span>
-<span class="sd">      + a32 x1 * x2 * x3 + a33 x1 * x2^2 * x3</span>
-<span class="sd">      + a34 x1 * x2 * x3^2 + a35 x1^2 * x2 * x3</span>
-<span class="sd">      + a36 x4 + a37 x4^2 + a38 x4^3 + a39 x4^4       </span>
-<span class="sd">      + a40 x1*x4 + a41 x1*x4^2 + a42  x1*x4^3</span>
-<span class="sd">                           + a43 x1^2*x4 + a44  x1^2*x4^2 </span>
-<span class="sd">                           + a45 x1^3*x4 </span>
-<span class="sd">      + a46 x2*x4 + a47 x2*x4^2 + a48  x2*x4^3</span>
-<span class="sd">                           + a49 x2^2*x4 + a50  x2^2*x4^2 </span>
-<span class="sd">                           + a51 x2^3*x4 </span>
-<span class="sd">      + a52 x3*x4 + a53 x3*x4^2 + a54  x3*x4^3</span>
-<span class="sd">                           + a55 x3^2*x4 + a56  x3^2*x4^2 </span>
-<span class="sd">                           + a57 x3^3*x4 </span>
-<span class="sd">      + a58 x1 * x2 * x4 + a59 x1 * x2^2 * x4</span>
-<span class="sd">      + a60 x1 * x2 * x4^2 + a61 x1^2 * x2 * x4</span>
-<span class="sd">      + a62 x1 * x3 * x4 + a63 x1 * x3^2 * x4</span>
-<span class="sd">      + a64 x1 * x3 * x4^2 + a65 x1^2 * x3 * x4</span>
-<span class="sd">      + a66 x2 * x3 * x4 + a67 x2 * x3^2 * x4</span>
-<span class="sd">      + a68 x2 * x3 * x4^2 + a69 x2^2 * x3 * x4</span>
-<span class="sd">      + a70 x1 * x2 * x3 * x4</span>
-<span class="sd">      + a71 x5 + a72 x5^2 + a73 x5^3 + a74 x5^4       </span>
-<span class="sd">      + a75 x1*x5 + a76 x1*x5^2 + a77 x1*x5^3</span>
-<span class="sd">                           + a78 x1^2*x5 + a79 x1^2*x5^2 </span>
-<span class="sd">                           + a80 x1^3*x5 </span>
-<span class="sd">      + a81 x2*x5 + a82 x2*x5^2 + a83 x2*x5^3</span>
-<span class="sd">                           + a84 x2^2*x5 + a85 x2^2*x5^2 </span>
-<span class="sd">                           + a86 x2^3*x5 </span>
-<span class="sd">      + a87 x3*x5 + a88 x3*x5^2 + a89 x3*x5^3</span>
-<span class="sd">                           + a90 x3^2*x5 + a91 x3^2*x5^2 </span>
-<span class="sd">                           + a92 x3^3*x5 </span>
-<span class="sd">      + a93 x4*x5 + a94 x4*x5^2 + a95 x4*x5^3</span>
-<span class="sd">                           + a96 x4^2*x5 + a97 x4^2*x5^2 </span>
-<span class="sd">                           + a98 x4^3*x5 </span>
-<span class="sd">      + a99  x1 * x2 * x5 + a100 x1 * x2^2 * x5</span>
-<span class="sd">      + a101 x1 * x2 * x5^2 + a102 x1^2 * x2 * x5</span>
-<span class="sd">      + a103 x1 * x3 * x5 + a104 x1 * x3^2 * x5</span>
-<span class="sd">      + a105 x1 * x3 * x5^2 + a106 x1^2 * x3 * x5</span>
-<span class="sd">      + a107 x1 * x4 * x5 + a108 x1 * x4^2 * x5</span>
-<span class="sd">      + a109 x1 * x4 * x5^2 + a110 x1^2 * x4 * x5</span>
-<span class="sd">      + a111 x2 * x3 * x5 + a112 x2 * x3^2 * x5</span>
-<span class="sd">      + a113 x2 * x3 * x5^2 + a114 x2^2 * x3 * x5</span>
-<span class="sd">      + a115 x2 * x4 * x5 + a116 x2 * x4^2 * x5</span>
-<span class="sd">      + a117 x2 * x4 * x5^2 + a118 x2^2 * x4 * x5</span>
-<span class="sd">      + a119 x3 * x4 * x5 + a120 x3 * x4^2 * x5</span>
-<span class="sd">      + a121 x3 * x4 * x5^2 + a122 x3^2 * x4 * x5</span>
-<span class="sd">      + a123 x1 * x2 * x3 * x5</span>
-<span class="sd">      + a124 x1 * x2 * x4 * x5</span>
-<span class="sd">      + a125 x1 * x3 * x4 * x5</span>
-<span class="sd">      + a126 x2 * x3 * x4 * x5</span>
-<span class="sd">      + a127 x6 + a128 x6^2 + a129 x6^3 + a130 x6^4   </span>
-<span class="sd">      + a131 x1*x6 + a132 x1*x6^2 + a133 x1*x6^3</span>
-<span class="sd">                         + a134 x1^2*x6 + a135 x1^2*x6^2 </span>
-<span class="sd">                         + a136 x1^3*x6 </span>
-<span class="sd">      + a137 x2*x6 + a138 x2*x6^2 + a139 x2*x6^3</span>
-<span class="sd">                         + a140 x2^2*x6 + a141 x2^2*x6^2 </span>
-<span class="sd">                         + a142 x2^3*x6 </span>
-<span class="sd">      + a143 x3*x6 + a144 x3*x6^2 + a145 x3*x6^3</span>
-<span class="sd">                         + a146 x3^2*x6 + a147 x3^2*x6^2 </span>
-<span class="sd">                         + a148 x3^3*x6 </span>
-<span class="sd">      + a149 x4*x6 + a150 x4*x6^2 + a151 x4*x6^3</span>
-<span class="sd">                         + a152 x4^2*x6 + a153 x4^2*x6^2 </span>
-<span class="sd">                         + a154 x4^3*x6 </span>
-<span class="sd">      + a155 x5*x6 + a156 x5*x6^2 + a157 x5*x6^3</span>
-<span class="sd">                         + a158 x5^2*x6 + a159 x5^2*x6^2 </span>
-<span class="sd">                         + a160 x5^3*x6 </span>
-<span class="sd">      + a161 x1 * x2 * x6 + a162 x1 * x2^2 * x6</span>
-<span class="sd">      + a163 x1 * x2 * x6^2 + a164 x1^2 * x2 * x6</span>
-<span class="sd">      + a165 x1 * x3 * x6 + a166 x1 * x3^2 * x6</span>
-<span class="sd">      + a167 x1 * x3 * x6^2 + a168 x1^2 * x3 * x6</span>
-<span class="sd">      + a169 x1 * x4 * x6 + a170 x1 * x4^2 * x6</span>
-<span class="sd">      + a171 x1 * x4 * x6^2 + a172 x1^2 * x4 * x6</span>
-<span class="sd">      + a173 x1 * x5 * x6 + a174 x1 * x5^2 * x6</span>
-<span class="sd">      + a175 x1 * x5 * x6^2 + a176 x1^2 * x5 * x6</span>
-<span class="sd">      + a177 x2 * x3 * x6 + a178 x2 * x3^2 * x6</span>
-<span class="sd">      + a179 x2 * x3 * x6^2 + a180 x2^2 * x3 * x6</span>
-<span class="sd">      + a181 x2 * x4 * x6 + a182 x2 * x4^2 * x6</span>
-<span class="sd">      + a183 x2 * x4 * x6^2 + a184 x2^2 * x4 * x6</span>
-<span class="sd">      + a185 x2 * x5 * x6 + a186 x2 * x5^2 * x6</span>
-<span class="sd">      + a187 x2 * x5 * x6^2 + a188 x2^2 * x5 * x6</span>
-<span class="sd">      + a189 x3 * x4 * x6 + a190 x3 * x4^2 * x6</span>
-<span class="sd">      + a191 x3 * x4 * x6^2 + a192 x3^2 * x4 * x6</span>
-<span class="sd">      + a193 x3 * x5 * x6 + a194 x3 * x5^2 * x6</span>
-<span class="sd">      + a195 x3 * x5 * x6^2 + a196 x3^2 * x5 * x6</span>
-<span class="sd">      + a197 x4 * x5 * x6 + a198 x4 * x5^2 * x6</span>
-<span class="sd">      + a199 x4 * x5 * x6^2 + a200 x4^2 * x5 * x6</span>
-<span class="sd">      + a201 x1 * x2 * x3 * x6</span>
-<span class="sd">      + a202 x1 * x2 * x4 * x6</span>
-<span class="sd">      + a203 x1 * x2 * x5 * x6</span>
-<span class="sd">      + a204 x1 * x3 * x4 * x6</span>
-<span class="sd">      + a205 x1 * x3 * x5 * x6</span>
-<span class="sd">      + a206 x1 * x4 * x5 * x6</span>
-<span class="sd">      + a207 x2 * x3 * x4 * x6</span>
-<span class="sd">      + a208 x2 * x3 * x5 * x6</span>
-<span class="sd">      + a209 x2 * x4 * x5 * x6</span>
-<span class="sd">      + a210 x3 * x4 * x5 * x6</span>
-
 <span class="sd">    ONLY THE HEXAGONAL CASE IS IMPLEMENTED, more to be done</span>
-
 
 <span class="sd">    The input variable x is a matrix ngeo*6, where</span>
 <span class="sd">    x[:,0] is the set of a values  </span>
@@ -385,7 +279,7 @@
 <div class="viewcode-block" id="expand_quadratic_to_quartic"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitutils.expand_quadratic_to_quartic">[docs]</a><span class="k">def</span> <span class="nf">expand_quadratic_to_quartic</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function gets a vector of coefficients from a quadratic fit and turns it</span>
-<span class="sd">    into a vector of coeffients as from a quartic fit (extra coeffients are set to zero)</span>
+<span class="sd">    into a vector of coeffients as from a quartic fit (extra coeffients are set to zero).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">b</span><span class="o">=</span><span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> 
     <span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span>

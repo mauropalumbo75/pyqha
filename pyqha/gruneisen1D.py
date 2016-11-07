@@ -3,17 +3,19 @@
 # This file is distributed under the terms of the # MIT License. 
 # See the file `License' in the root directory of the present distribution.
 
-################################################################################
-# 
-# This file contains some functions to compute the Gruneisein parameters
-# using 1-dimensional polynomials along each necessary direction according to the
-# unit cell of the system. For example, for hexagonal systems it is along a and c
-# directions where a and c are the vectors of the hex cell.
-# 
-# The results obtained in this way are less accurate than performing the fit
-# using a multi-dimensional polynomial over the whole grid of lattice parameters.
-# The latter is thus preferable (implemented in fitfreqgrun.py).
-# Note: the functions in this file would need to be tested and possibly improved
+"""
+Not yet finished.
+
+This file contains some functions to compute the Gruneisein parameters
+using 1-dimensional polynomials along each necessary direction according to the
+unit cell of the system. For example, for hexagonal systems it is along a and c
+directions where a and c are the vectors of the hex cell.
+ 
+The results obtained in this way are less accurate than performing the fit
+using a multi-dimensional polynomial over the whole grid of lattice parameters.
+The latter is thus preferable (implemented in fitfreqgrun.py).
+Note: the functions in this file would need to be tested and possibly improved
+"""
 
 import numpy as np
 import time

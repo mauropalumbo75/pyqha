@@ -24,6 +24,8 @@ The tutorial is based on the following examples:
 +---------------+------------------------------------------------------------------------------------------------------------------------------------------+
 | 7             | A quasi-static calculation for the elastic tensor of an hexagonal (anisotropic) system  using a quadratic polynomial                     |
 +---------------+------------------------------------------------------------------------------------------------------------------------------------------+
+| 8             | Numerical issues in quasi-harmonic calculations                     									   |
++---------------+------------------------------------------------------------------------------------------------------------------------------------------+
 
 Several simplified plotting functions are available in :py:mod:`pyqha` and are used in the following tutorial to show what you can plot.
 Note however that all plotting functions need the matplotlib library, which must be available on your system and can be used to further taylor your plot. 
@@ -188,7 +190,7 @@ If everything went well,  you should get the following plots:
    :width: 400
 
 ================================================
-Computing quasi-static elastic constant 
+Computing quasi-static elastic constants 
 ================================================
 
 The following code example shows how to do a calculation of a quasi-static elastic tensor as a function of temperature for an hexagonal system. This kind of calculation requires that a quasi-harmonic calculation has already be done (as in example 6). Besides, the elastic constants for different :math:`(a,c)` values must be available. To compute these elastic constants you can use for example the thermo_pw code [#thermo_pw]_.
@@ -208,6 +210,112 @@ The following code example shows how to do a calculation of a quasi-static elast
    :width: 400
 .. image:: ../examples/example7/figure_5.png
    :width: 400
+
+================================================
+Numerical issues 
+================================================
+
+It is important to realize that the practical application of the quasi-harmonic approximation relies on fitting and minimizing the free energy as a function of volume, lattice parameters and temperature, ultimately on numerical methods. :py:mod:`pyqha` uses numpy and scipy functions to this aim. The user must select the best methods/options for the specific system under investigation and it is always better to test, test, test...
+
+The following example shows how different methods/options may lead to different sets of results. Sometimes the differences are within the target numerical precision. Sometimes the results are simply wrong because of an improper choice of the methods/options.
+
+
+First, lets compute some example results for a hypotetical hexagonal system, using total energy and phonon DOS for different values of :math:`(a,c)` lattice parameters. We use all default values of the function :py:func:`fitFvib`, i.e. a quadratic polynomial for fitting the total energies, a quadratic polynomial for fitting the vibrational energies, BFGS algorithm for minimization with default options (see the documentation of scipy.optimize.minimize for more details).
+
+.. literalinclude:: ../examples/example8/example8.py
+   :language: python
+   :dedent: 4
+   :lines: 10-41
+
+Running the above code and observing the results (not shown here), you should notice that the thermal expansions present some spikes. These quantities are obtained as numerical derivatives of the lattice parameters and are thus more sensitive to any numerical noise. 
+
+Let's see what happens if we use different polynomial forms for fitting, but the same minimization method.
+
+.. literalinclude:: ../examples/example8/example8.py
+   :language: python
+   :dedent: 4
+   :lines: 42-66
+
+The results of the above code are shown here:
+
+.. image:: ../examples/example8/figure_1.png
+   :width: 400
+.. image:: ../examples/example8/figure_2.png
+   :width: 400
+.. image:: ../examples/example8/figure_3.png
+   :width: 400
+.. image:: ../examples/example8/figure_4.png
+   :width: 400
+
+You can see that the fit with quadratic polynomials for both Etot and Fvib (quad+quad) gives a slightly different result at 0 K, with a difference of the order of 0.2%. Some differences remain even when using quadratic/quartic or quartic/quartic polynomials. In general, a quartic polynomial is expected to provide a better fit, but care must be paid to avoid overfitting and the best choice also depends on the shape of your energy surface.
+
+Next, you try to minimize with gtol=1e-3 (gradient norm must be less than gtol before successful termination, see the documentation of scipy.optimize.minimize), same method.
+
+.. literalinclude:: ../examples/example8/example8.py
+   :language: python
+   :dedent: 4
+   :lines: 67-73
+
+As you can see in the following figures, this leads to wrong results:
+
+.. image:: ../examples/example8/figure_5.png
+   :width: 400
+.. image:: ../examples/example8/figure_6.png
+   :width: 400
+
+If on the contrary you increase the default gtol=1e-5 value, you can the following results:
+
+.. literalinclude:: ../examples/example8/example8.py
+   :language: python
+   :dedent: 4
+   :lines: 74-94
+
+.. image:: ../examples/example8/figure_7.png
+   :width: 400
+.. image:: ../examples/example8/figure_8.png
+   :width: 400
+.. image:: ../examples/example8/figure_9.png
+   :width: 400
+.. image:: ../examples/example8/figure_10.png
+   :width: 400
+
+The difference in the lattice parameters is very limited and can hardly be seen, but it is more evident in the thermal expansions. In the latters, notice how the spikes are reduced when decreasing gtol.
+
+Let's try now a different minimization algorithm, the common coniugate-gradient method (CG) as implemented in scipy.optimize.minimize, with default options and quadratic polynomial for fitting.
+
+.. literalinclude:: ../examples/example8/example8.py
+   :language: python
+   :dedent: 4
+   :lines: 97-102
+
+.. image:: ../examples/example8/figure_11.png
+   :width: 400
+.. image:: ../examples/example8/figure_12.png
+   :width: 400
+.. image:: ../examples/example8/figure_13.png
+   :width: 400
+.. image:: ../examples/example8/figure_14.png
+   :width: 400
+
+In this case the thermal expansions show much more noise than previously. It is thus clear that care must be paid to properly choose the fitting/minimizations methods and options.
+
+Finally, let's see another numerical issue in quasi-harmonic calculations which is illustrated in the following code and figure:
+
+.. literalinclude:: ../examples/example8/example8.py
+   :language: python
+   :dedent: 4
+   :lines: 105-
+
+.. image:: ../examples/example8/figure_15.png
+   :width: 400
+.. image:: ../examples/example8/figure_16.png
+   :width: 400
+.. image:: ../examples/example8/figure_17.png
+   :width: 400
+ 
+The first two figures above show iso-contour lines for the :math:`E_{tot}(a,c)+F_{vib}(a,c)` surface at T=1 K and T=1999 K. You can see that the minimum is shifting as expected because of thermal expansion (usually positive) and as a consequence it becomes closer to the boundary of the chosen :math:`(a,c)` grid. It is important to check that the minimun does not get too close to the boundary in order to avoid a serious decrease of the fit accuracy. In any case, the :math:`\chi^2` of the fitting procedure is always slightly changing (usually increasing) with temperature, as shown in the last figure.
+
+.. References
 
 .. [#thermo_pw] http://qeforge.qe-forge.org/gf/project/thermo_pw/
 

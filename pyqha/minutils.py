@@ -121,15 +121,15 @@ def fquartic_der(x,a,ibrav=4):
     
 ################################################################################
 
-def find_min(a,ibrav,type,guess=None):
+def find_min(a,ibrav,type,guess=None,method="BFGS",minoptions={}):
     """
     An auxiliary function for handling the minimum search    
     """
     if type=="quadratic":
-        xmin=find_min_quadratic(a,ibrav,guess)
+        xmin=find_min_quadratic(a,ibrav,guess,method,minoptions)
         fmin=fquadratic(xmin,a)
     elif type=="quartic":
-        xmin=find_min_quartic(a,ibrav,guess)
+        xmin=find_min_quartic(a,ibrav,guess,method,minoptions)
         fmin=fquartic(xmin,a)
     else:
         return None
@@ -139,7 +139,7 @@ def find_min(a,ibrav,type,guess=None):
 
 ################################################################################
 
-def find_min_quadratic(a,ibrav=4,guess=None):
+def find_min_quadratic(a,ibrav,guess,method,minoptions):
     """
     This is the function for finding the minimum of the quadratic polynomial
     """
@@ -176,11 +176,9 @@ def find_min_quadratic(a,ibrav=4,guess=None):
     #  Find the minimun using minimize from scipy.optimize with the gradient
     #  whatever algorithm with the gradient is more stable and I recommend using it 
     if ibrav==4:
-        #res_quadratic = minimize(fquadratic4,x_in,jac=fquadratic_der4)
-        res_quadratic = minimize(fquadratic4,x_in,method="BFGS", jac=fquadratic_der4,  options={'gtol': 1e-5})
+        res_quadratic = minimize(fquadratic4,x_in, jac=fquadratic_der4, method=method, options=minoptions)
     else:
-        res_quadratic = minimize(fquadratic,x_in, jac=fquadratic_der)
-        #res_quadratic = minimize(fquadratic,x_in, method="BFGS", jac=fquadratic_der,  options={'gtol': 1e-12}) 
+        res_quadratic = minimize(fquadratic,x_in, jac=fquadratic_der,method=method, options=minoptions)
   
     if (not res_quadratic.success):
         print ("WARNING! Problems in extremum finding: ",res_quadratic.message)
@@ -190,7 +188,7 @@ def find_min_quadratic(a,ibrav=4,guess=None):
 
 ################################################################################
 
-def find_min_quartic(a,ibrav=4,guess=None):
+def find_min_quartic(a,ibrav,guess,method,minoptions):
     """
     This is the function for finding the minimum of the quartic polynomial
     """
@@ -228,13 +226,7 @@ def find_min_quartic(a,ibrav=4,guess=None):
     #  Find the minimun using minimize from scipy.optimize with the gradient
     #  whatever algorithm with the gradient is more stable and I recommend using it 
     if ibrav==4:
-        #res_quartic = minimize(fquartic4,x_in,jac=fquartic_der4)
-        #res_quartic = minimize(fquartic4,x_in,method="BFGS", jac=fquartic_der4,  options={'gtol': 1e-7})
-        #print (res_quartic.hess_inv)
-        #print (fquartic_der2_4(res_quartic.x))
-        #res_quartic = minimize(fquartic4,x_in,method="CG", jac=fquartic_der4,  options={'gtol': 1e-8})
-        res_quartic = minimize(fquartic4,x_in,method="Newton-CG", jac=fquartic_der4, hess=fquartic_der2_4,  options={'xtol': 1e-8})
-        #res_quartic = minimize(fquartic4,x_in,method="dogleg", jac=fquartic_der4, hess=fquartic_der2_4,  options={'gtol': 1e-8})
+        res_quartic = minimize(fquartic4,x_in,method=method, jac=fquartic_der4, hess=fquartic_der2_4,  options=minoptions)
 #    else:
 #        res_quartic = minimize(fquartic,x_in,jac=fquartic_der)        
   

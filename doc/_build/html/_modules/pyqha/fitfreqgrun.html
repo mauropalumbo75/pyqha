@@ -72,16 +72,18 @@
           <div class="body" role="main">
             
   <h1>Source code for pyqha.fitfreqgrun</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python3</span>
-<span class="c1">#encoding: UTF-8</span>
+<span></span><span class="c1">#encoding: UTF-8</span>
+<span class="c1"># Copyright (C) 2016 Mauro Palumbo</span>
+<span class="c1"># This file is distributed under the terms of the # MIT License. </span>
+<span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">read</span> <span class="k">import</span> <span class="n">read_Etot</span><span class="p">,</span> <span class="n">read_freq_ext_geo</span>
+<span class="kn">from</span> <span class="nn">read</span> <span class="k">import</span> <span class="n">read_Etot</span><span class="p">,</span> <span class="n">read_freq_geo</span>
 <span class="kn">from</span> <span class="nn">fitutils</span> <span class="k">import</span> <span class="n">fit_anis</span><span class="p">,</span> <span class="n">print_polynomial</span>
 <span class="kn">from</span> <span class="nn">minutils</span> <span class="k">import</span> <span class="n">fquadratic</span><span class="p">,</span> <span class="n">fquartic</span><span class="p">,</span> <span class="n">fquadratic_der</span><span class="p">,</span> <span class="n">fquartic_der</span><span class="p">,</span> <span class="n">find_min</span>
-<span class="kn">from</span> <span class="nn">write</span> <span class="k">import</span> <span class="n">write_freq_ext</span>
+<span class="kn">from</span> <span class="nn">write</span> <span class="k">import</span> <span class="n">write_freq</span>
 
 
 
@@ -89,12 +91,14 @@
 
 <div class="viewcode-block" id="rearrange_freqx"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitfreqgrun.rearrange_freqx">[docs]</a><span class="k">def</span> <span class="nf">rearrange_freqx</span><span class="p">(</span><span class="n">freqx</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function rearrange the input numpy matrix freqx into an equivalent matrix freqxx</span>
-<span class="sd">    for the subsequent fitting.</span>
-<span class="sd">    freqx is a ngeo*nq*modes matrix, each freqx[i] is the nq*modes freq matrix for a given geometry (i)</span>
-<span class="sd">    freqxx is a nq*modes*ngeo matrix, each freqxx[i][j] is a vector with all values for different</span>
-<span class="sd">    geometries of the frequencies at point q=i and mode=j. For example, freqxx[0][0]</span>
-<span class="sd">    is the vector with ngeo values of the frequencies at the first q-point and first mode so on.</span>
+<span class="sd">    This function rearranges the input numpy matrix *freqx* into an equivalent </span>
+<span class="sd">    matrix *freqxx* for the subsequent fitting.</span>
+<span class="sd">    *freqx* is a :math:`ngeo*nq*modes` matrix, each *freqx[i]* is the :math:`nq*modes`</span>
+<span class="sd">    frequency matrix for a given geometry *i*.</span>
+<span class="sd">    freqxx is a :math:`nq*modes*ngeo` matrix, each *freqxx[i,j]* is a vector with</span>
+<span class="sd">    all values for different geometries of the frequencies at point *q=i* and *mode=j*.</span>
+<span class="sd">    For example, *freqxx[0,0]* is the vector with ngeo values of the frequencies</span>
+<span class="sd">    at the first q-point and first mode so on.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ngeo</span><span class="o">=</span><span class="n">freqx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">nq</span><span class="o">=</span><span class="n">freqx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -117,11 +121,11 @@
 <div class="viewcode-block" id="fitfreqxx"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitfreqgrun.fitfreqxx">[docs]</a><span class="k">def</span> <span class="nf">fitfreqxx</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">freqxx</span><span class="p">,</span><span class="n">ibrav</span><span class="p">,</span><span class="n">out</span><span class="p">,</span><span class="n">typefreq</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function fits the frequencies in freqxx as a function of the</span>
-<span class="sd">    grid of lattice parameters.</span>
+<span class="sd">    grid of lattice parameters :math:`(a,b,c)`.</span>
 
-<span class="sd">    It returns a nq*modes matrix, whose element [i,j] is the set of coefficients of the </span>
-<span class="sd">    polynomial fit and another nq*modes matrix, whose element [i,j] is the corresponding</span>
-<span class="sd">    chi squared. If the chi squared is zero, the fitting procedure was NOT succesful</span>
+<span class="sd">    It returns a :math:`nq*modes` matrix, whose element [i,j] is the set of coefficients of the </span>
+<span class="sd">    polynomial fit and another :math:`nq*modes` matrix, whose element [i,j] is the corresponding</span>
+<span class="sd">    :math:`\chi^2`. If the :math:`\chi^2=0`, the fitting procedure was NOT succesful</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
     <span class="n">freqa</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">freqchi</span> <span class="o">=</span> <span class="p">[]</span>
@@ -155,10 +159,12 @@
 <span class="c1">#</span>
 <div class="viewcode-block" id="freqmin"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitfreqgrun.freqmin">[docs]</a><span class="k">def</span> <span class="nf">freqmin</span><span class="p">(</span><span class="n">afreq</span><span class="p">,</span> <span class="n">min0</span><span class="p">,</span> <span class="n">nq</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">typefreq</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function calculate the frequencies from the fitted polynomials at the </span>
-<span class="sd">    minimun point min0. afreq contains the fitted polynomial coefficients. </span>
+<span class="sd">    This function calculates the frequencies from the fitted polynomials coeffients (one</span>
+<span class="sd">    for each q point and mode) at the minimun point *min0* given in input. </span>
+<span class="sd">    *afreq* is a :math:`nq*modes` numpy matrix containing the fitted polynomial coefficients.</span>
+<span class="sd">    It can be obtained from :py:func:`fitfreqxx`.</span>
 
-<span class="sd">    It returns a nq*modes matrix, whose element [i,j] is the fitted frequency </span>
+<span class="sd">    It returns a :math:`nq*modes` matrix, each element [i,j] being the fitted frequency </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nq</span><span class="p">,</span><span class="n">modes</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nq</span><span class="p">):</span>
@@ -174,16 +180,18 @@
 
 <div class="viewcode-block" id="freqmingrun"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitfreqgrun.freqmingrun">[docs]</a><span class="k">def</span> <span class="nf">freqmingrun</span><span class="p">(</span><span class="n">afreq</span><span class="p">,</span> <span class="n">min0</span><span class="p">,</span> <span class="n">nq</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">typefreq</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function calculate the frequencies and the gruneisen parameters </span>
-<span class="sd">    from the fitted polynomials at the minimun point min0. afreq contains the </span>
-<span class="sd">    fitted polynomial coefficients. </span>
+<span class="sd">    This function calculates the frequencies and the Gruneisen parameters</span>
+<span class="sd">    from the fitted polynomials coeffients (one</span>
+<span class="sd">    for each q point and mode) at the minimun point *min0* given in input. </span>
+<span class="sd">    *afreq* is a :math:`nq*modes` numpy matrix containing the fitted polynomial coefficients.</span>
+<span class="sd">    It can be obtained from :py:func:`fitfreqxx`.</span>
 
-<span class="sd">    It returns a nq*modes matrix, whose element [i,j] is the fitted frequency </span>
-<span class="sd">    In addition, it returns a nq*modes*6 with the Gruneisein parameters.</span>
-<span class="sd">    Each element [i,j,k] is the the Gruneisein parameter at nq=i, mode=j and direction</span>
-<span class="sd">    k (for example, in hex systems k=0 is a direction, k=2 is c direction, other are zero)</span>
+<span class="sd">    It returns a :math:`nq*modes` matrix, each element [i,j] being the fitted frequency </span>
+<span class="sd">    In addition, it returns a :math:`nq*modes*6` with the Gruneisein parameters.</span>
+<span class="sd">    Each element [i,j,k] is the the Gruneisein parameter at *nq=i*, *mode=j* and direction</span>
+<span class="sd">    *k* (for example, in hex systems *k=0* is *a* direction, *k=2* is *c* direction, others are zero)</span>
 
-<span class="sd">    Note that the Gruneisein parameters are not multiplied for the lattice parameters </span>
+<span class="sd">    Note that the Gruneisein parameters are not multiplied for the lattice parameters. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#nq = 10 # for testing quickly</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nq</span><span class="p">,</span><span class="n">modes</span><span class="p">))</span>
@@ -208,15 +216,26 @@
 
 <span class="c1">################################################################################</span>
  
-<div class="viewcode-block" id="fitfreq"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitfreqgrun.fitfreq">[docs]</a><span class="k">def</span> <span class="nf">fitfreq</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">min0</span><span class="p">,</span> <span class="n">inputfilefreq</span><span class="p">,</span> <span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">typefreq</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">compute_grun</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="fitfreq"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitfreqgrun.fitfreq">[docs]</a><span class="k">def</span> <span class="nf">fitfreq</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">min0</span><span class="p">,</span> <span class="n">filefreq</span><span class="p">,</span> <span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">typefreq</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">compute_grun</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    An auxiliary function for fitting the frequencies. It returns a matrix of nq*modes</span>
-<span class="sd">    frequencies obtained for the fitted polynomial (quadratic or quartic) at the </span>
-<span class="sd">    minimun point min0. It also returns the weigths of each q point where the </span>
+<span class="sd">    An auxiliary function for fitting the frequencies. </span>
+<span class="sd">    </span>
+<span class="sd">    *celldmsx* is the matrix of lattice parameters :math:`(a,b,c)` where the total</span>
+<span class="sd">    energies where computed. *min0* is the a set of :math:`(a,b,c)`. *filefreq*</span>
+<span class="sd">    defines the input files (*filefreq1*, *filefreq2*, etc.) containing the </span>
+<span class="sd">    frequencies for different geometries. The number of geometries is determined</span>
+<span class="sd">    from the size of *celldmsx*. *ibrav* is the usual Bravais lattice. </span>
+<span class="sd">    *typefreq* can be &quot;quadratic&quot; (default) or &quot;quartic&quot;, i.e. the kind of </span>
+<span class="sd">    polynomial to be used for fitting. *compute_grun* defines if the Gruneisen</span>
+<span class="sd">    parameters must be calculated (True) or not (False, default). </span>
+<span class="sd">    </span>
+<span class="sd">    It returns a matrix of :math:`nq*modes` frequencies obtained for the fitted </span>
+<span class="sd">    polynomial coefficients (quadratic or quartic) at the </span>
+<span class="sd">    minimun point *min0*. It also returns the weigths of each q-point where the </span>
 <span class="sd">    frequencies are available.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># get the weigths and the frequencies from files </span>
-    <span class="n">weightsx</span><span class="p">,</span> <span class="n">freqx</span> <span class="o">=</span> <span class="n">read_freq_ext_geo</span><span class="p">(</span><span class="n">inputfilefreq</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">celldmsx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">weightsx</span><span class="p">,</span> <span class="n">freqx</span> <span class="o">=</span> <span class="n">read_freq_geo</span><span class="p">(</span><span class="n">filefreq</span><span class="p">,</span><span class="n">celldmsx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         
     <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Rearranging frequencies...&quot;</span><span class="p">)</span>
     <span class="n">freqxx</span> <span class="o">=</span> <span class="n">rearrange_freqx</span><span class="p">(</span><span class="n">freqx</span><span class="p">)</span>
@@ -263,9 +282,9 @@
     <span class="c1"># fit the frequencies over the grid of lattice parameters and get the fitted</span>
     <span class="c1"># ones at the minimum point from Etot (min0)</span>
     <span class="n">weights</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">grun</span> <span class="o">=</span> <span class="n">fitfreq</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">min0</span><span class="p">,</span> <span class="n">inputfilefreq</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">typefreq</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">compute_grun</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">write_freq_ext</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="s2">&quot;average_freqPython&quot;</span><span class="p">)</span>
-    <span class="n">write_freq_ext</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">grun</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s2">&quot;output_grun_along_a_ext3Dfit&quot;</span><span class="p">)</span>
-    <span class="n">write_freq_ext</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">grun</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s2">&quot;output_grun_along_c_ext3Dfit&quot;</span><span class="p">)</span>
+    <span class="n">write_freq</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="s2">&quot;average_freqPython&quot;</span><span class="p">)</span>
+    <span class="n">write_freq</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">grun</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s2">&quot;output_grun_along_a_ext3Dfit&quot;</span><span class="p">)</span>
+    <span class="n">write_freq</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">grun</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s2">&quot;output_grun_along_c_ext3Dfit&quot;</span><span class="p">)</span>
 
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>

@@ -32,12 +32,17 @@ if __name__ == "__main__":
     thermodata = nT, T, Evib, Fvib, Svib, Cvib 
     TT, Fmin, Vmin, B0, betaT, Cv, Cp, aT, chi = fitFvibV(fEtot,thermodata)
     
-    simple_plot_xy(TT,Fmin,xlabel="T (K)",ylabel="Fmin (Ry/cell)")
-    simple_plot_xy(TT,Vmin,xlabel="T (K)",ylabel="Vmin (a.u.^3)")
-    simple_plot_xy(TT,B0,xlabel="T (K)",ylabel="B0 (kbar)")
-    simple_plot_xy(TT,betaT,xlabel="T (K)",ylabel="beta")
-    simple_plot_xy(TT,Cp,xlabel="T (K)",ylabel="Cp (Ry/cell/K")
-    
+    fig1 = simple_plot_xy(TT,Fmin,xlabel="T (K)",ylabel="Fmin (Ry/cell)")
+    fig2 = simple_plot_xy(TT,Vmin,xlabel="T (K)",ylabel="Vmin (a.u.^3)")
+    fig3 = simple_plot_xy(TT,B0,xlabel="T (K)",ylabel="B0 (kbar)")
+    fig4 = simple_plot_xy(TT,betaT,xlabel="T (K)",ylabel="beta")
+    fig5 = simple_plot_xy(TT,Cp,xlabel="T (K)",ylabel="Cp (Ry/cell/K")
+    fig1.savefig("figure_1.png")
+    fig2.savefig("figure_2.png")
+    fig3.savefig("figure_3.png")
+    fig4.savefig("figure_4.png")
+    fig5.savefig("figure_5.png")    
+
     # save the results in a file if you want...
     write_xy("Fmin.dat",T,Fmin,"T (K)","Fmin (Ryd/cell)")
     write_xy("Vmin.dat",T,Vmin,"T (K)","Vmin (a.u.^3)")
@@ -48,7 +53,8 @@ if __name__ == "__main__":
     CvCp = np.zeros((len(T),2))
     CvCp[:,0] = Cv
     CvCp[:,1] = Cp
-    multiple_plot_xy(TT,CvCp,xlabel="T (K)",ylabel="Cv/Cp (Ry/cell/K")
+    fig6 = multiple_plot_xy(TT,CvCp,xlabel="T (K)",ylabel="Cv/Cp (Ry/cell/K")
+    fig6.savefig("figure_6.png")
 
     print_eos_data(V,E+Fvib[i],a,chi,"E")  # print full detail at each T
 

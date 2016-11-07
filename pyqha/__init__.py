@@ -11,12 +11,14 @@ from fitFvib import fitFvib, fitFvibV
 from fitC import rearrange_Cx, fitCxx, fitCT
 from eos import print_eos_data
 from thermo import gen_TT, compute_thermo, compute_thermo_geo, rearrange_thermo
-#from alphagruneisenp import compute_alpha_gruneisein
+from fitfreqgrun import rearrange_freqx, fitfreqxx, freqmin, freqmingrun, fitfreq
+from alphagruneisenp import compute_alpha_gruneisein
 
 
 # read/write functions
 from read import read_dos, read_dos_geo, read_thermo, read_Etot, read_elastic_constants, read_elastic_constants_geo
-from write import write_thermo, write_xy, write_celldmsT, write_alphaT, write_C_geo, write_CT
+from read import read_freq, read_freq_geo
+from write import write_thermo, write_xy, write_celldmsT, write_alphaT, write_C_geo, write_CT, write_freq
 
 
 # plotting functions
