@@ -192,8 +192,7 @@ def join(partials):
 # 
 
 def compute_alpha_gruneisein(TT,ibrav,celldmsx,min0=None,S=None,weights=None,freq=None,\
-     grun=None,minT=None,afreq=None,fittypefreq=None,aS=None,fittypeS=None,nproc=1):
-
+grun=None,minT=None,afreq=None,fittypefreq=None,aS=None,fittypeS=None,nproc=1):
     """
     This function computes the thermal expansions at different temperatures from
     the Gruneisen parameters and other parameters. 
@@ -235,14 +234,15 @@ def compute_alpha_gruneisein(TT,ibrav,celldmsx,min0=None,S=None,weights=None,fre
     |                                       | the average frequencies and Gruneisen parameters at each temperature.|
     |                                       | *aS,fittypeS* are the coefficients of the fitted polynomials for the |
     |                                       | elastic compliances and the polynomial type. They are used here to   |
-    |                                       | compute the elastic compliances at each temperature as in the quasi-s|
-    |                                       |tatic approximation.                                                  |
+    |                                       | compute the elastic compliances at each temperature as in the quasi- |
+    |                                       | static approximation.                                                |
     +---------------------------------------+----------------------------------------------------------------------+
 
     By default, all the input parameters in the above table are ==None and if nothing
     is given in input the function will return None without computing anything.
     
     *nproc* is the number of processes to be run in parallel.
+    
     """
     
     if (min0!=None):        # if the lattice parameters at the minimun 0 K energy are given

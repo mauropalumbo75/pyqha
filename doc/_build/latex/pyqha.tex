@@ -34,7 +34,7 @@
 
 
 \title{pyqha Documentation}
-\date{Oct 26, 2016}
+\date{Nov 09, 2016}
 \release{0.1}
 \author{Mauro Palumbo}
 \newcommand{\sphinxlogo}{}
@@ -132,6 +132,46 @@ or you can import only the ones you need. The above command also makes available
 More functions are available as submodules. See the related documentation for more details. Note, however, that most of these functions are less well documented and are meant for advanced users or if you want to tinker with the code.
 
 
+\section{General notes}
+\label{introduction:general-notes}
+The parameter \sphinxstyleemphasis{ibrav}, which occurs in many functions of this package, identifies the Bravais lattice of the system as in Quantum Espresso. Currently, only cubic (\sphinxstyleemphasis{ibrav=1,2,3}), hexagonal (\sphinxstyleemphasis{ibrav=4}), tetragonal (\sphinxstyleemphasis{ibrav=6,7}), orthorombic (\sphinxstyleemphasis{ibrav=8,9,10,11}) lattices are implemented. Note that only the variation of phonon frequencies over a grid \((a,b,c)\) of lattice parameters can be carried out for now. Angles and internal degrees of freedom (atomic positions) cannot be considered. Thus, different \sphinxstyleemphasis{ibrav} can give the same grid:
+\begin{quote}
+
+\noindent\begin{tabulary}{\linewidth}{|L|L|L|}
+\hline
+
+\sphinxstyleemphasis{ibrav}
+&
+Grid
+&
+Fitting polynomial
+\\
+\hline
+1,2,3
+&
+\((a,a,a)\)
+&
+1 variable, 2nd or 4th degree
+\\
+\hline
+4,6,7
+&
+\((a,a,c)\)
+&
+2 variables, 2nd or 4th degree
+\\
+\hline
+8,9,10,11
+&
+\((a,b,c)\)
+&
+3 variables, 2nd or 4th degree
+\\
+\hline\end{tabulary}
+
+\end{quote}
+
+
 \chapter{Tutorial}
 \label{tutorial::doc}\label{tutorial:tutorial}\label{tutorial:id1}
 This is a simple tutorial demonstrating the main functionalities of \sphinxcode{pyqha}. The examples below show how to use the package to perform the most common tasks. The code examples can be found in the directory \sphinxstyleemphasis{examples} of the package and can be run either as interactive sessions in your Python intepreter or as scripts.
@@ -191,12 +231,12 @@ Several simplified plotting functions are available in \sphinxcode{pyqha} and ar
 Note however that all plotting functions need the matplotlib library, which must be available on your system and can be used to further taylor your plot.
 
 
-\section{Fitting the total energy}
-\label{tutorial:fitting-the-total-energy}
+\section{Fitting the total energy (examples 1 and 2)}
+\label{tutorial:fitting-the-total-energy-examples-1-and-2}
 The simplest task you can do with \sphinxcode{pyqha} is to fit the total energy as a function of volume \(E_{tot}(V)\) (example1) or lattice parameters values \(E_{tot}(a,b,c,\alpha,\beta,\gamma)\) (example2). In the former case, you can use
 an equation of state (EOS) such as Murnaghan's or similar. In the latter case, you must use polynomials. Currently the Murnaghan EOS and quadratic and quartic polynomials are implemented in \sphinxcode{pyqha}. Besides, only \(a,b,c\) lattice parameters can be handled. This includes cubic, hexagonal, tetragonal and orthorombic systems.
 
-Let's start with the simpler case where we want to fit \(E_{tot}(V)\). This is the case of isotropic cubic systems (simple cubic, body centered cubic, face centered cubic) or systems which can be approximate as isotropic (for example an hexagonal system with nearly constant \(c/a\) ratio).
+Let's start with the simpler case where we want to fit \(E_{tot}(V)\). This is the case of isotropic cubic systems (simple cubic, body centered cubic, face centered cubic) or systems which can be approximated as isotropic (for example an hexagonal system with nearly constant \(c/a\) ratio).
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 
@@ -234,7 +274,7 @@ Optionally, you can plot the results with the \sphinxcode{plot\_EV()}. The origi
 \noindent\sphinxincludegraphics[width=500\sphinxpxdimen]{{figure_1}.png}
 
 The second example shows how to fit the total energy of an hexagonal system, i.e. as a function of the lattice parameters \((a,c)\). The input file (\sphinxstyleemphasis{fin}) contains three columns, the first two with the \((a,c)\) (in \(a.u.\)) and the third one with the energies (in \(Ryd/cell\)). Note that if the original data are as \((a,c/a)\), as often reported, you must convert the \(c/a\) values into \(c\) values in the input file.
-The \sphinxcode{fitEtot()} reads the input file and perform the fit using either a quadratic or quartic polynomial (as specified by the parameter \sphinxstyleemphasis{fitype}).
+The \sphinxcode{fitEtot()} reads the input file and performs the fit using either a quadratic or quartic polynomial (as specified by the parameter \sphinxstyleemphasis{fitype}).
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 
@@ -307,8 +347,8 @@ Optionally, you can use the functions \sphinxcode{plot\_Etot()}, \sphinxcode{plo
 \noindent\sphinxincludegraphics[width=500\sphinxpxdimen]{{figure_3}.png}
 
 
-\section{Computing thermal properties from phonon DOS}
-\label{tutorial:computing-thermal-properties-from-phonon-dos}
+\section{Computing thermal properties from phonon DOS (examples 3 and 4)}
+\label{tutorial:computing-thermal-properties-from-phonon-dos-examples-3-and-4}
 \sphinxcode{pyqha} can calculate the vibrational properties of your system from the phonon DOS in the harmonic approximation as shown in \sphinxstyleemphasis{example3}. The DOS file must be a two columns one, the first column being the energy (in \(Ryd/cell\)) and the second column being the density of states (in \((Ryd/cell)^{-1}\)).
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
@@ -385,7 +425,7 @@ The output produced by the function \sphinxcode{compute\_thermo()} is stored in 
 1.6500000000e+01	5.6217830073e\PYGZhy{}03	5.6213090314e\PYGZhy{}03	2.8725811574e\PYGZhy{}08	8.9112541358e\PYGZhy{}08
 \end{sphinxVerbatim}
 
-The first line is the simple integral of the input dos. It must be approximately equal to \(3N\), where \sphinxstyleemphasis{N} is the number of atoms in the cell. In the present case (hex Os) it is equal to 6. The second line shows the Zero Point Energy (ZPE). After a few comments lines, the vibrational energy (Evib), Helmholtz energy (Fvib), entropy (Svib) and heat capacity (Cvib) are written as a function of temperature. All quantities are calculated in the harmonic approximation, i.e. for fixed volume (and lattice parameters).
+The first line is the simple integral of the input dos. It must be approximately equal to \(3N\), where \sphinxstyleemphasis{N} is the number of atoms in the cell. In the present case (h.c.p. Os) it is equal to 6. The second line shows the Zero Point Energy (ZPE). After a few comments lines, the vibrational energy (Evib), Helmholtz energy (Fvib), entropy (Svib) and heat capacity (Cvib) are written as a function of temperature. All quantities are calculated in the harmonic approximation, i.e. for fixed volume (and lattice parameters).
 
 The original dos is plotted as:
 
@@ -451,9 +491,9 @@ The corresponding vibrational Helmoltz energies, entropies and heat capacity are
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_41}.png}
 
 
-\section{Computing quasi-harmonic properties}
-\label{tutorial:computing-quasi-harmonic-properties}
-Here we show how to do a full quasi-harmonic calculation starting from the \(E_{tot}\) and phonon DOS. First, we show an example using the Murnaghan EOS, having \(E_{tot}(V)\) and the corresponding DOS, then using a quartic polynomial on the full grid \((a,c)\) for an hexagonal cell.
+\section{Computing quasi-harmonic properties (examples 5 and 6)}
+\label{tutorial:computing-quasi-harmonic-properties-examples-5-and-6}
+Here we show how to do a full quasi-harmonic calculation starting from the \(E_{tot}\) at 0 K and phonon DOS. First, we show an example using the Murnaghan EOS, having \(E_{tot}(V)\) and the corresponding DOS, then using a quartic polynomial on the full grid \((a,c)\) for an hexagonal cell.
 
 Here is the code in the Murnaghan case:
 
@@ -614,8 +654,8 @@ If everything went well,  you should get the following plots:
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_61}.png}
 
 
-\section{Computing quasi-static elastic constants}
-\label{tutorial:computing-quasi-static-elastic-constants}
+\section{Computing quasi-static elastic constants (example 7)}
+\label{tutorial:computing-quasi-static-elastic-constants-example-7}
 The following code example shows how to do a calculation of a quasi-static elastic tensor as a function of temperature for an hexagonal system. This kind of calculation requires that a quasi-harmonic calculation has already be done (as in example 6). Besides, the elastic constants for different \((a,c)\) values must be available. To compute these elastic constants you can use for example the thermo\_pw code \footnote[1]{\sphinxAtStartFootnote
 \url{http://qeforge.qe-forge.org/gf/project/thermo\_pw/}
 }.
@@ -700,13 +740,13 @@ The following code example shows how to do a calculation of a quasi-static elast
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_53}.png}
 
 
-\section{Numerical issues}
-\label{tutorial:numerical-issues}
+\section{Numerical issues (example 8)}
+\label{tutorial:numerical-issues-example-8}
 It is important to realize that the practical application of the quasi-harmonic approximation relies on fitting and minimizing the free energy as a function of volume, lattice parameters and temperature, ultimately on numerical methods. \sphinxcode{pyqha} uses numpy and scipy functions to this aim. The user must select the best methods/options for the specific system under investigation and it is always better to test, test, test...
 
 The following example shows how different methods/options may lead to different sets of results. Sometimes the differences are within the target numerical precision. Sometimes the results are simply wrong because of an improper choice of the methods/options.
 
-First, lets compute some example results for a hypotetical hexagonal system, using total energy and phonon DOS for different values of \((a,c)\) lattice parameters. We use all default values of the function \sphinxcode{fitFvib()}, i.e. a quadratic polynomial for fitting the total energies, a quadratic polynomial for fitting the vibrational energies, BFGS algorithm for minimization with default options (see the documentation of scipy.optimize.minimize for more details).
+First, let's compute some example results for a hypotetical hexagonal system, using total energy and phonon DOS for different values of \((a,c)\) lattice parameters. We use all default values of the function \sphinxcode{fitFvib()}, i.e. a quadratic polynomial for fitting the total energies, a quadratic polynomial for fitting the vibrational energies, BFGS algorithm for minimization with default options (see the documentation of scipy.optimize.minimize for more details).
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{k+kn}{from} \PYG{n+nn}{pyqha} \PYG{k+kn}{import} \PYG{n}{RY\PYGZus{}KBAR}
@@ -743,39 +783,7 @@ First, lets compute some example results for a hypotetical hexagonal system, usi
 
 \end{sphinxVerbatim}
 
-Running the above code and observing the results (not shown here), you should notice that the thermal expansions present some spikes. These quantities are obtained as numerical derivatives of the lattice parameters and are thus more sensitive to any numerical noise.
-
-Let's see what happens if we use different polynomial forms for fitting, but the same minimization method.
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{n}{res2} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
-
-\PYG{c+c1}{\PYGZsh{} Fit the quartic polynomial for Etot and quadratic for Fvib, default minimization method=\PYGZdq{}BFGS\PYGZdq{}, minoptions=\PYGZob{}\PYGZsq{}gtol\PYGZsq{}: 1e\PYGZhy{}5\PYGZcb{}}
-\PYG{n}{res3} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{typeEtot}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
-
-\PYG{c+c1}{\PYGZsh{} Fit the quartic polynomial for Etot and quartic for Fvib, default minimization method=\PYGZdq{}BFGS\PYGZdq{}, minoptions=\PYGZob{}\PYGZsq{}gtol\PYGZsq{}: 1e\PYGZhy{}5\PYGZcb{}}
-\PYG{n}{res4} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{typeEtot}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{typeFvib}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
-
-\PYG{c+c1}{\PYGZsh{} plot together the 3 resulting lattice parameters and thermal expansions}
-\PYG{n}{y} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{(}\PYG{p}{(}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{)}\PYG{p}{,}\PYG{l+m+mi}{3}\PYG{p}{)}\PYG{p}{)}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}	
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res4}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
-\PYG{n}{fig5} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{a\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quad+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quart fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}	
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res4}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
-\PYG{n}{fig6} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{c\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quad+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quart fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}	
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res4}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
-\PYG{n}{fig7} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}xx (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quad+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quart fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}	
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res4}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
-\end{sphinxVerbatim}
-
-The results of the above code are shown here:
+Running the above code and observing the results below, you can notice that the thermal expansions present some spikes. These quantities are obtained as numerical derivatives of the lattice parameters and are thus more sensitive to any numerical noise. The default convergence criterium, minoptions=\{`gtol': 1e-5\}, for the minimization BFGS algorithm is not sufficient to obtain good results.
 
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_17}.png}
 
@@ -785,120 +793,113 @@ The results of the above code are shown here:
 
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_45}.png}
 
-You can see that the fit with quadratic polynomials for both Etot and Fvib (quad+quad) gives a slightly different result at 0 K, with a difference of the order of 0.2\%. Some differences remain even when using quadratic/quartic or quartic/quartic polynomials. In general, a quartic polynomial is expected to provide a better fit, but care must be paid to avoid overfitting and the best choice also depends on the shape of your energy surface.
-
-Next, you try to minimize with gtol=1e-3 (gradient norm must be less than gtol before successful termination, see the documentation of scipy.optimize.minimize), same method.
+Let's see what happens if we now systematically increase \sphinxstyleemphasis{gtol}, using the same minimization method (BFGS):
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{n}{fig8} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}zz (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quad+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quart fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} Fit and minimize with quadratic polynomials for both Etot and Fvib, minimization method=\PYGZdq{}BFGS\PYGZdq{}, increasing gtol}
+\PYG{n}{res2} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{method}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{BFGS}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}6}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{n}{res3} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{method}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{BFGS}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{n}{res4} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{method}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{BFGS}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}8}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
 
+\PYG{c+c1}{\PYGZsh{} plot together the 3 resulting thermal expansions}
+\PYG{n}{y} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{(}\PYG{p}{(}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{)}\PYG{p}{,}\PYG{l+m+mi}{3}\PYG{p}{)}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res4}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{fig5} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{a\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}6}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}7}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res4}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{fig6} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{c\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}6}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}7}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res4}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{fig7} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}xx (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}6}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}7}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res4}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{fig8} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}zz (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}6}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}7}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
 
-\PYG{n}{res5} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{method}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{BFGS}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
-
-\PYG{n}{res6} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{method}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{BFGS}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}8}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
 
 \end{sphinxVerbatim}
 
-As you can see in the following figures, this leads to wrong results:
+The results of the above code are shown here:
 
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_54}.png}
 
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_62}.png}
 
-If on the contrary you increase the default gtol=1e-5 value, you can the following results:
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{c+c1}{\PYGZsh{} plot together the 3 resulting thermal expansions}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}	
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res5}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res6}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
-\PYG{n}{fig13} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{a\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}6}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}7}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}	
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res5}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res6}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
-\PYG{n}{fig14} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{c\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}6}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}7}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}	
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res5}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res6}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
-\PYG{n}{fig15} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}xx (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}6}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}7}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res2}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}	
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res5}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
-\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res6}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
-\PYG{n}{fig16} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}zz (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}6}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{1e\PYGZhy{}8}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
-
-
-\PYG{c+c1}{\PYGZsh{} The minimum shifts with temperatue, so does the quality of the fit (for example the chi\PYGZca{}2)}
-\PYG{n}{celldmsx}\PYG{p}{,} \PYG{n}{Ex} \PYG{o}{=} \PYG{n}{read\PYGZus{}Etot}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{)}  \PYG{c+c1}{\PYGZsh{} since the fitFvib does not return Etot data, you must read them from the original file}
-\end{sphinxVerbatim}
-
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_7}.png}
 
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_8}.png}
+
+As you can see, the thermal expansions are getting better, but there is still some noise at high temperature, even with the slowest \sphinxstyleemphasis{gtol}. If you try the ``Newton-CG'' algorithm you can finally get rid of these spikes.
+
+Let's see now what happens if we now use different polynomial forms for fitting, but the same minimization method (Newton-CG) and convergence criterium, minoptions=\{`gtol': 1e-7\}.
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Refit the quadratic polynomial for Etot and quadratic for Fvib, default minimization method=\PYGZdq{}Newton\PYGZhy{}CG\PYGZdq{}, higher minoptions=\PYGZob{}\PYGZsq{}gtol\PYGZsq{}: 1e\PYGZhy{}7\PYGZcb{}}
+\PYG{n}{res5} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{method}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Newton\PYGZhy{}CG}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Fit the quartic polynomial for Etot and quadratic for Fvib, default minimization method=\PYGZdq{}Newton\PYGZhy{}CG\PYGZdq{}, higher minoptions=\PYGZob{}\PYGZsq{}gtol\PYGZsq{}: 1e\PYGZhy{}7\PYGZcb{}}
+\PYG{n}{res6} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{method}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Newton\PYGZhy{}CG}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{typeEtot}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Fit the quartic polynomial for Etot and quartic for Fvib, default minimization method=\PYGZdq{}Newton\PYGZhy{}CG\PYGZdq{}, higher minoptions=\PYGZob{}\PYGZsq{}gtol\PYGZsq{}: 1e\PYGZhy{}7\PYGZcb{}}
+\PYG{n}{res7} \PYG{o}{=} \PYG{n}{fitFvib}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{,}\PYG{n}{thermodata}\PYG{p}{,}\PYG{n}{method}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Newton\PYGZhy{}CG}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{typeEtot}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{typeFvib}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{minoptions}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{gtol}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} plot together the 3 resulting lattice parameters and thermal expansions}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res5}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res6}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res7}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{fig9} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{a\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quad+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quart fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res5}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res6}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res7}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{fig10} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{c\PYGZus{}min (a.u.)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quad+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quart fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res5}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res6}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res7}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{fig11} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}xx (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quad+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quart fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res5}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}	
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res6}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{y}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{res7}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{n}{fig12} \PYG{o}{=} \PYG{n}{multiple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res1}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{alpha\PYGZus{}zz (1/K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{labels}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quad+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quad fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quart+quart fit}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+
+\end{sphinxVerbatim}
 
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_9}.png}
 
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_10}.png}
 
-The difference in the lattice parameters is very limited and can hardly be seen, but it is more evident in the thermal expansions. In the latters, notice how the spikes are reduced when decreasing gtol.
-
-Let's try now a different minimization algorithm, the common coniugate-gradient method (CG) as implemented in scipy.optimize.minimize, with default options and quadratic polynomial for fitting.
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{c+c1}{\PYGZsh{} 2D contour plot with fitted energy (Etot+Fvib)}
-\PYG{n}{fig21} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot\PYGZus{}contour}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{4}\PYG{p}{]}\PYG{o}{+}\PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{6}\PYG{p}{]}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)} 
-\PYG{n}{iT}\PYG{o}{=}\PYG{l+m+mi}{1998}                  \PYG{c+c1}{\PYGZsh{} this is the index of the temperatures array, not the temperature itself}
-\PYG{k}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T= }\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{ (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{c+c1}{\PYGZsh{} 2D contour plot with fitted energy (Etot+Fvib)}
-\PYG{n}{fig22} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot\PYGZus{}contour}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{4}\PYG{p}{]}\PYG{o}{+}\PYG{n}{res3}\PYG{p}{[}\PYG{l+m+mi}{6}\PYG{p}{]}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)} 
-\end{sphinxVerbatim}
-
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_111}.png}
 
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_121}.png}
+
+You can see that the fit with quadratic polynomials for both Etot and Fvib (quad+quad) gives a slightly different result, especially at 0 K, with a difference of the order of 0.2\%. Some minor differences remain even when using quadratic/quartic or quartic/quartic polynomials. In general, a quartic polynomial is expected to provide a better fit, but care must be paid to avoid overfitting and the best choice also depends on the shape of your energy surface.
+
+Finally, let's see another numerical issue in quasi-harmonic calculations which is illustrated in the following code and figures:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} The minimum shifts with temperature, so does the quality of the fit (for example the chi\PYGZca{}2)}
+\PYG{n}{celldmsx}\PYG{p}{,} \PYG{n}{Ex} \PYG{o}{=} \PYG{n}{read\PYGZus{}Etot}\PYG{p}{(}\PYG{n}{fEtot}\PYG{p}{)}  \PYG{c+c1}{\PYGZsh{} since the fitFvib does not return Etot data, you must read them from the original file}
+\PYG{n}{iT}\PYG{o}{=}\PYG{l+m+mi}{1}                  \PYG{c+c1}{\PYGZsh{} this is the index of the temperatures array, not the temperature itself}
+\PYG{k}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T= }\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{res7}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{ (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} 2D contour plot with fitted energy (Etot+Fvib)}
+\PYG{n}{fig13} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot\PYGZus{}contour}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{res7}\PYG{p}{[}\PYG{l+m+mi}{4}\PYG{p}{]}\PYG{o}{+}\PYG{n}{res7}\PYG{p}{[}\PYG{l+m+mi}{6}\PYG{p}{]}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)} 
+\PYG{n}{iT}\PYG{o}{=}\PYG{l+m+mi}{1998}                  \PYG{c+c1}{\PYGZsh{} this is the index of the temperatures array, not the temperature itself}
+\PYG{k}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T= }\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{res7}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{ (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} 2D contour plot with fitted energy (Etot+Fvib)}
+\PYG{n}{fig14} \PYG{o}{=} \PYG{n}{plot\PYGZus{}Etot\PYGZus{}contour}\PYG{p}{(}\PYG{n}{celldmsx}\PYG{p}{,}\PYG{n}{nmesh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}\PYG{n}{fittype}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{quartic}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ibrav}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{n}{a}\PYG{o}{=}\PYG{n}{res7}\PYG{p}{[}\PYG{l+m+mi}{4}\PYG{p}{]}\PYG{o}{+}\PYG{n}{res7}\PYG{p}{[}\PYG{l+m+mi}{6}\PYG{p}{]}\PYG{p}{[}\PYG{n}{iT}\PYG{p}{]}\PYG{p}{)} 
+\PYG{c+c1}{\PYGZsh{} plot the chi\PYGZca{}2 as a function of temperature}
+\PYG{n}{fig15} \PYG{o}{=} \PYG{n}{simple\PYGZus{}plot\PYGZus{}xy}\PYG{p}{(}\PYG{n}{res7}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{n}{res7}\PYG{p}{[}\PYG{l+m+mi}{5}\PYG{p}{]}\PYG{o}{+}\PYG{n}{res7}\PYG{p}{[}\PYG{l+m+mi}{7}\PYG{p}{]}\PYG{p}{,}\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T (K)}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{chi\PYGZca{}2}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}   
+
+\end{sphinxVerbatim}
 
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_131}.png}
 
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_141}.png}
 
-In this case the thermal expansions show much more noise than previously. It is thus clear that care must be paid to properly choose the fitting/minimizations methods and options.
-
-Finally, let's see another numerical issue in quasi-harmonic calculations which is illustrated in the following code and figure:
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-
-
-\PYG{c+c1}{\PYGZsh{} Save all plots}
-\PYG{n}{fig1}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}1.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig2}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}2.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig3}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}3.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig4}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}4.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig5}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}5.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig6}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}6.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig7}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}7.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig8}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}8.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig9}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}9.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig10}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}10.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig11}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}11.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig12}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}12.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig13}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}13.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig14}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}14.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig15}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}15.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig16}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}16.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig17}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}17.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig18}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}18.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig19}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}19.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig20}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}20.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)} 
-\PYG{n}{fig21}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}21.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig22}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}22.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{fig23}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{figure\PYGZus{}23.png}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-
-\end{sphinxVerbatim}
-
 \noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_151}.png}
-
-\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_161}.png}
-
-\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{figure_171}.png}
 
 The first two figures above show iso-contour lines for the \(E_{tot}(a,c)+F_{vib}(a,c)\) surface at T=1 K and T=1999 K. You can see that the minimum is shifting as expected because of thermal expansion (usually positive) and as a consequence it becomes closer to the boundary of the chosen \((a,c)\) grid. It is important to check that the minimun does not get too close to the boundary in order to avoid a serious decrease of the fit accuracy. In any case, the \(\chi^2\) of the fitting procedure is always slightly changing (usually increasing) with temperature, as shown in the last figure.
 
@@ -1148,7 +1149,26 @@ the tutorial.
 
 \end{fulllineitems}
 
-\phantomsection\label{pyqha:module-pyqha.fitC}\index{pyqha.fitC (module)}\index{fitCT() (in module pyqha.fitC)}
+\phantomsection\label{pyqha:module-pyqha.fitC}\index{pyqha.fitC (module)}
+This submodule groups all functions relevant for computing elastic constants and
+compliances.
+\index{fS() (in module pyqha.fitC)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.fitC.fS}\pysiglinewithargsret{\sphinxcode{pyqha.fitC.}\sphinxbfcode{fS}}{\emph{aS}, \emph{mintemp}, \emph{typeCx}}{}
+An auxiliary function returning the elastic compliances 6x6 tensor at the
+set of lattice parameters given in input as \sphinxstyleemphasis{mintemp}. These should be the
+lattice parameters at a given temperature obtained from the free energy
+minimization, so that S(T) can be obtained.
+Before calling this function, the polynomial coefficients resulting from 
+fitting the elastic compliances over a grid of lattice parameters, i.e. over
+different geometries, must be obtained and passed as input in \sphinxstyleemphasis{aS}. 
+\sphinxstyleemphasis{typeCx} defines what kind of polynomial to use for fitting (``quadratic'' or
+``quartic'')
+
+\end{fulllineitems}
+
+\index{fitCT() (in module pyqha.fitC)}
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.fitC.fitCT}\pysiglinewithargsret{\sphinxcode{pyqha.fitC.}\sphinxbfcode{fitCT}}{\emph{aC}, \emph{chiC}, \emph{T}, \emph{minT}, \emph{ibrav=4}, \emph{typeC='quadratic'}}{}
@@ -1194,6 +1214,15 @@ polynomial fit and another 6*6 matrix, each element \sphinxstyleemphasis{{[}i,j{
 
 \end{fulllineitems}
 
+\index{fitS() (in module pyqha.fitC)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.fitC.fitS}\pysiglinewithargsret{\sphinxcode{pyqha.fitC.}\sphinxbfcode{fitS}}{\emph{inputfileEtot}, \emph{inputpathCx}, \emph{ibrav}, \emph{typeSx='quadratic'}}{}
+An auxiliary function for fitting the elastic compliances elements over a
+grid of lattice parameters, i.e. over different geometries.
+
+\end{fulllineitems}
+
 \index{rearrange\_Cx() (in module pyqha.fitC)}
 
 \begin{fulllineitems}
@@ -1220,7 +1249,10 @@ Some useful standard constants for conversions and calculations.
 
 
 \section{pyqha.eos module}
-\label{pyqha:pyqha-eos-module}\label{pyqha:module-pyqha.eos}\index{pyqha.eos (module)}\index{E\_Murn() (in module pyqha.eos)}
+\label{pyqha:pyqha-eos-module}\label{pyqha:module-pyqha.eos}\index{pyqha.eos (module)}
+This submodule groups several functions for calculating isotropic quasi-harmonic
+quantities using the Murnaghan EOS.
+\index{E\_Murn() (in module pyqha.eos)}
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.eos.E_Murn}\pysiglinewithargsret{\sphinxcode{pyqha.eos.}\sphinxbfcode{E\_Murn}}{\emph{V}, \emph{a}}{}
@@ -1237,7 +1269,7 @@ This function implements the Murnaghan EOS (in a form which is best for fitting)
 Returns the energy at the volume \sphinxstyleemphasis{V} using the coefficients \sphinxstyleemphasis{a0,a1,a2,a3} 
 from the equation:
 \begin{equation*}
-\begin{split}a_0 - (a_2*a_1)/(a_3-1.0) V a_2/a_3 ( a_1/V^{a_3})/(a_3-1.0) +1.0 )\end{split}
+\begin{split}E = a_0 - (a_2*a_1)/(a_3-1.0) V a_2/a_3 ( a_1/V^{a_3})/(a_3-1.0) +1.0 )\end{split}
 \end{equation*}
 \end{fulllineitems}
 
@@ -1245,10 +1277,8 @@ from the equation:
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.eos.H_Murn}\pysiglinewithargsret{\sphinxcode{pyqha.eos.}\sphinxbfcode{H\_Murn}}{\emph{V}, \emph{a}}{}
-This function return
-
 As {\hyperref[pyqha:pyqha.eos.E_MurnV]{\sphinxcrossref{\sphinxcode{E\_MurnV()}}}} but input parameters are given as a single list 
-\sphinxstyleemphasis{a={[}a0,a1,a2,a3{]}} and it returns the pressure not the energy from the EOS.
+\sphinxstyleemphasis{a={[}a0,a1,a2,a3{]}} and it returns the enthalpy not the energy from the EOS.
 
 \end{fulllineitems}
 
@@ -1265,7 +1295,7 @@ As {\hyperref[pyqha:pyqha.eos.E_MurnV]{\sphinxcrossref{\sphinxcode{E\_MurnV()}}}
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.eos.calculate_fitted_points}\pysiglinewithargsret{\sphinxcode{pyqha.eos.}\sphinxbfcode{calculate\_fitted\_points}}{\emph{V}, \emph{a}}{}
-Calculates a denser mesh of E(V) points for plotting...
+Calculates a denser mesh of E(V) points (1000) for plotting.
 
 \end{fulllineitems}
 
@@ -1273,8 +1303,13 @@ Calculates a denser mesh of E(V) points for plotting...
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.eos.compute_Cp}\pysiglinewithargsret{\sphinxcode{pyqha.eos.}\sphinxbfcode{compute\_Cp}}{\emph{T}, \emph{Cv}, \emph{V}, \emph{B0}, \emph{beta}}{}
-This function computes the isobaric heat capacity from the eq. Cp-Cv=...
-Not implemented yet.
+This function computes the isobaric heat capacity from the equation:
+
+\(Cp - Cv = T V beta^2 B0\)
+
+where \sphinxstyleemphasis{Cp,Cv} are the isobaric and isocoric heat capacities respectively,
+\sphinxstyleemphasis{T} is the temperature, \sphinxstyleemphasis{V} the unit cell volume, \sphinxstyleemphasis{beta} the volumetric
+thermal expansion and \sphinxstyleemphasis{B0} the isothermal bulk modulus.
 
 \end{fulllineitems}
 
@@ -1289,7 +1324,7 @@ at the two volumes closest to Vmin(T). Vmin(T) is from the minimization of F(V,T
 and \sphinxstyleemphasis{V} is the array of volumes used for it.
 Returns \sphinxstyleemphasis{Cv(T)}.
 
-Not implemented yet.
+Work in progress... for now it uses all volumes in the interpolation.
 
 \end{fulllineitems}
 
@@ -1298,7 +1333,8 @@ Not implemented yet.
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.eos.compute_beta}\pysiglinewithargsret{\sphinxcode{pyqha.eos.}\sphinxbfcode{compute\_beta}}{\emph{minT}}{}
 This function computes the volumetric thermal expansion as a numerical
-derivative of the volume as a function of temperature V(T). This is obtained
+derivative of the volume as a function of temperature V(T) given in the
+input array \sphinxstyleemphasis{minT}. This array can obtained
 from the free energy minimization which should be done before.
 
 \end{fulllineitems}
@@ -1309,8 +1345,10 @@ from the free energy minimization which should be done before.
 \phantomsection\label{pyqha:pyqha.eos.fit_Murn}\pysiglinewithargsret{\sphinxcode{pyqha.eos.}\sphinxbfcode{fit\_Murn}}{\emph{V}, \emph{E}}{}
 This is the function for fitting with the Murnaghan EOS as a function of volume only.
 
-The input variable V is an 1D array of volumes, E are the corresponding 
+The input variable \sphinxstyleemphasis{V} is an 1D array of volumes, \sphinxstyleemphasis{E} are the corresponding 
 energies (or other analogous quantity to be fitted with the Murnaghan EOS.
+
+Note: volumes must be in a.u. and energies in Rydberg.
 
 \end{fulllineitems}
 
@@ -1318,7 +1356,7 @@ energies (or other analogous quantity to be fitted with the Murnaghan EOS.
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.eos.print_eos_data}\pysiglinewithargsret{\sphinxcode{pyqha.eos.}\sphinxbfcode{print\_eos\_data}}{\emph{x}, \emph{y}, \emph{a}, \emph{chi}, \emph{ylabel='Etot'}}{}
-Print the data and the fitted results using the EOS. It can be used for
+Print the data and the fitted results using the Murnaghan EOS. It can be used for
 different fitted quantities using the proper ylabel. ylabel can be ``Etot'', 
 ``Fvib'', etc.
 
@@ -1328,7 +1366,7 @@ different fitted quantities using the proper ylabel. ylabel can be ``Etot'',
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.eos.write_Etotfitted}\pysiglinewithargsret{\sphinxcode{pyqha.eos.}\sphinxbfcode{write\_Etotfitted}}{\emph{filename}, \emph{x}, \emph{y}, \emph{a}, \emph{chi}, \emph{ylabel='E'}}{}
-Write in filename the data and the fitted results using the EOS. It can be used for
+Write in filename the data and the fitted results using the Murnaghan EOS. It can be used for
 different fitted quantities using the proper ylabel. ylabel can be ``Etot'', 
 ``Fvib'', etc.
 
@@ -1337,7 +1375,26 @@ different fitted quantities using the proper ylabel. ylabel can be ``Etot'',
 
 
 \section{pyqha.fitC module}
-\label{pyqha:pyqha-fitc-module}\label{pyqha:module-pyqha.fitC}\index{pyqha.fitC (module)}\index{fitCT() (in module pyqha.fitC)}
+\label{pyqha:pyqha-fitc-module}\label{pyqha:module-pyqha.fitC}\index{pyqha.fitC (module)}
+This submodule groups all functions relevant for computing elastic constants and
+compliances.
+\index{fS() (in module pyqha.fitC)}
+
+\begin{fulllineitems}
+\pysiglinewithargsret{\sphinxcode{pyqha.fitC.}\sphinxbfcode{fS}}{\emph{aS}, \emph{mintemp}, \emph{typeCx}}{}
+An auxiliary function returning the elastic compliances 6x6 tensor at the
+set of lattice parameters given in input as \sphinxstyleemphasis{mintemp}. These should be the
+lattice parameters at a given temperature obtained from the free energy
+minimization, so that S(T) can be obtained.
+Before calling this function, the polynomial coefficients resulting from 
+fitting the elastic compliances over a grid of lattice parameters, i.e. over
+different geometries, must be obtained and passed as input in \sphinxstyleemphasis{aS}. 
+\sphinxstyleemphasis{typeCx} defines what kind of polynomial to use for fitting (``quadratic'' or
+``quartic'')
+
+\end{fulllineitems}
+
+\index{fitCT() (in module pyqha.fitC)}
 
 \begin{fulllineitems}
 \pysiglinewithargsret{\sphinxcode{pyqha.fitC.}\sphinxbfcode{fitCT}}{\emph{aC}, \emph{chiC}, \emph{T}, \emph{minT}, \emph{ibrav=4}, \emph{typeC='quadratic'}}{}
@@ -1380,6 +1437,15 @@ the Bravais lattice, as in Quantum Espresso.
 It returns a 6*6 matrix, each element \sphinxstyleemphasis{{[}i,j{]}} being the set of coefficients of the 
 polynomial fit and another 6*6 matrix, each element \sphinxstyleemphasis{{[}i,j{]}} being the corresponding
 \(\chi^2\). If the chi squared is zero, the fitting procedure was NOT succesful
+
+\end{fulllineitems}
+
+\index{fitS() (in module pyqha.fitC)}
+
+\begin{fulllineitems}
+\pysiglinewithargsret{\sphinxcode{pyqha.fitC.}\sphinxbfcode{fitS}}{\emph{inputfileEtot}, \emph{inputpathCx}, \emph{ibrav}, \emph{typeSx='quadratic'}}{}
+An auxiliary function for fitting the elastic compliances elements over a
+grid of lattice parameters, i.e. over different geometries.
 
 \end{fulllineitems}
 
@@ -1547,14 +1613,168 @@ the tutorial.
 
 
 
+\section{pyqha.alphagruneisenp module}
+\label{pyqha:module-pyqha.alphagruneisenp}\label{pyqha:pyqha-alphagruneisenp-module}\index{pyqha.alphagruneisenp (module)}\index{c\_qv() (in module pyqha.alphagruneisenp)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.alphagruneisenp.c_qv}\pysiglinewithargsret{\sphinxcode{pyqha.alphagruneisenp.}\sphinxbfcode{c\_qv}}{\emph{T}, \emph{omega}}{}
+This function calculates the mode contribution to the heat capacity at a given T
+and omega. A similar (faster) function should be available as C extension.
+
+\end{fulllineitems}
+
+\index{c\_qv2() (in module pyqha.alphagruneisenp)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.alphagruneisenp.c_qv2}\pysiglinewithargsret{\sphinxcode{pyqha.alphagruneisenp.}\sphinxbfcode{c\_qv2}}{\emph{T}, \emph{omega}}{}
+\end{fulllineitems}
+
+\index{c\_qv\_python() (in module pyqha.alphagruneisenp)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.alphagruneisenp.c_qv_python}\pysiglinewithargsret{\sphinxcode{pyqha.alphagruneisenp.}\sphinxbfcode{c\_qv\_python}}{\emph{T}, \emph{omega}}{}
+This function calculates the mode contribution to the heat capacity at a given T
+and omega. A similar (faster) function should be available as C extension.
+
+\end{fulllineitems}
+
+\index{compute\_alpha\_grun() (in module pyqha.alphagruneisenp)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.alphagruneisenp.compute_alpha_grun}\pysiglinewithargsret{\sphinxcode{pyqha.alphagruneisenp.}\sphinxbfcode{compute\_alpha\_grun}}{\emph{T}, \emph{V}, \emph{S}, \emph{weights}, \emph{freq}, \emph{grun}, \emph{ibrav=4}}{}
+This function computes the thermal expansions alpha using the Gruneisein 
+parameters at a given temperature \sphinxstyleemphasis{T}. \sphinxstyleemphasis{V} is the unit cell volume, \sphinxstyleemphasis{S} is
+the elastic compliances matrix in Voigt notation, \sphinxstyleemphasis{freq} and \sphinxstyleemphasis{weights}  are
+the phonon frequencies in a grid of q-point and their corresponding weights.
+\sphinxstyleemphasis{grun} are the Gruneisen parameters. \sphinxstyleemphasis{ibrav} identifies the Bravais lattice.
+
+It implements the following equation:
+
+:math:{}`{}`
+
+more comments to be added
+
+First with min0, freq and grun T-independent
+
+More ibrav types to be implemented
+
+\end{fulllineitems}
+
+\index{compute\_alpha\_gruneisein() (in module pyqha.alphagruneisenp)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.alphagruneisenp.compute_alpha_gruneisein}\pysiglinewithargsret{\sphinxcode{pyqha.alphagruneisenp.}\sphinxbfcode{compute\_alpha\_gruneisein}}{\emph{TT}, \emph{ibrav}, \emph{celldmsx}, \emph{min0=None}, \emph{S=None}, \emph{weights=None}, \emph{freq=None}, \emph{grun=None}, \emph{minT=None}, \emph{afreq=None}, \emph{fittypefreq=None}, \emph{aS=None}, \emph{fittypeS=None}, \emph{nproc=1}}{}
+This function computes the thermal expansions at different temperatures from
+the Gruneisen parameters and other parameters.
+
+\sphinxstyleemphasis{TT} is a numpy array of temperatures for which the thermal expansions are
+computed. \sphinxstyleemphasis{ibrav} identifies the Bravais lattice. \sphinxstyleemphasis{celldmsx} contains the lattice
+parameters of the computed grid \((a,b,c)\) as read with \sphinxcode{read\_Etot()}.
+Different calculation options are possible, according to the optional 
+input parameters given in input:
+
+\noindent\begin{tabulary}{\linewidth}{|L|L|}
+\hline
+\sphinxstylethead{\relax 
+Input parameters
+\unskip}\relax &\sphinxstylethead{\relax 
+Meaning
+\unskip}\relax \\
+\hline
+\sphinxstyleemphasis{min0,S,weights,freq,grun}
+&
+Use temperarature-independent (0 K) volume, elastic compliances,
+average frequencies and Gruneisen parameters. The volume is obtained
+from \sphinxstyleemphasis{min0}, the lattice parameters at the minimun 0 K energy. \sphinxstyleemphasis{S} is
+the elastic compliances tensor at 0 K calculated at \sphinxstyleemphasis{min0}. \sphinxstyleemphasis{weights}
+,*freq*,*grun* are the weights, phonon frequencies and Gruneisen
+parameters at 0 K calculated at \sphinxstyleemphasis{min0}.
+\\
+\hline
+\sphinxstyleemphasis{S,weights,minT,afreq,fittypefreq}
+&
+Use temperarature-independent (0 K) elastic compliances but
+temperature-dependent volume, average frequencies and Gruneisen
+parameters. The volume is obtained from \sphinxstyleemphasis{minT}, a numpy array with
+the lattice parameters at the minimun free energy at each temperature
+. \sphinxstyleemphasis{S} is the elastic compliances tensor at 0 K calculated at \sphinxstyleemphasis{min0}.
+\sphinxstyleemphasis{weights} are the weights of the phonon frequencies.  \sphinxstyleemphasis{afreq},
+\sphinxstyleemphasis{fittypefreq} are the coefficients of the fitted polynomials for the
+phonon frequencies and the type of polynomial. They are used here to
+compute the average frequencies and Gruneisen parameters at each
+temperature.
+\\
+\hline
+\sphinxstyleemphasis{weights,afreq,fittypefreq,aS,fittypeS}
+&
+Use temperarature-dependent (0 K) volume, elastic compliances,
+average frequencies and Gruneisen parameters. The volume is obtained
+from \sphinxstyleemphasis{minT}, a numpy array with the lattice parameters at the minimun
+free energy at each temperature. \sphinxstyleemphasis{weights} are the weights of the
+phonon frequencies. \sphinxstyleemphasis{afreq},
+\sphinxstyleemphasis{fittypefreq} are the coefficients of the fitted polynomials for the
+phonon frequencies and the type of polynomial. They are used here to
+the average frequencies and Gruneisen parameters at each temperature.
+\sphinxstyleemphasis{aS,fittypeS} are the coefficients of the fitted polynomials for the
+elastic compliances and the polynomial type. They are used here to
+compute the elastic compliances at each temperature as in the quasi-
+static approximation.
+\\
+\hline\end{tabulary}
+
+
+By default, all the input parameters in the above table are ==None and if nothing
+is given in input the function will return None without computing anything.
+
+\sphinxstyleemphasis{nproc} is the number of processes to be run in parallel.
+
+\end{fulllineitems}
+
+\index{compute\_alpha\_gruneisen\_loopparallel() (in module pyqha.alphagruneisenp)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.alphagruneisenp.compute_alpha_gruneisen_loopparallel}\pysiglinewithargsret{\sphinxcode{pyqha.alphagruneisenp.}\sphinxbfcode{compute\_alpha\_gruneisen\_loopparallel}}{\emph{it}}{}
+This function implements the parallel loop where the alpha are computed. It  
+essentially calls the compute\_alpha\_grun function with the proper parameters
+according to the selected option. ``it'' is a list with all function parameters
+for the call in pool.map
+
+it{[}0{]}== 0 -\textgreater{} use V, S, average frequencies and gruneisen parameters at 0 K 
+it{[}0{]}== 1 -\textgreater{} use S at 0 K, calculate V, average frequencies and gruneisen parameters at each T 
+it{[}0{]}== 2 -\textgreater{}  calculate S, V, average frequencies and gruneisen parameters at each T
+
+\end{fulllineitems}
+
+\index{join() (in module pyqha.alphagruneisenp)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.alphagruneisenp.join}\pysiglinewithargsret{\sphinxcode{pyqha.alphagruneisenp.}\sphinxbfcode{join}}{\emph{partials}}{}
+This function simply puts together the different temperature ranges where alpha
+was calculated in parallel into a single numpy array
+
+\end{fulllineitems}
+
+
+
 \section{pyqha.fitfreqgrun module}
 \label{pyqha:pyqha-fitfreqgrun-module}\label{pyqha:module-pyqha.fitfreqgrun}\index{pyqha.fitfreqgrun (module)}\index{fitfreq() (in module pyqha.fitfreqgrun)}
 
 \begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.fitfreqgrun.fitfreq}\pysiglinewithargsret{\sphinxcode{pyqha.fitfreqgrun.}\sphinxbfcode{fitfreq}}{\emph{celldmsx}, \emph{min0}, \emph{inputfilefreq}, \emph{ibrav=4}, \emph{typefreq='quadratic'}, \emph{compute\_grun=False}}{}
-An auxiliary function for fitting the frequencies. It returns a matrix of nq*modes
-frequencies obtained for the fitted polynomial (quadratic or quartic) at the 
-minimun point min0. It also returns the weigths of each q point where the 
+\phantomsection\label{pyqha:pyqha.fitfreqgrun.fitfreq}\pysiglinewithargsret{\sphinxcode{pyqha.fitfreqgrun.}\sphinxbfcode{fitfreq}}{\emph{celldmsx}, \emph{min0}, \emph{filefreq}, \emph{ibrav=4}, \emph{typefreq='quadratic'}, \emph{compute\_grun=False}}{}
+An auxiliary function for fitting the frequencies.
+
+\sphinxstyleemphasis{celldmsx} is the matrix of lattice parameters \((a,b,c)\) where the total
+energies where computed. \sphinxstyleemphasis{min0} is the a set of \((a,b,c)\). \sphinxstyleemphasis{filefreq}
+defines the input files (\sphinxstyleemphasis{filefreq1}, \sphinxstyleemphasis{filefreq2}, etc.) containing the 
+frequencies for different geometries. The number of geometries is determined
+from the size of \sphinxstyleemphasis{celldmsx}. \sphinxstyleemphasis{ibrav} is the usual Bravais lattice. 
+\sphinxstyleemphasis{typefreq} can be ``quadratic'' (default) or ``quartic'', i.e. the kind of 
+polynomial to be used for fitting. \sphinxstyleemphasis{compute\_grun} defines if the Gruneisen
+parameters must be calculated (True) or not (False, default).
+
+It returns a matrix of \(nq*modes\) frequencies obtained for the fitted 
+polynomial coefficients (quadratic or quartic) at the 
+minimun point \sphinxstyleemphasis{min0}. It also returns the weigths of each q-point where the 
 frequencies are available.
 
 \end{fulllineitems}
@@ -1564,11 +1784,11 @@ frequencies are available.
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.fitfreqgrun.fitfreqxx}\pysiglinewithargsret{\sphinxcode{pyqha.fitfreqgrun.}\sphinxbfcode{fitfreqxx}}{\emph{celldmsx}, \emph{freqxx}, \emph{ibrav}, \emph{out}, \emph{typefreq}}{}
 This function fits the frequencies in freqxx as a function of the
-grid of lattice parameters.
+grid of lattice parameters \((a,b,c)\).
 
-It returns a nq*modes matrix, whose element {[}i,j{]} is the set of coefficients of the 
-polynomial fit and another nq*modes matrix, whose element {[}i,j{]} is the corresponding
-chi squared. If the chi squared is zero, the fitting procedure was NOT succesful
+It returns a \(nq*modes\) matrix, whose element {[}i,j{]} is the set of coefficients of the 
+polynomial fit and another \(nq*modes\) matrix, whose element {[}i,j{]} is the corresponding
+\(\chi^2\). If the \(\chi^2=0\), the fitting procedure was NOT succesful
 
 \end{fulllineitems}
 
@@ -1576,10 +1796,12 @@ chi squared. If the chi squared is zero, the fitting procedure was NOT succesful
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.fitfreqgrun.freqmin}\pysiglinewithargsret{\sphinxcode{pyqha.fitfreqgrun.}\sphinxbfcode{freqmin}}{\emph{afreq}, \emph{min0}, \emph{nq}, \emph{modes}, \emph{ibrav}, \emph{typefreq}}{}
-This function calculate the frequencies from the fitted polynomials at the 
-minimun point min0. afreq contains the fitted polynomial coefficients.
+This function calculates the frequencies from the fitted polynomials coeffients (one
+for each q point and mode) at the minimun point \sphinxstyleemphasis{min0} given in input. 
+\sphinxstyleemphasis{afreq} is a \(nq*modes\) numpy matrix containing the fitted polynomial coefficients.
+It can be obtained from {\hyperref[pyqha:pyqha.fitfreqgrun.fitfreqxx]{\sphinxcrossref{\sphinxcode{fitfreqxx()}}}}.
 
-It returns a nq*modes matrix, whose element {[}i,j{]} is the fitted frequency
+It returns a \(nq*modes\) matrix, each element {[}i,j{]} being the fitted frequency
 
 \end{fulllineitems}
 
@@ -1587,16 +1809,18 @@ It returns a nq*modes matrix, whose element {[}i,j{]} is the fitted frequency
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.fitfreqgrun.freqmingrun}\pysiglinewithargsret{\sphinxcode{pyqha.fitfreqgrun.}\sphinxbfcode{freqmingrun}}{\emph{afreq}, \emph{min0}, \emph{nq}, \emph{modes}, \emph{ibrav}, \emph{typefreq}}{}
-This function calculate the frequencies and the gruneisen parameters 
-from the fitted polynomials at the minimun point min0. afreq contains the 
-fitted polynomial coefficients.
+This function calculates the frequencies and the Gruneisen parameters
+from the fitted polynomials coeffients (one
+for each q point and mode) at the minimun point \sphinxstyleemphasis{min0} given in input. 
+\sphinxstyleemphasis{afreq} is a \(nq*modes\) numpy matrix containing the fitted polynomial coefficients.
+It can be obtained from {\hyperref[pyqha:pyqha.fitfreqgrun.fitfreqxx]{\sphinxcrossref{\sphinxcode{fitfreqxx()}}}}.
 
-It returns a nq*modes matrix, whose element {[}i,j{]} is the fitted frequency 
-In addition, it returns a nq*modes*6 with the Gruneisein parameters.
-Each element {[}i,j,k{]} is the the Gruneisein parameter at nq=i, mode=j and direction
-k (for example, in hex systems k=0 is a direction, k=2 is c direction, other are zero)
+It returns a \(nq*modes\) matrix, each element {[}i,j{]} being the fitted frequency 
+In addition, it returns a \(nq*modes*6\) with the Gruneisein parameters.
+Each element {[}i,j,k{]} is the the Gruneisein parameter at \sphinxstyleemphasis{nq=i}, \sphinxstyleemphasis{mode=j} and direction
+\sphinxstyleemphasis{k} (for example, in hex systems \sphinxstyleemphasis{k=0} is \sphinxstyleemphasis{a} direction, \sphinxstyleemphasis{k=2} is \sphinxstyleemphasis{c} direction, others are zero)
 
-Note that the Gruneisein parameters are not multiplied for the lattice parameters
+Note that the Gruneisein parameters are not multiplied for the lattice parameters.
 
 \end{fulllineitems}
 
@@ -1604,12 +1828,14 @@ Note that the Gruneisein parameters are not multiplied for the lattice parameter
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.fitfreqgrun.rearrange_freqx}\pysiglinewithargsret{\sphinxcode{pyqha.fitfreqgrun.}\sphinxbfcode{rearrange\_freqx}}{\emph{freqx}}{}
-This function rearrange the input numpy matrix freqx into an equivalent matrix freqxx
-for the subsequent fitting.
-freqx is a ngeo*nq*modes matrix, each freqx{[}i{]} is the nq*modes freq matrix for a given geometry (i)
-freqxx is a nq*modes*ngeo matrix, each freqxx{[}i{]}{[}j{]} is a vector with all values for different
-geometries of the frequencies at point q=i and mode=j. For example, freqxx{[}0{]}{[}0{]}
-is the vector with ngeo values of the frequencies at the first q-point and first mode so on.
+This function rearranges the input numpy matrix \sphinxstyleemphasis{freqx} into an equivalent 
+matrix \sphinxstyleemphasis{freqxx} for the subsequent fitting.
+\sphinxstyleemphasis{freqx} is a \(ngeo*nq*modes\) matrix, each \sphinxstyleemphasis{freqx{[}i{]}} is the \(nq*modes\)
+frequency matrix for a given geometry \sphinxstyleemphasis{i}.
+freqxx is a \(nq*modes*ngeo\) matrix, each \sphinxstyleemphasis{freqxx{[}i,j{]}} is a vector with
+all values for different geometries of the frequencies at point \sphinxstyleemphasis{q=i} and \sphinxstyleemphasis{mode=j}.
+For example, \sphinxstyleemphasis{freqxx{[}0,0{]}} is the vector with ngeo values of the frequencies
+at the first q-point and first mode so on.
 
 \end{fulllineitems}
 
@@ -1628,7 +1854,7 @@ into a vector of coeffients as from a quartic fit (extra coeffients are set to z
 \index{fit\_anis() (in module pyqha.fitutils)}
 
 \begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.fitutils.fit_anis}\pysiglinewithargsret{\sphinxcode{pyqha.fitutils.}\sphinxbfcode{fit\_anis}}{\emph{celldmsx}, \emph{Ex}, \emph{ibrav=1}, \emph{out=False}, \emph{type='quadratic'}, \emph{ylabel='Etot'}}{}
+\phantomsection\label{pyqha:pyqha.fitutils.fit_anis}\pysiglinewithargsret{\sphinxcode{pyqha.fitutils.}\sphinxbfcode{fit\_anis}}{\emph{celldmsx}, \emph{Ex}, \emph{ibrav=4}, \emph{out=False}, \emph{type='quadratic'}, \emph{ylabel='Etot'}}{}
 An auxiliary function for handling fitting in the anisotropic case
 
 \end{fulllineitems}
@@ -1637,25 +1863,31 @@ An auxiliary function for handling fitting in the anisotropic case
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.fitutils.fit_quadratic}\pysiglinewithargsret{\sphinxcode{pyqha.fitutils.}\sphinxbfcode{fit\_quadratic}}{\emph{x}, \emph{y}, \emph{ibrav=4}, \emph{out=False}, \emph{ylabel='E'}}{}
-This is the function for fitting with a quadratic polynomial
+This function fits the \sphinxstyleemphasis{y} values (energies) with a quadratic polynomial of
+up to 3 variables \(x1,x2,x3\) corresponding to the lattice parameters
+\((a,b,c)\). In the most general form the polynomial is:
 
-The most general fitting multidimensional quadratic polynomial for a triclinic
-system is:
-a1 + a2 x1 + a3 x1\textasciicircum{}2 + a4  x2 + a5  x2\textasciicircum{}2 + a6 x1*x2 +    
-+ a7  x3 + a8  x3\textasciicircum{}2 + a9  x1*x3 + a10 x2*x3 +         
-+ a11 x4 + a12 x4\textasciicircum{}2 + a13 x1*x4 + a14 x2*x4 + a15 x3*x4 +        
-+ a16 x5 + a17 x5\textasciicircum{}2 + a18 x1*x5 + a19 x2*x5 + a20 x3*x5 + a21 x4*x5 
-+ a22 x6 + a23 x6\textasciicircum{}2 + a24 x1*x6 + a25 x2*x6 + a26 x3*x6 + a27 x4*x6 + a28 x5*x6
+\(a1 + a2 x1 + a3 x1^2 + a4  x2 + a5  x2^2 + a6 x1*x2 +    
++ a7  x3 + a8  x3^2 + a9  x1*x3 + a10 x2*x3\)
 
-ONLY THE HEXAGONAL AND GENERAL CASE ARE IMPLEMENTED, more to be done
+The input variable \sphinxstyleemphasis{x} is a matrix \(ngeo*6\), where:
 
-The input variable x is a matrix ngeo*6, where
-x{[}:,0{]} is the set of a values  
-x{[}:,1{]} is the set of b values  
-x{[}:,2{]} is the set of c values  
-x{[}:,3{]} is the set of alpha values  
-x{[}:,4{]} is the set of beta values   
-x{[}:,5{]} is the set of gamma values
+\sphinxstyleemphasis{x{[}:,0{]}} is the set of a values
+
+\sphinxstyleemphasis{x{[}:,1{]}} is the set of b values
+
+\sphinxstyleemphasis{x{[}:,2{]}} is the set of c values
+
+and x{[}:,3{]}, x{[}:,4{]}, x{[}:,5{]} are all zeros. 
+\sphinxstyleemphasis{ibrav} defines the Bravais lattice, \sphinxstyleemphasis{out} set the output verbosity (\sphinxstyleemphasis{out=True} 
+verbose output), \sphinxstyleemphasis{ylabel} set a label for the quantity in \sphinxstyleemphasis{y} (can be \(E_{tot}\)
+or \(E_{tot}+F_{vib}\) for example).
+
+Note 1: implemented for cubic (\sphinxstyleemphasis{ibrav=1,2,3}), hexagonal (\sphinxstyleemphasis{ibrav=4}), 
+tetragonal (\sphinxstyleemphasis{ibrav=6,7}), orthorombic (\sphinxstyleemphasis{ibrav=8,9,10,11})
+
+Note 2: the polynomial fit is done using \sphinxcode{numpy.linalg.lstsq()}. 
+Please refer to numpy documentation for further details.
 
 \end{fulllineitems}
 
@@ -1663,20 +1895,36 @@ x{[}:,5{]} is the set of gamma values
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.fitutils.fit_quartic}\pysiglinewithargsret{\sphinxcode{pyqha.fitutils.}\sphinxbfcode{fit\_quartic}}{\emph{x}, \emph{y}, \emph{ibrav=4}, \emph{out=False}, \emph{ylabel='E'}}{}
-This is the function for fitting with a quartic polynomial
+This function fits the \sphinxstyleemphasis{y} values (energies) with a quartic polynomial of
+up to 3 variables \(x1,x2,x3\) corresponding to the lattice parameters
+\((a,b,c)\). In the most general form the polynomial is:
 
-The most general fitting multidimensional quadratic polynomial for a triclinic
-system is:
+\(a1 + a2 x1 + a3 x1^2 + a4  x1^3 + a5  x1^4 + a6 x2 + a7  x2^2 + 
+a8  x2^3 + a9  x2^4 + a10 x1*x2 + a11 x1*x2^2 + a12 x1*x2^3 +
+a13 x1^2*x2 + a14 x1^2*x2^2 + a15 x1^3*x2 + a16 x3 + a17 x3^2 + a18 x3^3 +
+a19 x3^4 + a20 x1*x3 + a21 x1*x3^2 + a22 x1*x3^3 + a23 x1^2*x3 + a24 x1^2*x3^2 +
+a25 x1^3*x3 + a26 x2*x3 + a27 x2*x3^2 + a28 x2*x3^3 + a29 x2^2*x3 +
+a30 x2^2*x3^2 + a31 x2^3*x3 + a32 x1*x2*x3 + a33 x1^2*x2*x3 +
+a34 x1*x2^2*x3 + a35 x1*x2*x3^2\)
 
-ONLY THE HEXAGONAL CASE IS IMPLEMENTED, more to be done
+The input variable \sphinxstyleemphasis{x} is a matrix \(ngeo*6\), where:
 
-The input variable x is a matrix ngeo*6, where
-x{[}:,0{]} is the set of a values  
-x{[}:,1{]} is the set of b values  
-x{[}:,2{]} is the set of c or c/a values  
-x{[}:,3{]} is the set of alpha values  
-x{[}:,4{]} is the set of beta values   
-x{[}:,5{]} is the set of gamma values
+\sphinxstyleemphasis{x{[}:,0{]}} is the set of a values
+
+\sphinxstyleemphasis{x{[}:,1{]}} is the set of b values
+
+\sphinxstyleemphasis{x{[}:,2{]}} is the set of c values
+
+and x{[}:,3{]}, x{[}:,4{]}, x{[}:,5{]} are all zeros. 
+\sphinxstyleemphasis{ibrav} defines the Bravais lattice, \sphinxstyleemphasis{out} set the output verbosity (\sphinxstyleemphasis{out=True} 
+verbose output), \sphinxstyleemphasis{ylabel} set a label for the quantity in \sphinxstyleemphasis{y} (can be \(E_{tot}\)
+or \(E_{tot}+F_{vib}\) for example).
+
+Note 1: implemented for cubic (\sphinxstyleemphasis{ibrav=1,2,3}), hexagonal (\sphinxstyleemphasis{ibrav=4}), 
+tetragonal (\sphinxstyleemphasis{ibrav=6,7}), orthorombic (\sphinxstyleemphasis{ibrav=8,9,10,11})
+
+Note 2: the polynomial fit is done using \sphinxcode{numpy.linalg.lstsq()}. 
+Please refer to numpy documentation for further details.
 
 \end{fulllineitems}
 
@@ -1700,41 +1948,6 @@ This function prints the fitted polynomial, either quartic or quadratic
 
 
 
-\section{pyqha.gruneisen1D module}
-\label{pyqha:pyqha-gruneisen1d-module}\label{pyqha:module-pyqha.gruneisen1D}\index{pyqha.gruneisen1D (module)}\index{compute\_grun() (in module pyqha.gruneisen1D)}
-
-\begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.gruneisen1D.compute_grun}\pysiglinewithargsret{\sphinxcode{pyqha.gruneisen1D.}\sphinxbfcode{compute\_grun}}{\emph{ngeo}, \emph{celldmsx}, \emph{inputfilefreq}, \emph{ibrav=4}, \emph{ext=False}}{}
-Read the frequencies for all geometries where the gruneisen parameters must be
-calculated. This depends on the direction (along a, along c, etc.)
-According to the direction chosen, start,stop,step must be given to loop over 
-all geometries as listed in the file containing the energies
-
-More work to do: entend to other ibrav types, etc.
-
-\end{fulllineitems}
-
-\index{compute\_grun\_along\_one\_direction() (in module pyqha.gruneisen1D)}
-
-\begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.gruneisen1D.compute_grun_along_one_direction}\pysiglinewithargsret{\sphinxcode{pyqha.gruneisen1D.}\sphinxbfcode{compute\_grun\_along\_one\_direction}}{\emph{nq}, \emph{modes}, \emph{ngeo}, \emph{cgeo}, \emph{celldmsx}, \emph{freqgeo}, \emph{rangegeo}, \emph{xindex=0}}{}
-Compute the Gruneisen parameters along one direction.
-This function uses a 1-dimensional polynomial of fourth degree to fit the 
-frequencies along a certain direction (along a and c axis in hexagonal systems
-for example).
-
-\end{fulllineitems}
-
-\index{find\_geocenters() (in module pyqha.gruneisen1D)}
-
-\begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.gruneisen1D.find_geocenters}\pysiglinewithargsret{\sphinxcode{pyqha.gruneisen1D.}\sphinxbfcode{find\_geocenters}}{\emph{ngeo}}{}
-Find the center geometries. Remember indexex in lists starts from 0...
-
-\end{fulllineitems}
-
-
-
 \section{pyqha.minutils module}
 \label{pyqha:module-pyqha.minutils}\label{pyqha:pyqha-minutils-module}\index{pyqha.minutils (module)}\index{calculate\_fitted\_points\_anis() (in module pyqha.minutils)}
 
@@ -1749,9 +1962,11 @@ gives the dimensions of the mesh.
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.minutils.contract_vector}\pysiglinewithargsret{\sphinxcode{pyqha.minutils.}\sphinxbfcode{contract\_vector}}{\emph{x}, \emph{ibrav=4}}{}
-Utility function: contract a vector x, len(x)=6, into a x-dim vector (x\textless{}6) 
-according to ibrav
-Note: not all ibrav are implemented yet
+Utility function: contract a vector \sphinxstyleemphasis{x}, len(x)=6, into a x-dim vector (x\textless{}6) 
+according to the Bravais lattice type as in \sphinxstyleemphasis{ibrav}
+
+Note: implemented for cubic (\sphinxstyleemphasis{ibrav=1,2,3}), hexagonal (\sphinxstyleemphasis{ibrav=4}), 
+tetragonal (\sphinxstyleemphasis{ibrav=6,7}), orthorombic (\sphinxstyleemphasis{ibrav=8,9,10,11})
 
 \end{fulllineitems}
 
@@ -1759,9 +1974,11 @@ Note: not all ibrav are implemented yet
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.minutils.expand_vector}\pysiglinewithargsret{\sphinxcode{pyqha.minutils.}\sphinxbfcode{expand\_vector}}{\emph{x}, \emph{ibrav=4}}{}
-Utility function: expands a vector x, len(x)\textless{}6, into a 6-dim vector according
-to ibrav
-Note: not all ibrav are implemented yet
+Utility function: expands a vector \sphinxstyleemphasis{x}, len(x)\textless{}6, into a 6-dim vector according
+to the Bravais lattice type as in \sphinxstyleemphasis{ibrav}
+
+Note: implemented for cubic (\sphinxstyleemphasis{ibrav=1,2,3}), hexagonal (\sphinxstyleemphasis{ibrav=4}), 
+tetragonal (\sphinxstyleemphasis{ibrav=6,7}), orthorombic (\sphinxstyleemphasis{ibrav=8,9,10,11})
 
 \end{fulllineitems}
 
@@ -1769,7 +1986,7 @@ Note: not all ibrav are implemented yet
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.minutils.find_min}\pysiglinewithargsret{\sphinxcode{pyqha.minutils.}\sphinxbfcode{find\_min}}{\emph{a}, \emph{ibrav}, \emph{type}, \emph{guess=None}, \emph{method='BFGS'}, \emph{minoptions=\{\}}}{}
-An auxiliary function for handling the minimum search
+An auxiliary function for handling the minimum search.
 
 \end{fulllineitems}
 
@@ -1793,9 +2010,16 @@ This is the function for finding the minimum of the quartic polynomial
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.minutils.fquadratic}\pysiglinewithargsret{\sphinxcode{pyqha.minutils.}\sphinxbfcode{fquadratic}}{\emph{x}, \emph{a}, \emph{ibrav=4}}{}
-Implemented polynomials for fitting and miminizing
+This function implements the quadratic polynomials for fitting and miminizing
+according to the Bravais lattice type as in \sphinxstyleemphasis{ibrav}.
+\sphinxstyleemphasis{x} is the vector with input coordinates \((a,b,c,alpha,beta,gamma)\),
+\sphinxstyleemphasis{a} is the vector
+with the polynomial coeffients. The dimension of \sphinxstyleemphasis{a} depends on
+\sphinxstyleemphasis{ibrav}. \sphinxstyleemphasis{x} has always 6 elements with zeros for those not used according to
+\sphinxstyleemphasis{ibrav}.
 
-only ibrav=4 and the most general case are implemented for now
+Note: implemented for cubic (\sphinxstyleemphasis{ibrav=1,2,3}), hexagonal (\sphinxstyleemphasis{ibrav=4}), 
+tetragonal (\sphinxstyleemphasis{ibrav=6,7}), orthorombic (\sphinxstyleemphasis{ibrav=8,9,10,11})
 
 \end{fulllineitems}
 
@@ -1803,18 +2027,55 @@ only ibrav=4 and the most general case are implemented for now
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.minutils.fquadratic_der}\pysiglinewithargsret{\sphinxcode{pyqha.minutils.}\sphinxbfcode{fquadratic\_der}}{\emph{x}, \emph{a}, \emph{ibrav=4}}{}
+This function implements the first derivatives of the quadratic polynomials 
+for fitting and miminizing according to the Bravais lattice type as in \sphinxstyleemphasis{ibrav}. 
+\sphinxstyleemphasis{x} is the vector with input coordinates \((a,b,c,alpha,beta,gamma)\),
+\sphinxstyleemphasis{a} is the vector
+with the polynomial coeffients. The dimension of \sphinxstyleemphasis{a} depends on
+\sphinxstyleemphasis{ibrav}. \sphinxstyleemphasis{x} has always 6 elements with zeros for those not used according to
+\sphinxstyleemphasis{ibrav}.
+The derivatives are returned as a numpy vector of 6 elements, each element 
+being a derivative with respect to \((a,b,c,alpha,beta,gamma)\).
+
+Note: implemented for cubic (\sphinxstyleemphasis{ibrav=1,2,3}), hexagonal (\sphinxstyleemphasis{ibrav=4}), 
+tetragonal (\sphinxstyleemphasis{ibrav=6,7}), orthorombic (\sphinxstyleemphasis{ibrav=8,9,10,11})
+
 \end{fulllineitems}
 
 \index{fquartic() (in module pyqha.minutils)}
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.minutils.fquartic}\pysiglinewithargsret{\sphinxcode{pyqha.minutils.}\sphinxbfcode{fquartic}}{\emph{x}, \emph{a}, \emph{ibrav=4}}{}
+This function implements the quartic polynomials for fitting and miminizing
+according to the Bravais lattice type as in \sphinxstyleemphasis{ibrav}.
+\sphinxstyleemphasis{x} is the vector with input coordinates \((a,b,c,alpha,beta,gamma)\),
+\sphinxstyleemphasis{a} is the vector
+with the polynomial coeffients. The dimension of \sphinxstyleemphasis{a} depends on
+\sphinxstyleemphasis{ibrav}. \sphinxstyleemphasis{x} has always 6 elements with zeros for those not used according to
+\sphinxstyleemphasis{ibrav}.
+
+Note: implemented for cubic (\sphinxstyleemphasis{ibrav=1,2,3}), hexagonal (\sphinxstyleemphasis{ibrav=4}), 
+tetragonal (\sphinxstyleemphasis{ibrav=6,7}), orthorombic (\sphinxstyleemphasis{ibrav=8,9,10,11})
+
 \end{fulllineitems}
 
 \index{fquartic\_der() (in module pyqha.minutils)}
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.minutils.fquartic_der}\pysiglinewithargsret{\sphinxcode{pyqha.minutils.}\sphinxbfcode{fquartic\_der}}{\emph{x}, \emph{a}, \emph{ibrav=4}}{}
+This function implements the first derivatives of the quadratic polynomials 
+for fitting and miminizing according to the Bravais lattice type as in \sphinxstyleemphasis{ibrav}. 
+The derivatives are returned as a numpy vector of 6 elements, each element 
+being a derivative with respect to \((a,b,c,alpha,beta,gamma)\).
+\sphinxstyleemphasis{x} is the vector with input coordinates \((a,b,c,alpha,beta,gamma)\),
+\sphinxstyleemphasis{a} is the vector
+with the polynomial coeffients. The dimension of \sphinxstyleemphasis{a} depends on
+\sphinxstyleemphasis{ibrav}. \sphinxstyleemphasis{x} has always 6 elements with zeros for those not used according to
+\sphinxstyleemphasis{ibrav}.
+
+Note: implemented for cubic (\sphinxstyleemphasis{ibrav=1,2,3}), hexagonal (\sphinxstyleemphasis{ibrav=4}), 
+tetragonal (\sphinxstyleemphasis{ibrav=6,7}), orthorombic (\sphinxstyleemphasis{ibrav=8,9,10,11})
+
 \end{fulllineitems}
 
 
@@ -1868,11 +2129,87 @@ This function generates a simple xy plot with matplotlib.
 
 
 \section{pyqha.properties\_anis module}
-\label{pyqha:module-pyqha.properties_anis}\label{pyqha:pyqha-properties-anis-module}\index{pyqha.properties\_anis (module)}\index{compute\_alpha() (in module pyqha.properties\_anis)}
+\label{pyqha:module-pyqha.properties_anis}\label{pyqha:pyqha-properties-anis-module}\index{pyqha.properties\_anis (module)}\index{compute\_Ceps() (in module pyqha.properties\_anis)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.properties_anis.compute_Ceps}\pysiglinewithargsret{\sphinxcode{pyqha.properties\_anis.}\sphinxbfcode{compute\_Ceps}}{\emph{min0}, \emph{celldmsx}, \emph{T}, \emph{Cvib}, \emph{ibrav=4}, \emph{typeCvib='quadratic'}}{}
+This function calculates the constant strain heat capacity \(C_{\epsilon}\)
+as a function of temperature. 
+By definition \(C_{\epsilon} = -T(dS/dT)_{\epsilon}=-T(d^2F/dT^2)_{\epsilon}\). 
+To avoid the numerical derivation, within the quasi-harmonic
+approximation it is better to derive it from fitting the harmonic heat capacities
+results on the grid \((a,b,c)\) at the equilibrium lattic parameters given
+in \sphinxstyleemphasis{min0}. \sphinxstyleemphasis{celldms} is the grid \((a,b,c)\), \sphinxstyleemphasis{Cvib} are the harmonic 
+heat capacity on the grid.
+The procedure is the same as the for the \(E_{tot}+F_{vib}\) in the quasi-harmonic
+calculation but without the minimization step.
+
+Note: a better way would be to do a full harmonic calculation at exactly \sphinxstyleemphasis{min0}.
+The difference with the above way is usually negligible.
+
+\sphinxstylestrong{Important}: the above procedure relies on the quasi-harmonic approximation,
+i.e. on the fact that anharmonic contribution are only due to the change of
+phonon frequencies with the lattice parameters. In reality, this is not the 
+case and the entropy so obtained can only be taken as an approximation of the
+real one.
+
+\end{fulllineitems}
+
+\index{compute\_Csigma() (in module pyqha.properties\_anis)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.properties_anis.compute_Csigma}\pysiglinewithargsret{\sphinxcode{pyqha.properties\_anis.}\sphinxbfcode{compute\_Csigma}}{\emph{TT}, \emph{Ceps}, \emph{minT}, \emph{alphaT}, \emph{C}, \emph{ibrav=4}}{}
+This function calculates the constant strain heat capacity \(C_{\sigma}\)
+as a function of temperature. 
+By definition \(C_{\sigma} = -T(dS/dT)_{\sigma}=-T(d^2F/dT^2)_{\epsilon,\sigma}\). 
+To avoid the numerical derivation, within the quasi-harmonic
+approximation it is better to derive it from fitting the harmonic heat capacities
+results on the grid \((a,b,c)\) at the equilibrium lattic parameters given
+in \sphinxstyleemphasis{min0}. \sphinxstyleemphasis{celldms} is the grid \((a,b,c)\), \sphinxstyleemphasis{Cvib} are the harmonic 
+heat capacity on the grid.
+The procedure is the same as the for the \(E_{tot}+F_{vib}\) in the quasi-harmonic
+calculation but without the minimization step.
+
+Note: a better way would be to do a full harmonic calculation at exactly \sphinxstyleemphasis{min0}.
+The difference with the above way is usually negligible.
+
+\sphinxstylestrong{Important}: the above procedure relies on the quasi-harmonic approximation,
+i.e. on the fact that anharmonic contribution are only due to the change of
+phonon frequencies with the lattice parameters. In reality, this is not the 
+case and the entropy so obtained can only be taken as an approximation of the
+real one.
+
+\end{fulllineitems}
+
+\index{compute\_S() (in module pyqha.properties\_anis)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.properties_anis.compute_S}\pysiglinewithargsret{\sphinxcode{pyqha.properties\_anis.}\sphinxbfcode{compute\_S}}{\emph{min0}, \emph{celldmsx}, \emph{T}, \emph{Svib}, \emph{ibrav=4}, \emph{typeSvib='quadratic'}}{}
+This function calculates the entropy as a function of temperature. By definition
+\(S = -(dF/dT)_{\epsilon}\). To avoid the numerical derivation, within the quasi-harmonic
+approximation it is better to derive it from fitting the harmonic entropy
+results on the grid \((a,b,c)\) at the equilibrium lattic parameters given
+in \sphinxstyleemphasis{min0}. \sphinxstyleemphasis{celldms} is the grid \((a,b,c)\), \sphinxstyleemphasis{Svib} are the harmonic 
+entropies on the grid.
+The procedure is the same as the for the \(E_{tot}+F_{vib}\) in the quasi-harmonic
+calculation but without the minimization step.
+
+Note: a better way would be to do a full harmonic calculation at exactly \sphinxstyleemphasis{min0}.
+The difference with the above way is usually negligible.
+
+\sphinxstylestrong{Important}: the above procedure relies on the quasi-harmonic approximation,
+i.e. on the fact that anharmonic contribution are only due to the change of
+phonon frequencies with the lattice parameters. In reality, this is not the 
+case and the entropy so obtained can only be taken as an approximation of the
+real one.
+
+\end{fulllineitems}
+
+\index{compute\_alpha() (in module pyqha.properties\_anis)}
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.properties_anis.compute_alpha}\pysiglinewithargsret{\sphinxcode{pyqha.properties\_anis.}\sphinxbfcode{compute\_alpha}}{\emph{minT}, \emph{ibrav}}{}
-This function calculate the thermal expansion alphaT at different temperatures
+This function calculates the thermal expansion alphaT at different temperatures
 from the input minT matrix by computing the numerical derivatives with numpy.
 The input matrix minT has shape nT*6, where the first index is the temperature 
 and the second the lattice parameter. For example, minT{[}i,0{]} and minT{[}i,2{]} are
@@ -1906,7 +2243,8 @@ expansions and the elastic constant tensor C
 
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.properties_anis.compute_volume}\pysiglinewithargsret{\sphinxcode{pyqha.properties\_anis.}\sphinxbfcode{compute\_volume}}{\emph{celldms}, \emph{ibrav=4}}{}
-Compute the volume given the celldms, only for ibrav=4 for now
+Compute the volume given the \sphinxstyleemphasis{celldms}. Only for ibrav=4 for now, else 
+returns 0.
 
 \end{fulllineitems}
 
@@ -2004,56 +2342,38 @@ Note: the order must be the same as for the total energies!
 \index{read\_freq() (in module pyqha.read)}
 
 \begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.read.read_freq}\pysiglinewithargsret{\sphinxcode{pyqha.read.}\sphinxbfcode{read\_freq}}{\emph{filename}}{}
-This funcstion reads the phonon frequencies at each \sphinxstyleemphasis{q} point from a frequency file.  
-Input file has the following format (to be done).
+\phantomsection\label{pyqha:pyqha.read.read_freq}\pysiglinewithargsret{\sphinxcode{pyqha.read.}\sphinxbfcode{read\_freq}}{\emph{fname}}{}
+Read the phonon frequencies at each q point from a frequency file \sphinxstyleemphasis{fname}.
+The format of this file is different from the one read by the {\hyperref[pyqha:pyqha.read.read_freq]{\sphinxcrossref{\sphinxcode{read\_freq()}}}} and
+contains usually more frequencies, each with a weight, but no q-point coordinates.
 
-Returning values are a nq*3 matrix q, each q{[}i{]} being a q point (vector of 3 elements)
-and a nq*modes matrix freq, each element freq{[}i{]} being the phonon frequencies
-(vector of modes elements)
+The input frequency file is expected to have the following format:
+1st line contains the number of atoms in the unit cell, the q-point grid 
+\((nqx, nqy, nqz)\) and the total number of q-points listed \sphinxstyleemphasis{nq}.
+2nd line not read.   
+For the 3rd line on, the following scheme is repeated:
+1st line: the \sphinxstyleemphasis{weight} of the q-point (they can be different because of simmetry)
+n modes lines, each with the corresponding phonon frequency
 
-\end{fulllineitems}
-
-\index{read\_freq\_ext() (in module pyqha.read)}
-
-\begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.read.read_freq_ext}\pysiglinewithargsret{\sphinxcode{pyqha.read.}\sphinxbfcode{read\_freq\_ext}}{\emph{filename}}{}
-Read the phonon frequencies at each q point from a frequency file. The format 
-of this file is different from the one read by the function read\_freq and
-contains usually more frequencies, each with a weight, but no qpoint coordinates.
-Input file has the following format:
-
-First line contains n. atoms, nqx, nqy, nqz, nq total.
-Second line not read.
-Third line: weight of the first qpoint
-Following lines: phonon frequencies (their number is modes=3*n. atoms), one per line
-then again: weight of the next qpoint, phonon frequencies (3*modes), one per line, etc.
-
-Weights are diffent because of simmetry
-
-Returning values are a nq vector weights, each weights{[}i{]} being the weight of a q point 
-and a nq*modes matrix freq, each element freq{[}i{]} being the phonon frequencies
-(vector of modes elements) at the qpoint i
-
-\end{fulllineitems}
-
-\index{read\_freq\_ext\_geo() (in module pyqha.read)}
-
-\begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.read.read_freq_ext_geo}\pysiglinewithargsret{\sphinxcode{pyqha.read.}\sphinxbfcode{read\_freq\_ext\_geo}}{\emph{inputfilefreq}, \emph{rangegeo}}{}
-Read the frequencies for all geometries where the gruneisen parameters must be
-calculated.
-
-Notes:
-nq = qgeo.shape{[}1{]} -\textgreater{} total number of q points read
-modes = freqgeo.shape{[}2{]} -\textgreater{} number of frequency modes
+Returning values are a \sphinxstyleemphasis{nq} vector of weights, each \sphinxstyleemphasis{weights{[}i{]}} being the weight of given q-point 
+and a \(nq*modes\) matrix \sphinxstyleemphasis{freq}, each element \sphinxstyleemphasis{freq{[}i{]}} being the phonon frequencies
+(vector of modes elements) at the q-point \sphinxstyleemphasis{i}
 
 \end{fulllineitems}
 
 \index{read\_freq\_geo() (in module pyqha.read)}
 
 \begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.read.read_freq_geo}\pysiglinewithargsret{\sphinxcode{pyqha.read.}\sphinxbfcode{read\_freq\_geo}}{\emph{inputfilefreq}, \emph{rangegeo}}{}
+\phantomsection\label{pyqha:pyqha.read.read_freq_geo}\pysiglinewithargsret{\sphinxcode{pyqha.read.}\sphinxbfcode{read\_freq\_geo}}{\emph{fname}, \emph{ngeo=1}}{}
+Read the frequencies as in {\hyperref[pyqha:pyqha.read.read_freq]{\sphinxcrossref{\sphinxcode{read\_freq()}}}} but for \sphinxstyleemphasis{ngeo} geometries.
+Input files are \sphinxstyleemphasis{fname1}, \sphinxstyleemphasis{fname2}, \sphinxstyleemphasis{fname3}, etc.
+
+\end{fulllineitems}
+
+\index{read\_freq\_geo\_old() (in module pyqha.read)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.read.read_freq_geo_old}\pysiglinewithargsret{\sphinxcode{pyqha.read.}\sphinxbfcode{read\_freq\_geo\_old}}{\emph{inputfilefreq}, \emph{rangegeo}}{}
 Read the frequencies for all geometries where the gruneisen parameters must be
 calculated. Start, stop, step must be given accordingly. It can be used to read
 the frequencies only at some geometries from a larger set, if necessary, 
@@ -2062,6 +2382,19 @@ providing the proper start, stop and step values.
 Notes:
 nq = qgeo.shape{[}1{]} -\textgreater{} total number of q points read
 modes = freqgeo.shape{[}2{]} -\textgreater{} number of frequency modes
+
+\end{fulllineitems}
+
+\index{read\_freq\_old() (in module pyqha.read)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.read.read_freq_old}\pysiglinewithargsret{\sphinxcode{pyqha.read.}\sphinxbfcode{read\_freq\_old}}{\emph{filename}}{}
+This function reads the phonon frequencies at each q-point from a frequency file.  
+Input file has the following format (to be done).
+
+Returning values are a nq*3 matrix q, each q{[}i{]} being a q point (vector of 3 elements)
+and a nq*modes matrix freq, each element freq{[}i{]} being the phonon frequencies
+(vector of modes elements)
 
 \end{fulllineitems}
 
@@ -2279,21 +2612,21 @@ Same for the elastic compliances
 \index{write\_freq() (in module pyqha.write)}
 
 \begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.write.write_freq}\pysiglinewithargsret{\sphinxcode{pyqha.write.}\sphinxbfcode{write\_freq}}{\emph{qgeo}, \emph{freq}, \emph{filename}}{}
-Write frequencies (or Gruneisen parameters) in a file. In this format also q points
-coordinates are written but not the weight of each point.
-It can be used to write the Gruneisen mode parameters, giving them in input as freq
-
-\end{fulllineitems}
-
-\index{write\_freq\_ext() (in module pyqha.write)}
-
-\begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.write.write_freq_ext}\pysiglinewithargsret{\sphinxcode{pyqha.write.}\sphinxbfcode{write\_freq\_ext}}{\emph{weights}, \emph{freq}, \emph{filename}}{}
+\phantomsection\label{pyqha:pyqha.write.write_freq}\pysiglinewithargsret{\sphinxcode{pyqha.write.}\sphinxbfcode{write\_freq}}{\emph{weights}, \emph{freq}, \emph{filename}}{}
 Write frequencies (or Gruneisen parameters) on an extended mesh in a file.
 In this format, q points coordinates are NOT written but the weight of each point yes.
 It can be used to write the Gruneisen mode parameters, giving them in input as freq
 Write the gruneisen parameters
+
+\end{fulllineitems}
+
+\index{write\_freq\_old() (in module pyqha.write)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.write.write_freq_old}\pysiglinewithargsret{\sphinxcode{pyqha.write.}\sphinxbfcode{write\_freq\_old}}{\emph{qgeo}, \emph{freq}, \emph{filename}}{}
+Write frequencies (or Gruneisen parameters) in a file. In this format also q points
+coordinates are written but not the weight of each point.
+It can be used to write the Gruneisen mode parameters, giving them in input as freq
 
 \end{fulllineitems}
 
@@ -2334,6 +2667,7 @@ are the axis labels (possibly with units), written in the header of the file
 \begin{theindex}
 \def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
 \bigletter{p}
+\item {\sphinxstyleindexentry{pyqha.alphagruneisenp}}\sphinxstyleindexpageref{pyqha:module-pyqha.alphagruneisenp}
 \item {\sphinxstyleindexentry{pyqha.constants}}\sphinxstyleindexpageref{pyqha:module-pyqha.constants}
 \item {\sphinxstyleindexentry{pyqha.eos}}\sphinxstyleindexpageref{pyqha:module-pyqha.eos}
 \item {\sphinxstyleindexentry{pyqha.fitC}}\sphinxstyleindexpageref{pyqha:module-pyqha.fitC}
@@ -2341,7 +2675,6 @@ are the axis labels (possibly with units), written in the header of the file
 \item {\sphinxstyleindexentry{pyqha.fitfreqgrun}}\sphinxstyleindexpageref{pyqha:module-pyqha.fitfreqgrun}
 \item {\sphinxstyleindexentry{pyqha.fitFvib}}\sphinxstyleindexpageref{pyqha:module-pyqha.fitFvib}
 \item {\sphinxstyleindexentry{pyqha.fitutils}}\sphinxstyleindexpageref{pyqha:module-pyqha.fitutils}
-\item {\sphinxstyleindexentry{pyqha.gruneisen1D}}\sphinxstyleindexpageref{pyqha:module-pyqha.gruneisen1D}
 \item {\sphinxstyleindexentry{pyqha.minutils}}\sphinxstyleindexpageref{pyqha:module-pyqha.minutils}
 \item {\sphinxstyleindexentry{pyqha.plotutils}}\sphinxstyleindexpageref{pyqha:module-pyqha.plotutils}
 \item {\sphinxstyleindexentry{pyqha.properties\_anis}}\sphinxstyleindexpageref{pyqha:module-pyqha.properties_anis}

@@ -118,7 +118,17 @@ def read_Etot(fname, ibrav=4, bc_as_a_ratio = True):
     celldmsx=[]
     Ex=[]
     
-    if ibrav==4:    # Hexagonal systems
+    if ibrav in (1,2,3):                # cubic systems (a,a,a)
+        with open(fname, "r") as lines:
+            for line in lines:
+                celldms=np.zeros([6])
+                linesplit=line.split()
+                celldms[0]=float(linesplit[0])
+                E=float(linesplit[1])
+                celldmsx.append(celldms)
+                Ex.append(E)
+    
+    elif ibrav in (4,6,7):              # hexagonal or tetragonal systems (a,a,c)
         with open(fname, "r") as lines:
             for line in lines:
                 celldms=np.zeros([6])
@@ -131,6 +141,22 @@ def read_Etot(fname, ibrav=4, bc_as_a_ratio = True):
                 E=float(linesplit[2])
                 celldmsx.append(celldms)
                 Ex.append(E)
+                
+    elif ibrav in (8,9,10,11):          # orthorombic systems (a,b,c)
+        with open(fname, "r") as lines:
+            for line in lines:
+                celldms=np.zeros([6])
+                linesplit=line.split()
+                celldms[0]=float(linesplit[0])
+                if (bc_as_a_ratio==True):
+                    celldms[1]=float(linesplit[1])*celldms[0]   # convert from b/a to b
+                    celldms[2]=float(linesplit[2])*celldms[0]   # convert from c/a to c
+                else:
+                    celldms[1]=float(linesplit[1])              # as it is
+                    celldms[2]=float(linesplit[2])              # as it is
+                E=float(linesplit[3])
+                celldmsx.append(celldms)
+                Ex.append(E)    
     else:
         return
     

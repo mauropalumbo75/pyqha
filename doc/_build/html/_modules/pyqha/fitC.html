@@ -77,6 +77,11 @@
 <span class="c1"># This file is distributed under the terms of the # MIT License. </span>
 <span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This submodule groups all functions relevant for computing elastic constants and</span>
+<span class="sd">compliances. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">read</span> <span class="k">import</span> <span class="n">read_Etot</span><span class="p">,</span> <span class="n">read_elastic_constants_geo</span><span class="p">,</span> <span class="n">read_thermo</span>
@@ -213,12 +218,14 @@
 <div class="viewcode-block" id="fS"><a class="viewcode-back" href="../../pyqha.html#pyqha.fitC.fS">[docs]</a><span class="k">def</span> <span class="nf">fS</span><span class="p">(</span><span class="n">aS</span><span class="p">,</span><span class="n">mintemp</span><span class="p">,</span><span class="n">typeCx</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An auxiliary function returning the elastic compliances 6x6 tensor at the</span>
-<span class="sd">    set of lattice parameters given in input as mintemp. These should be the</span>
+<span class="sd">    set of lattice parameters given in input as *mintemp*. These should be the</span>
 <span class="sd">    lattice parameters at a given temperature obtained from the free energy</span>
 <span class="sd">    minimization, so that S(T) can be obtained.</span>
 <span class="sd">    Before calling this function, the polynomial coefficients resulting from </span>
 <span class="sd">    fitting the elastic compliances over a grid of lattice parameters, i.e. over</span>
-<span class="sd">    different geometries, must be obtained and passed as input in aS. </span>
+<span class="sd">    different geometries, must be obtained and passed as input in *aS*. </span>
+<span class="sd">    *typeCx* defines what kind of polynomial to use for fitting (&quot;quadratic&quot; or</span>
+<span class="sd">    &quot;quartic&quot;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>

@@ -192,7 +192,17 @@
     <span class="n">celldmsx</span><span class="o">=</span><span class="p">[]</span>
     <span class="n">Ex</span><span class="o">=</span><span class="p">[]</span>
     
-    <span class="k">if</span> <span class="n">ibrav</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>    <span class="c1"># Hexagonal systems</span>
+    <span class="k">if</span> <span class="n">ibrav</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">):</span>                <span class="c1"># cubic systems (a,a,a)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="n">celldms</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">6</span><span class="p">])</span>
+                <span class="n">linesplit</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">celldms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">E</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">celldmsx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">celldms</span><span class="p">)</span>
+                <span class="n">Ex</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
+    
+    <span class="k">elif</span> <span class="n">ibrav</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">):</span>              <span class="c1"># hexagonal or tetragonal systems (a,a,c)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lines</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
                 <span class="n">celldms</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">6</span><span class="p">])</span>
@@ -205,6 +215,22 @@
                 <span class="n">E</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
                 <span class="n">celldmsx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">celldms</span><span class="p">)</span>
                 <span class="n">Ex</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
+                
+    <span class="k">elif</span> <span class="n">ibrav</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">):</span>          <span class="c1"># orthorombic systems (a,b,c)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="n">celldms</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">6</span><span class="p">])</span>
+                <span class="n">linesplit</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">celldms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">bc_as_a_ratio</span><span class="o">==</span><span class="kc">True</span><span class="p">):</span>
+                    <span class="n">celldms</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">celldms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>   <span class="c1"># convert from b/a to b</span>
+                    <span class="n">celldms</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="n">celldms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>   <span class="c1"># convert from c/a to c</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">celldms</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>              <span class="c1"># as it is</span>
+                    <span class="n">celldms</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>              <span class="c1"># as it is</span>
+                <span class="n">E</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">linesplit</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+                <span class="n">celldmsx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">celldms</span><span class="p">)</span>
+                <span class="n">Ex</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>    
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span>
     

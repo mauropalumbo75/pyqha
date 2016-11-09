@@ -3,6 +3,11 @@
 # This file is distributed under the terms of the # MIT License. 
 # See the file `License' in the root directory of the present distribution.
 
+"""
+This submodule groups all functions relevant for computing elastic constants and
+compliances. 
+"""
+
 import sys
 import numpy as np
 from read import read_Etot, read_elastic_constants_geo, read_thermo
@@ -139,12 +144,14 @@ def fitS(inputfileEtot, inputpathCx, ibrav, typeSx="quadratic"):
 def fS(aS,mintemp,typeCx):
     """
     An auxiliary function returning the elastic compliances 6x6 tensor at the
-    set of lattice parameters given in input as mintemp. These should be the
+    set of lattice parameters given in input as *mintemp*. These should be the
     lattice parameters at a given temperature obtained from the free energy
     minimization, so that S(T) can be obtained.
     Before calling this function, the polynomial coefficients resulting from 
     fitting the elastic compliances over a grid of lattice parameters, i.e. over
-    different geometries, must be obtained and passed as input in aS. 
+    different geometries, must be obtained and passed as input in *aS*. 
+    *typeCx* defines what kind of polynomial to use for fitting ("quadratic" or
+    "quartic")
     """
     S = np.zeros((6,6))
     for i in range(0,6):

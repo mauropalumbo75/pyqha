@@ -313,16 +313,20 @@ the tutorial.</p>
 </div>
 </dd></dl>
 
-<span class="target" id="module-pyqha.fitC"></span><dl class="function">
+<span class="target" id="module-pyqha.fitC"></span><p>This submodule groups all functions relevant for computing elastic constants and
+compliances.</p>
+<dl class="function">
 <dt id="pyqha.fitC.fS">
 <code class="descclassname">pyqha.fitC.</code><code class="descname">fS</code><span class="sig-paren">(</span><em>aS</em>, <em>mintemp</em>, <em>typeCx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/fitC.html#fS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.fitC.fS" title="Permalink to this definition">¶</a></dt>
 <dd><p>An auxiliary function returning the elastic compliances 6x6 tensor at the
-set of lattice parameters given in input as mintemp. These should be the
+set of lattice parameters given in input as <em>mintemp</em>. These should be the
 lattice parameters at a given temperature obtained from the free energy
 minimization, so that S(T) can be obtained.
 Before calling this function, the polynomial coefficients resulting from 
 fitting the elastic compliances over a grid of lattice parameters, i.e. over
-different geometries, must be obtained and passed as input in aS.</p>
+different geometries, must be obtained and passed as input in <em>aS</em>. 
+<em>typeCx</em> defines what kind of polynomial to use for fitting (&#8220;quadratic&#8221; or
+&#8220;quartic&#8221;)</p>
 </dd></dl>
 
 <dl class="function">
@@ -393,6 +397,8 @@ is the vector with ngeo values of the <em>C11</em> elastic constant and so on.</
 </div>
 <div class="section" id="module-pyqha.eos">
 <span id="pyqha-eos-module"></span><h2>pyqha.eos module<a class="headerlink" href="#module-pyqha.eos" title="Permalink to this headline">¶</a></h2>
+<p>This submodule groups several functions for calculating isotropic quasi-harmonic
+quantities using the Murnaghan EOS.</p>
 <dl class="function">
 <dt id="pyqha.eos.E_Murn">
 <code class="descclassname">pyqha.eos.</code><code class="descname">E_Murn</code><span class="sig-paren">(</span><em>V</em>, <em>a</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/eos.html#E_Murn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.eos.E_Murn" title="Permalink to this definition">¶</a></dt>
@@ -407,15 +413,14 @@ is the vector with ngeo values of the <em>C11</em> elastic constant and so on.</
 Returns the energy at the volume <em>V</em> using the coefficients <em>a0,a1,a2,a3</em> 
 from the equation:</p>
 <div class="math">
-<p><img src="_images/math/e892012b52d6eb84a56e82f7fe739c804129f748.png" alt="a_0 - (a_2*a_1)/(a_3-1.0) V a_2/a_3 ( a_1/V^{a_3})/(a_3-1.0) +1.0 )"/></p>
+<p><img src="_images/math/89d70895fe85ef1d2fe8f81fa4321018a3e6af4c.png" alt="E = a_0 - (a_2*a_1)/(a_3-1.0) V a_2/a_3 ( a_1/V^{a_3})/(a_3-1.0) +1.0 )"/></p>
 </div></dd></dl>
 
 <dl class="function">
 <dt id="pyqha.eos.H_Murn">
 <code class="descclassname">pyqha.eos.</code><code class="descname">H_Murn</code><span class="sig-paren">(</span><em>V</em>, <em>a</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/eos.html#H_Murn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.eos.H_Murn" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function return</p>
-<p>As <a class="reference internal" href="#pyqha.eos.E_MurnV" title="pyqha.eos.E_MurnV"><code class="xref py py-func docutils literal"><span class="pre">E_MurnV()</span></code></a> but input parameters are given as a single list 
-<em>a=[a0,a1,a2,a3]</em> and it returns the pressure not the energy from the EOS.</p>
+<dd><p>As <a class="reference internal" href="#pyqha.eos.E_MurnV" title="pyqha.eos.E_MurnV"><code class="xref py py-func docutils literal"><span class="pre">E_MurnV()</span></code></a> but input parameters are given as a single list 
+<em>a=[a0,a1,a2,a3]</em> and it returns the enthalpy not the energy from the EOS.</p>
 </dd></dl>
 
 <dl class="function">
@@ -428,14 +433,17 @@ from the equation:</p>
 <dl class="function">
 <dt id="pyqha.eos.calculate_fitted_points">
 <code class="descclassname">pyqha.eos.</code><code class="descname">calculate_fitted_points</code><span class="sig-paren">(</span><em>V</em>, <em>a</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/eos.html#calculate_fitted_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.eos.calculate_fitted_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates a denser mesh of E(V) points for plotting...</p>
+<dd><p>Calculates a denser mesh of E(V) points (1000) for plotting.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyqha.eos.compute_Cp">
 <code class="descclassname">pyqha.eos.</code><code class="descname">compute_Cp</code><span class="sig-paren">(</span><em>T</em>, <em>Cv</em>, <em>V</em>, <em>B0</em>, <em>beta</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/eos.html#compute_Cp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.eos.compute_Cp" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function computes the isobaric heat capacity from the eq. Cp-Cv=...
-Not implemented yet.</p>
+<dd><p>This function computes the isobaric heat capacity from the equation:</p>
+<p><img class="math" src="_images/math/88d274581cf97c4040b56e114e205ae7da9efe48.png" alt="Cp - Cv = T V beta^2 B0"/></p>
+<p>where <em>Cp,Cv</em> are the isobaric and isocoric heat capacities respectively,
+<em>T</em> is the temperature, <em>V</em> the unit cell volume, <em>beta</em> the volumetric
+thermal expansion and <em>B0</em> the isothermal bulk modulus.</p>
 </dd></dl>
 
 <dl class="function">
@@ -447,13 +455,15 @@ determines the <em>Cv</em> at each temperature by linear interpolation between t
 at the two volumes closest to Vmin(T). Vmin(T) is from the minimization of F(V,T)
 and <em>V</em> is the array of volumes used for it.
 Returns <em>Cv(T)</em>.</p>
+<p>Work in progress... for now it uses all volumes in the interpolation.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyqha.eos.compute_beta">
 <code class="descclassname">pyqha.eos.</code><code class="descname">compute_beta</code><span class="sig-paren">(</span><em>minT</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/eos.html#compute_beta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.eos.compute_beta" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function computes the volumetric thermal expansion as a numerical
-derivative of the volume as a function of temperature V(T). This is obtained
+derivative of the volume as a function of temperature V(T) given in the
+input array <em>minT</em>. This array can obtained
 from the free energy minimization which should be done before.</p>
 </dd></dl>
 
@@ -461,14 +471,15 @@ from the free energy minimization which should be done before.</p>
 <dt id="pyqha.eos.fit_Murn">
 <code class="descclassname">pyqha.eos.</code><code class="descname">fit_Murn</code><span class="sig-paren">(</span><em>V</em>, <em>E</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/eos.html#fit_Murn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.eos.fit_Murn" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the function for fitting with the Murnaghan EOS as a function of volume only.</p>
-<p>The input variable V is an 1D array of volumes, E are the corresponding 
+<p>The input variable <em>V</em> is an 1D array of volumes, <em>E</em> are the corresponding 
 energies (or other analogous quantity to be fitted with the Murnaghan EOS.</p>
+<p>Note: volumes must be in a.u. and energies in Rydberg.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyqha.eos.print_eos_data">
 <code class="descclassname">pyqha.eos.</code><code class="descname">print_eos_data</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>a</em>, <em>chi</em>, <em>ylabel='Etot'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/eos.html#print_eos_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.eos.print_eos_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Print the data and the fitted results using the EOS. It can be used for
+<dd><p>Print the data and the fitted results using the Murnaghan EOS. It can be used for
 different fitted quantities using the proper ylabel. ylabel can be &#8220;Etot&#8221;, 
 &#8220;Fvib&#8221;, etc.</p>
 </dd></dl>
@@ -476,7 +487,7 @@ different fitted quantities using the proper ylabel. ylabel can be &#8220;Etot&#
 <dl class="function">
 <dt id="pyqha.eos.write_Etotfitted">
 <code class="descclassname">pyqha.eos.</code><code class="descname">write_Etotfitted</code><span class="sig-paren">(</span><em>filename</em>, <em>x</em>, <em>y</em>, <em>a</em>, <em>chi</em>, <em>ylabel='E'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/eos.html#write_Etotfitted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.eos.write_Etotfitted" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write in filename the data and the fitted results using the EOS. It can be used for
+<dd><p>Write in filename the data and the fitted results using the Murnaghan EOS. It can be used for
 different fitted quantities using the proper ylabel. ylabel can be &#8220;Etot&#8221;, 
 &#8220;Fvib&#8221;, etc.</p>
 </dd></dl>
@@ -484,16 +495,20 @@ different fitted quantities using the proper ylabel. ylabel can be &#8220;Etot&#
 </div>
 <div class="section" id="module-pyqha.fitC">
 <span id="pyqha-fitc-module"></span><h2>pyqha.fitC module<a class="headerlink" href="#module-pyqha.fitC" title="Permalink to this headline">¶</a></h2>
+<p>This submodule groups all functions relevant for computing elastic constants and
+compliances.</p>
 <dl class="function">
 <dt>
 <code class="descclassname">pyqha.fitC.</code><code class="descname">fS</code><span class="sig-paren">(</span><em>aS</em>, <em>mintemp</em>, <em>typeCx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/fitC.html#fS"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>An auxiliary function returning the elastic compliances 6x6 tensor at the
-set of lattice parameters given in input as mintemp. These should be the
+set of lattice parameters given in input as <em>mintemp</em>. These should be the
 lattice parameters at a given temperature obtained from the free energy
 minimization, so that S(T) can be obtained.
 Before calling this function, the polynomial coefficients resulting from 
 fitting the elastic compliances over a grid of lattice parameters, i.e. over
-different geometries, must be obtained and passed as input in aS.</p>
+different geometries, must be obtained and passed as input in <em>aS</em>. 
+<em>typeCx</em> defines what kind of polynomial to use for fitting (&#8220;quadratic&#8221; or
+&#8220;quartic&#8221;)</p>
 </dd></dl>
 
 <dl class="function">
@@ -758,8 +773,7 @@ compute the average frequencies and Gruneisen parameters at each
 temperature.</td>
 </tr>
 <tr class="row-even"><td><em>weights,afreq,fittypefreq,aS,fittypeS</em></td>
-<td><blockquote class="first">
-<div>Use temperarature-dependent (0 K) volume, elastic compliances,
+<td>Use temperarature-dependent (0 K) volume, elastic compliances,
 average frequencies and Gruneisen parameters. The volume is obtained
 from <em>minT</em>, a numpy array with the lattice parameters at the minimun
 free energy at each temperature. <em>weights</em> are the weights of the
@@ -769,9 +783,8 @@ phonon frequencies and the type of polynomial. They are used here to
 the average frequencies and Gruneisen parameters at each temperature.
 <em>aS,fittypeS</em> are the coefficients of the fitted polynomials for the
 elastic compliances and the polynomial type. They are used here to
-compute the elastic compliances at each temperature as in the quasi-s</div></blockquote>
-<p class="last">tatic approximation.</p>
-</td>
+compute the elastic compliances at each temperature as in the quasi-
+static approximation.</td>
 </tr>
 </tbody>
 </table>
@@ -880,45 +893,57 @@ into a vector of coeffients as from a quartic fit (extra coeffients are set to z
 
 <dl class="function">
 <dt id="pyqha.fitutils.fit_anis">
-<code class="descclassname">pyqha.fitutils.</code><code class="descname">fit_anis</code><span class="sig-paren">(</span><em>celldmsx</em>, <em>Ex</em>, <em>ibrav=1</em>, <em>out=False</em>, <em>type='quadratic'</em>, <em>ylabel='Etot'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/fitutils.html#fit_anis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.fitutils.fit_anis" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pyqha.fitutils.</code><code class="descname">fit_anis</code><span class="sig-paren">(</span><em>celldmsx</em>, <em>Ex</em>, <em>ibrav=4</em>, <em>out=False</em>, <em>type='quadratic'</em>, <em>ylabel='Etot'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/fitutils.html#fit_anis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.fitutils.fit_anis" title="Permalink to this definition">¶</a></dt>
 <dd><p>An auxiliary function for handling fitting in the anisotropic case</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyqha.fitutils.fit_quadratic">
 <code class="descclassname">pyqha.fitutils.</code><code class="descname">fit_quadratic</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>ibrav=4</em>, <em>out=False</em>, <em>ylabel='E'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/fitutils.html#fit_quadratic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.fitutils.fit_quadratic" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the function for fitting with a quadratic polynomial</p>
-<p>The most general fitting multidimensional quadratic polynomial for a triclinic
-system is:
-a1 + a2 x1 + a3 x1^2 + a4  x2 + a5  x2^2 + a6 x1*x2 +    
-+ a7  x3 + a8  x3^2 + a9  x1*x3 + a10 x2*x3 +         
-+ a11 x4 + a12 x4^2 + a13 x1*x4 + a14 x2*x4 + a15 x3*x4 +        
-+ a16 x5 + a17 x5^2 + a18 x1*x5 + a19 x2*x5 + a20 x3*x5 + a21 x4*x5 
-+ a22 x6 + a23 x6^2 + a24 x1*x6 + a25 x2*x6 + a26 x3*x6 + a27 x4*x6 + a28 x5*x6</p>
-<p>ONLY THE HEXAGONAL AND GENERAL CASE ARE IMPLEMENTED, more to be done</p>
-<p>The input variable x is a matrix ngeo*6, where
-x[:,0] is the set of a values  
-x[:,1] is the set of b values  
-x[:,2] is the set of c values  
-x[:,3] is the set of alpha values  
-x[:,4] is the set of beta values   
-x[:,5] is the set of gamma values</p>
+<dd><p>This function fits the <em>y</em> values (energies) with a quadratic polynomial of
+up to 3 variables <img class="math" src="_images/math/4cc066d57a73756a55e51e3ede2effbf7af31135.png" alt="x1,x2,x3"/> corresponding to the lattice parameters
+<img class="math" src="_images/math/48f6917edfbcd881ae54ffeab449b6658e9e09dc.png" alt="(a,b,c)"/>. In the most general form the polynomial is:</p>
+<p><img class="math" src="_images/math/9ed7e282b0583420641a5d0ceb0d454b638317ac.png" alt="a1 + a2 x1 + a3 x1^2 + a4  x2 + a5  x2^2 + a6 x1*x2 +    
++ a7  x3 + a8  x3^2 + a9  x1*x3 + a10 x2*x3"/></p>
+<p>The input variable <em>x</em> is a matrix <img class="math" src="_images/math/679f82947ab910b14ecc1c1960c8a5cb2e23ed12.png" alt="ngeo*6"/>, where:</p>
+<p><em>x[:,0]</em> is the set of a values</p>
+<p><em>x[:,1]</em> is the set of b values</p>
+<p><em>x[:,2]</em> is the set of c values</p>
+<p>and x[:,3], x[:,4], x[:,5] are all zeros. 
+<em>ibrav</em> defines the Bravais lattice, <em>out</em> set the output verbosity (<em>out=True</em> 
+verbose output), <em>ylabel</em> set a label for the quantity in <em>y</em> (can be <img class="math" src="_images/math/57afe185b80b23ab0d780bbb9d1f9b2ad3e958f7.png" alt="E_{tot}"/>
+or <img class="math" src="_images/math/6fad90a8a0bf48bf469ab26edc21276d3b35748d.png" alt="E_{tot}+F_{vib}"/> for example).</p>
+<p>Note 1: implemented for cubic (<em>ibrav=1,2,3</em>), hexagonal (<em>ibrav=4</em>), 
+tetragonal (<em>ibrav=6,7</em>), orthorombic (<em>ibrav=8,9,10,11</em>)</p>
+<p>Note 2: the polynomial fit is done using <code class="xref py py-func docutils literal"><span class="pre">numpy.linalg.lstsq()</span></code>. 
+Please refer to numpy documentation for further details.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyqha.fitutils.fit_quartic">
 <code class="descclassname">pyqha.fitutils.</code><code class="descname">fit_quartic</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>ibrav=4</em>, <em>out=False</em>, <em>ylabel='E'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/fitutils.html#fit_quartic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.fitutils.fit_quartic" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the function for fitting with a quartic polynomial</p>
-<p>The most general fitting multidimensional quadratic polynomial for a triclinic
-system is:</p>
-<p>ONLY THE HEXAGONAL CASE IS IMPLEMENTED, more to be done</p>
-<p>The input variable x is a matrix ngeo*6, where
-x[:,0] is the set of a values  
-x[:,1] is the set of b values  
-x[:,2] is the set of c or c/a values  
-x[:,3] is the set of alpha values  
-x[:,4] is the set of beta values   
-x[:,5] is the set of gamma values</p>
+<dd><p>This function fits the <em>y</em> values (energies) with a quartic polynomial of
+up to 3 variables <img class="math" src="_images/math/4cc066d57a73756a55e51e3ede2effbf7af31135.png" alt="x1,x2,x3"/> corresponding to the lattice parameters
+<img class="math" src="_images/math/48f6917edfbcd881ae54ffeab449b6658e9e09dc.png" alt="(a,b,c)"/>. In the most general form the polynomial is:</p>
+<p><img class="math" src="_images/math/8b2ae044edfed2334d0e2f1726a2292c4cdc36fb.png" alt="a1 + a2 x1 + a3 x1^2 + a4  x1^3 + a5  x1^4 + a6 x2 + a7  x2^2 + 
+a8  x2^3 + a9  x2^4 + a10 x1*x2 + a11 x1*x2^2 + a12 x1*x2^3 +
+a13 x1^2*x2 + a14 x1^2*x2^2 + a15 x1^3*x2 + a16 x3 + a17 x3^2 + a18 x3^3 +
+a19 x3^4 + a20 x1*x3 + a21 x1*x3^2 + a22 x1*x3^3 + a23 x1^2*x3 + a24 x1^2*x3^2 +
+a25 x1^3*x3 + a26 x2*x3 + a27 x2*x3^2 + a28 x2*x3^3 + a29 x2^2*x3 +
+a30 x2^2*x3^2 + a31 x2^3*x3 + a32 x1*x2*x3 + a33 x1^2*x2*x3 +
+a34 x1*x2^2*x3 + a35 x1*x2*x3^2"/></p>
+<p>The input variable <em>x</em> is a matrix <img class="math" src="_images/math/679f82947ab910b14ecc1c1960c8a5cb2e23ed12.png" alt="ngeo*6"/>, where:</p>
+<p><em>x[:,0]</em> is the set of a values</p>
+<p><em>x[:,1]</em> is the set of b values</p>
+<p><em>x[:,2]</em> is the set of c values</p>
+<p>and x[:,3], x[:,4], x[:,5] are all zeros. 
+<em>ibrav</em> defines the Bravais lattice, <em>out</em> set the output verbosity (<em>out=True</em> 
+verbose output), <em>ylabel</em> set a label for the quantity in <em>y</em> (can be <img class="math" src="_images/math/57afe185b80b23ab0d780bbb9d1f9b2ad3e958f7.png" alt="E_{tot}"/>
+or <img class="math" src="_images/math/6fad90a8a0bf48bf469ab26edc21276d3b35748d.png" alt="E_{tot}+F_{vib}"/> for example).</p>
+<p>Note 1: implemented for cubic (<em>ibrav=1,2,3</em>), hexagonal (<em>ibrav=4</em>), 
+tetragonal (<em>ibrav=6,7</em>), orthorombic (<em>ibrav=8,9,10,11</em>)</p>
+<p>Note 2: the polynomial fit is done using <code class="xref py py-func docutils literal"><span class="pre">numpy.linalg.lstsq()</span></code>. 
+Please refer to numpy documentation for further details.</p>
 </dd></dl>
 
 <dl class="function">
@@ -948,23 +973,25 @@ gives the dimensions of the mesh.</p>
 <dl class="function">
 <dt id="pyqha.minutils.contract_vector">
 <code class="descclassname">pyqha.minutils.</code><code class="descname">contract_vector</code><span class="sig-paren">(</span><em>x</em>, <em>ibrav=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/minutils.html#contract_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.minutils.contract_vector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Utility function: contract a vector x, len(x)=6, into a x-dim vector (x&lt;6) 
-according to ibrav
-Note: not all ibrav are implemented yet</p>
+<dd><p>Utility function: contract a vector <em>x</em>, len(x)=6, into a x-dim vector (x&lt;6) 
+according to the Bravais lattice type as in <em>ibrav</em></p>
+<p>Note: implemented for cubic (<em>ibrav=1,2,3</em>), hexagonal (<em>ibrav=4</em>), 
+tetragonal (<em>ibrav=6,7</em>), orthorombic (<em>ibrav=8,9,10,11</em>)</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyqha.minutils.expand_vector">
 <code class="descclassname">pyqha.minutils.</code><code class="descname">expand_vector</code><span class="sig-paren">(</span><em>x</em>, <em>ibrav=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/minutils.html#expand_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.minutils.expand_vector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Utility function: expands a vector x, len(x)&lt;6, into a 6-dim vector according
-to ibrav
-Note: not all ibrav are implemented yet</p>
+<dd><p>Utility function: expands a vector <em>x</em>, len(x)&lt;6, into a 6-dim vector according
+to the Bravais lattice type as in <em>ibrav</em></p>
+<p>Note: implemented for cubic (<em>ibrav=1,2,3</em>), hexagonal (<em>ibrav=4</em>), 
+tetragonal (<em>ibrav=6,7</em>), orthorombic (<em>ibrav=8,9,10,11</em>)</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyqha.minutils.find_min">
 <code class="descclassname">pyqha.minutils.</code><code class="descname">find_min</code><span class="sig-paren">(</span><em>a</em>, <em>ibrav</em>, <em>type</em>, <em>guess=None</em>, <em>method='BFGS'</em>, <em>minoptions={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/minutils.html#find_min"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.minutils.find_min" title="Permalink to this definition">¶</a></dt>
-<dd><p>An auxiliary function for handling the minimum search</p>
+<dd><p>An auxiliary function for handling the minimum search.</p>
 </dd></dl>
 
 <dl class="function">
@@ -982,24 +1009,62 @@ Note: not all ibrav are implemented yet</p>
 <dl class="function">
 <dt id="pyqha.minutils.fquadratic">
 <code class="descclassname">pyqha.minutils.</code><code class="descname">fquadratic</code><span class="sig-paren">(</span><em>x</em>, <em>a</em>, <em>ibrav=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/minutils.html#fquadratic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.minutils.fquadratic" title="Permalink to this definition">¶</a></dt>
-<dd><p>Implemented polynomials for fitting and miminizing</p>
-<p>only ibrav=4 and the most general case are implemented for now</p>
+<dd><p>This function implements the quadratic polynomials for fitting and miminizing
+according to the Bravais lattice type as in <em>ibrav</em>.
+<em>x</em> is the vector with input coordinates <img class="math" src="_images/math/cb0ca23f7b73c2c32b48844a256558890dc38390.png" alt="(a,b,c,alpha,beta,gamma)"/>,
+<em>a</em> is the vector
+with the polynomial coeffients. The dimension of <em>a</em> depends on
+<em>ibrav</em>. <em>x</em> has always 6 elements with zeros for those not used according to
+<em>ibrav</em>.</p>
+<p>Note: implemented for cubic (<em>ibrav=1,2,3</em>), hexagonal (<em>ibrav=4</em>), 
+tetragonal (<em>ibrav=6,7</em>), orthorombic (<em>ibrav=8,9,10,11</em>)</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyqha.minutils.fquadratic_der">
 <code class="descclassname">pyqha.minutils.</code><code class="descname">fquadratic_der</code><span class="sig-paren">(</span><em>x</em>, <em>a</em>, <em>ibrav=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/minutils.html#fquadratic_der"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.minutils.fquadratic_der" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function implements the first derivatives of the quadratic polynomials 
+for fitting and miminizing according to the Bravais lattice type as in <em>ibrav</em>. 
+<em>x</em> is the vector with input coordinates <img class="math" src="_images/math/cb0ca23f7b73c2c32b48844a256558890dc38390.png" alt="(a,b,c,alpha,beta,gamma)"/>,
+<em>a</em> is the vector
+with the polynomial coeffients. The dimension of <em>a</em> depends on
+<em>ibrav</em>. <em>x</em> has always 6 elements with zeros for those not used according to
+<em>ibrav</em>.
+The derivatives are returned as a numpy vector of 6 elements, each element 
+being a derivative with respect to <img class="math" src="_images/math/cb0ca23f7b73c2c32b48844a256558890dc38390.png" alt="(a,b,c,alpha,beta,gamma)"/>.</p>
+<p>Note: implemented for cubic (<em>ibrav=1,2,3</em>), hexagonal (<em>ibrav=4</em>), 
+tetragonal (<em>ibrav=6,7</em>), orthorombic (<em>ibrav=8,9,10,11</em>)</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="pyqha.minutils.fquartic">
 <code class="descclassname">pyqha.minutils.</code><code class="descname">fquartic</code><span class="sig-paren">(</span><em>x</em>, <em>a</em>, <em>ibrav=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/minutils.html#fquartic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.minutils.fquartic" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function implements the quartic polynomials for fitting and miminizing
+according to the Bravais lattice type as in <em>ibrav</em>.
+<em>x</em> is the vector with input coordinates <img class="math" src="_images/math/cb0ca23f7b73c2c32b48844a256558890dc38390.png" alt="(a,b,c,alpha,beta,gamma)"/>,
+<em>a</em> is the vector
+with the polynomial coeffients. The dimension of <em>a</em> depends on
+<em>ibrav</em>. <em>x</em> has always 6 elements with zeros for those not used according to
+<em>ibrav</em>.</p>
+<p>Note: implemented for cubic (<em>ibrav=1,2,3</em>), hexagonal (<em>ibrav=4</em>), 
+tetragonal (<em>ibrav=6,7</em>), orthorombic (<em>ibrav=8,9,10,11</em>)</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="pyqha.minutils.fquartic_der">
 <code class="descclassname">pyqha.minutils.</code><code class="descname">fquartic_der</code><span class="sig-paren">(</span><em>x</em>, <em>a</em>, <em>ibrav=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/minutils.html#fquartic_der"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.minutils.fquartic_der" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function implements the first derivatives of the quadratic polynomials 
+for fitting and miminizing according to the Bravais lattice type as in <em>ibrav</em>. 
+The derivatives are returned as a numpy vector of 6 elements, each element 
+being a derivative with respect to <img class="math" src="_images/math/cb0ca23f7b73c2c32b48844a256558890dc38390.png" alt="(a,b,c,alpha,beta,gamma)"/>.
+<em>x</em> is the vector with input coordinates <img class="math" src="_images/math/cb0ca23f7b73c2c32b48844a256558890dc38390.png" alt="(a,b,c,alpha,beta,gamma)"/>,
+<em>a</em> is the vector
+with the polynomial coeffients. The dimension of <em>a</em> depends on
+<em>ibrav</em>. <em>x</em> has always 6 elements with zeros for those not used according to
+<em>ibrav</em>.</p>
+<p>Note: implemented for cubic (<em>ibrav=1,2,3</em>), hexagonal (<em>ibrav=4</em>), 
+tetragonal (<em>ibrav=6,7</em>), orthorombic (<em>ibrav=8,9,10,11</em>)</p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-pyqha.plotutils">
@@ -1066,7 +1131,7 @@ real one.</p>
 
 <dl class="function">
 <dt id="pyqha.properties_anis.compute_Csigma">
-<code class="descclassname">pyqha.properties_anis.</code><code class="descname">compute_Csigma</code><span class="sig-paren">(</span><em>min0</em>, <em>celldmsx</em>, <em>T</em>, <em>Cvib</em>, <em>ibrav=4</em>, <em>typeCvib='quadratic'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/properties_anis.html#compute_Csigma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.properties_anis.compute_Csigma" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pyqha.properties_anis.</code><code class="descname">compute_Csigma</code><span class="sig-paren">(</span><em>TT</em>, <em>Ceps</em>, <em>minT</em>, <em>alphaT</em>, <em>C</em>, <em>ibrav=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/properties_anis.html#compute_Csigma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.properties_anis.compute_Csigma" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function calculates the constant strain heat capacity <img class="math" src="_images/math/51da4686722e2c5d315b23d1e7a76a826fde1ac3.png" alt="C_{\sigma}"/>
 as a function of temperature. 
 By definition <img class="math" src="_images/math/b578189d5a7282d475e8b7a5f70f9940d810b112.png" alt="C_{\sigma} = -T(dS/dT)_{\sigma}=-T(d^2F/dT^2)_{\epsilon,\sigma}"/>. 

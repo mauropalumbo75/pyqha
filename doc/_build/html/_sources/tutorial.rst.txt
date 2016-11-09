@@ -30,14 +30,14 @@ The tutorial is based on the following examples:
 Several simplified plotting functions are available in :py:mod:`pyqha` and are used in the following tutorial to show what you can plot.
 Note however that all plotting functions need the matplotlib library, which must be available on your system and can be used to further taylor your plot. 
 
-=========================
-Fitting the total energy
-=========================
+==================================================
+Fitting the total energy (examples 1 and 2)
+==================================================
 
 The simplest task you can do with :py:mod:`pyqha` is to fit the total energy as a function of volume :math:`E_{tot}(V)` (example1) or lattice parameters values :math:`E_{tot}(a,b,c,\alpha,\beta,\gamma)` (example2). In the former case, you can use
 an equation of state (EOS) such as Murnaghan's or similar. In the latter case, you must use polynomials. Currently the Murnaghan EOS and quadratic and quartic polynomials are implemented in :py:mod:`pyqha`. Besides, only :math:`a,b,c` lattice parameters can be handled. This includes cubic, hexagonal, tetragonal and orthorombic systems.
 
-Let's start with the simpler case where we want to fit :math:`E_{tot}(V)`. This is the case of isotropic cubic systems (simple cubic, body centered cubic, face centered cubic) or systems which can be approximate as isotropic (for example an hexagonal system with nearly constant :math:`c/a` ratio).
+Let's start with the simpler case where we want to fit :math:`E_{tot}(V)`. This is the case of isotropic cubic systems (simple cubic, body centered cubic, face centered cubic) or systems which can be approximated as isotropic (for example an hexagonal system with nearly constant :math:`c/a` ratio).
 
 .. literalinclude:: ../examples/example1/example1.py
    :language: python
@@ -55,7 +55,7 @@ Optionally, you can plot the results with the :py:func:`plot_EV`. The original d
 
 
 The second example shows how to fit the total energy of an hexagonal system, i.e. as a function of the lattice parameters :math:`(a,c)`. The input file (*fin*) contains three columns, the first two with the :math:`(a,c)` (in :math:`a.u.`) and the third one with the energies (in :math:`Ryd/cell`). Note that if the original data are as :math:`(a,c/a)`, as often reported, you must convert the :math:`c/a` values into :math:`c` values in the input file.
-The :py:func:`fitEtot` reads the input file and perform the fit using either a quadratic or quartic polynomial (as specified by the parameter *fitype*).   
+The :py:func:`fitEtot` reads the input file and performs the fit using either a quadratic or quartic polynomial (as specified by the parameter *fitype*).   
 
 
 .. literalinclude:: ../examples/example2/example2.py
@@ -77,9 +77,9 @@ Optionally, you can use the functions :py:func:`plot_Etot`, :py:func:`plot_Etot_
 .. image:: ../examples/example2/figure_3.png
    :width: 500
 
-================================================
-Computing thermal properties from phonon DOS
-================================================
+=========================================================================
+Computing thermal properties from phonon DOS (examples 3 and 4)
+=========================================================================
 
 :py:mod:`pyqha` can calculate the vibrational properties of your system from the phonon DOS in the harmonic approximation as shown in *example3*. The DOS file must be a two columns one, the first column being the energy (in :math:`Ryd/cell`) and the second column being the density of states (in :math:`(Ryd/cell)^{-1}`). 
 
@@ -94,7 +94,7 @@ The output produced by the function :py:func:`compute_thermo` is stored in the v
    :language: text
    :lines: 1-40
 
-The first line is the simple integral of the input dos. It must be approximately equal to :math:`3N`, where *N* is the number of atoms in the cell. In the present case (hex Os) it is equal to 6. The second line shows the Zero Point Energy (ZPE). After a few comments lines, the vibrational energy (Evib), Helmholtz energy (Fvib), entropy (Svib) and heat capacity (Cvib) are written as a function of temperature. All quantities are calculated in the harmonic approximation, i.e. for fixed volume (and lattice parameters).
+The first line is the simple integral of the input dos. It must be approximately equal to :math:`3N`, where *N* is the number of atoms in the cell. In the present case (h.c.p. Os) it is equal to 6. The second line shows the Zero Point Energy (ZPE). After a few comments lines, the vibrational energy (Evib), Helmholtz energy (Fvib), entropy (Svib) and heat capacity (Cvib) are written as a function of temperature. All quantities are calculated in the harmonic approximation, i.e. for fixed volume (and lattice parameters).
 
 The original dos is plotted as:
 
@@ -134,11 +134,11 @@ The corresponding vibrational Helmoltz energies, entropies and heat capacity are
 .. image:: ../examples/example4/figure_4.png
    :width: 400
 
-================================================
-Computing quasi-harmonic properties 
-================================================
+=========================================================================
+Computing quasi-harmonic properties (examples 5 and 6)
+=========================================================================
 
-Here we show how to do a full quasi-harmonic calculation starting from the :math:`E_{tot}` and phonon DOS. First, we show an example using the Murnaghan EOS, having :math:`E_{tot}(V)` and the corresponding DOS, then using a quartic polynomial on the full grid :math:`(a,c)` for an hexagonal cell.
+Here we show how to do a full quasi-harmonic calculation starting from the :math:`E_{tot}` at 0 K and phonon DOS. First, we show an example using the Murnaghan EOS, having :math:`E_{tot}(V)` and the corresponding DOS, then using a quartic polynomial on the full grid :math:`(a,c)` for an hexagonal cell.
 
 Here is the code in the Murnaghan case:
 
@@ -189,9 +189,9 @@ If everything went well,  you should get the following plots:
 .. image:: ../examples/example6/figure_6.png
    :width: 400
 
-================================================
-Computing quasi-static elastic constants 
-================================================
+=========================================================================
+Computing quasi-static elastic constants (example 7)
+=========================================================================
 
 The following code example shows how to do a calculation of a quasi-static elastic tensor as a function of temperature for an hexagonal system. This kind of calculation requires that a quasi-harmonic calculation has already be done (as in example 6). Besides, the elastic constants for different :math:`(a,c)` values must be available. To compute these elastic constants you can use for example the thermo_pw code [#thermo_pw]_.
 
@@ -212,7 +212,7 @@ The following code example shows how to do a calculation of a quasi-static elast
    :width: 400
 
 ================================================
-Numerical issues 
+Numerical issues (example 8)
 ================================================
 
 It is important to realize that the practical application of the quasi-harmonic approximation relies on fitting and minimizing the free energy as a function of volume, lattice parameters and temperature, ultimately on numerical methods. :py:mod:`pyqha` uses numpy and scipy functions to this aim. The user must select the best methods/options for the specific system under investigation and it is always better to test, test, test...
@@ -220,23 +220,14 @@ It is important to realize that the practical application of the quasi-harmonic 
 The following example shows how different methods/options may lead to different sets of results. Sometimes the differences are within the target numerical precision. Sometimes the results are simply wrong because of an improper choice of the methods/options.
 
 
-First, lets compute some example results for a hypotetical hexagonal system, using total energy and phonon DOS for different values of :math:`(a,c)` lattice parameters. We use all default values of the function :py:func:`fitFvib`, i.e. a quadratic polynomial for fitting the total energies, a quadratic polynomial for fitting the vibrational energies, BFGS algorithm for minimization with default options (see the documentation of scipy.optimize.minimize for more details).
+First, let's compute some example results for a hypotetical hexagonal system, using total energy and phonon DOS for different values of :math:`(a,c)` lattice parameters. We use all default values of the function :py:func:`fitFvib`, i.e. a quadratic polynomial for fitting the total energies, a quadratic polynomial for fitting the vibrational energies, BFGS algorithm for minimization with default options (see the documentation of scipy.optimize.minimize for more details).
 
 .. literalinclude:: ../examples/example8/example8.py
    :language: python
    :dedent: 4
    :lines: 10-41
 
-Running the above code and observing the results (not shown here), you should notice that the thermal expansions present some spikes. These quantities are obtained as numerical derivatives of the lattice parameters and are thus more sensitive to any numerical noise. 
-
-Let's see what happens if we use different polynomial forms for fitting, but the same minimization method.
-
-.. literalinclude:: ../examples/example8/example8.py
-   :language: python
-   :dedent: 4
-   :lines: 42-66
-
-The results of the above code are shown here:
+Running the above code and observing the results below, you can notice that the thermal expansions present some spikes. These quantities are obtained as numerical derivatives of the lattice parameters and are thus more sensitive to any numerical noise. The default convergence criterium, minoptions={'gtol': 1e-5}, for the minimization BFGS algorithm is not sufficient to obtain good results. 
 
 .. image:: ../examples/example8/figure_1.png
    :width: 400
@@ -247,70 +238,56 @@ The results of the above code are shown here:
 .. image:: ../examples/example8/figure_4.png
    :width: 400
 
-You can see that the fit with quadratic polynomials for both Etot and Fvib (quad+quad) gives a slightly different result at 0 K, with a difference of the order of 0.2%. Some differences remain even when using quadratic/quartic or quartic/quartic polynomials. In general, a quartic polynomial is expected to provide a better fit, but care must be paid to avoid overfitting and the best choice also depends on the shape of your energy surface.
-
-Next, you try to minimize with gtol=1e-3 (gradient norm must be less than gtol before successful termination, see the documentation of scipy.optimize.minimize), same method.
+Let's see what happens if we now systematically increase *gtol*, using the same minimization method (BFGS):
 
 .. literalinclude:: ../examples/example8/example8.py
    :language: python
    :dedent: 4
-   :lines: 67-73
+   :lines: 42-66
 
-As you can see in the following figures, this leads to wrong results:
+The results of the above code are shown here:
 
 .. image:: ../examples/example8/figure_5.png
    :width: 400
 .. image:: ../examples/example8/figure_6.png
    :width: 400
-
-If on the contrary you increase the default gtol=1e-5 value, you can the following results:
-
-.. literalinclude:: ../examples/example8/example8.py
-   :language: python
-   :dedent: 4
-   :lines: 74-94
-
 .. image:: ../examples/example8/figure_7.png
    :width: 400
 .. image:: ../examples/example8/figure_8.png
    :width: 400
+
+As you can see, the thermal expansions are getting better, but there is still some noise at high temperature, even with the slowest *gtol*. If you try the "Newton-CG" algorithm you can finally get rid of these spikes.
+
+Let's see now what happens if we now use different polynomial forms for fitting, but the same minimization method (Newton-CG) and convergence criterium, minoptions={'gtol': 1e-7}.
+
+.. literalinclude:: ../examples/example8/example8.py
+   :language: python
+   :dedent: 4
+   :lines: 68-94
+
 .. image:: ../examples/example8/figure_9.png
    :width: 400
 .. image:: ../examples/example8/figure_10.png
    :width: 400
-
-The difference in the lattice parameters is very limited and can hardly be seen, but it is more evident in the thermal expansions. In the latters, notice how the spikes are reduced when decreasing gtol.
-
-Let's try now a different minimization algorithm, the common coniugate-gradient method (CG) as implemented in scipy.optimize.minimize, with default options and quadratic polynomial for fitting.
-
-.. literalinclude:: ../examples/example8/example8.py
-   :language: python
-   :dedent: 4
-   :lines: 97-102
-
 .. image:: ../examples/example8/figure_11.png
    :width: 400
 .. image:: ../examples/example8/figure_12.png
    :width: 400
-.. image:: ../examples/example8/figure_13.png
-   :width: 400
-.. image:: ../examples/example8/figure_14.png
-   :width: 400
 
-In this case the thermal expansions show much more noise than previously. It is thus clear that care must be paid to properly choose the fitting/minimizations methods and options.
+You can see that the fit with quadratic polynomials for both Etot and Fvib (quad+quad) gives a slightly different result, especially at 0 K, with a difference of the order of 0.2%. Some minor differences remain even when using quadratic/quartic or quartic/quartic polynomials. In general, a quartic polynomial is expected to provide a better fit, but care must be paid to avoid overfitting and the best choice also depends on the shape of your energy surface.
 
-Finally, let's see another numerical issue in quasi-harmonic calculations which is illustrated in the following code and figure:
+Finally, let's see another numerical issue in quasi-harmonic calculations which is illustrated in the following code and figures:
 
 .. literalinclude:: ../examples/example8/example8.py
    :language: python
    :dedent: 4
-   :lines: 105-
+   :lines: 96-108
 
+.. image:: ../examples/example8/figure_13.png
+   :width: 400
+.. image:: ../examples/example8/figure_14.png
+   :width: 400
 .. image:: ../examples/example8/figure_15.png
-   :width: 400
-.. image:: ../examples/example8/figure_16.png
-   :width: 400
-.. image:: ../examples/example8/figure_17.png
    :width: 400
  
 The first two figures above show iso-contour lines for the :math:`E_{tot}(a,c)+F_{vib}(a,c)` surface at T=1 K and T=1999 K. You can see that the minimum is shifting as expected because of thermal expansion (usually positive) and as a consequence it becomes closer to the boundary of the chosen :math:`(a,c)` grid. It is important to check that the minimun does not get too close to the boundary in order to avoid a serious decrease of the fit accuracy. In any case, the :math:`\chi^2` of the fitting procedure is always slightly changing (usually increasing) with temperature, as shown in the last figure.

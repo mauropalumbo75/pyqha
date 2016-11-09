@@ -53,3 +53,20 @@ or you can import only the ones you need. The above command also makes available
 
 More functions are available as submodules. See the related documentation for more details. Note, however, that most of these functions are less well documented and are meant for advanced users or if you want to tinker with the code.
 
+================
+General notes
+================
+
+The parameter *ibrav*, which occurs in many functions of this package, identifies the Bravais lattice of the system as in Quantum Espresso. Currently, only cubic (*ibrav=1,2,3*), hexagonal (*ibrav=4*), tetragonal (*ibrav=6,7*), orthorombic (*ibrav=8,9,10,11*) lattices are implemented. Note that only the variation of phonon frequencies over a grid :math:`(a,b,c)` of lattice parameters can be carried out for now. Angles and internal degrees of freedom (atomic positions) cannot be considered. Thus, different *ibrav* can give the same grid:
+
+    +-----------------------------+----------------------------------+----------------------------------+
+    | *ibrav*                     | Grid                             | Fitting polynomial               |
+    +-----------------------------+----------------------------------+----------------------------------+ 
+    | 1,2,3                       | :math:`(a,a,a)`                  | 1 variable, 2nd or 4th degree    |
+    +-----------------------------+----------------------------------+----------------------------------+ 
+    | 4,6,7                       | :math:`(a,a,c)`                  | 2 variables, 2nd or 4th degree   |
+    +-----------------------------+----------------------------------+----------------------------------+ 
+    | 8,9,10,11                   | :math:`(a,b,c)`                  | 3 variables, 2nd or 4th degree   |
+    +-----------------------------+----------------------------------+----------------------------------+ 
+
+

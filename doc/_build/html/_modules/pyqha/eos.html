@@ -77,6 +77,11 @@
 <span class="c1"># This file is distributed under the terms of the # MIT License. </span>
 <span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This submodule groups several functions for calculating isotropic quasi-harmonic</span>
+<span class="sd">quantities using the Murnaghan EOS.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="n">RY_KBAR</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="nb">pow</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -93,7 +98,7 @@
 <span class="sd">    from the equation:</span>
 <span class="sd">    </span>
 <span class="sd">    .. math::</span>
-<span class="sd">       a_0 - (a_2*a_1)/(a_3-1.0) V a_2/a_3 ( a_1/V^{a_3})/(a_3-1.0) +1.0 )</span>
+<span class="sd">       E = a_0 - (a_2*a_1)/(a_3-1.0) V a_2/a_3 ( a_1/V^{a_3})/(a_3-1.0) +1.0 )</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">res</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">V</span><span class="p">))</span>
@@ -117,11 +122,9 @@
     <span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="nb">pow</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">V</span><span class="p">,</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="H_Murn"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.H_Murn">[docs]</a><span class="k">def</span> <span class="nf">H_Murn</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">a</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function return</span>
-<span class="sd">    </span>
+    <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">    As :py:func:`E_MurnV` but input parameters are given as a single list </span>
-<span class="sd">    *a=[a0,a1,a2,a3]* and it returns the pressure not the energy from the EOS.</span>
+<span class="sd">    *a=[a0,a1,a2,a3]* and it returns the enthalpy not the energy from the EOS.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">E_Murn</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">a</span><span class="p">)</span><span class="o">+</span><span class="n">P_Murn</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">V</span></div>
 
@@ -130,7 +133,7 @@
 
 <div class="viewcode-block" id="print_eos_data"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.print_eos_data">[docs]</a><span class="k">def</span> <span class="nf">print_eos_data</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">chi</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Etot&quot;</span><span class="p">):</span>   
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Print the data and the fitted results using the EOS. It can be used for</span>
+<span class="sd">    Print the data and the fitted results using the Murnaghan EOS. It can be used for</span>
 <span class="sd">    different fitted quantities using the proper ylabel. ylabel can be &quot;Etot&quot;, </span>
 <span class="sd">    &quot;Fvib&quot;, etc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -149,7 +152,7 @@
 
 <div class="viewcode-block" id="write_Etotfitted"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.write_Etotfitted">[docs]</a><span class="k">def</span> <span class="nf">write_Etotfitted</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">chi</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;E&quot;</span><span class="p">):</span> 
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Write in filename the data and the fitted results using the EOS. It can be used for</span>
+<span class="sd">    Write in filename the data and the fitted results using the Murnaghan EOS. It can be used for</span>
 <span class="sd">    different fitted quantities using the proper ylabel. ylabel can be &quot;Etot&quot;, </span>
 <span class="sd">    &quot;Fvib&quot;, etc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -169,7 +172,7 @@
 <span class="c1">#</span>
 <div class="viewcode-block" id="calculate_fitted_points"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.calculate_fitted_points">[docs]</a><span class="k">def</span> <span class="nf">calculate_fitted_points</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">a</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates a denser mesh of E(V) points for plotting...</span>
+<span class="sd">    Calculates a denser mesh of E(V) points (1000) for plotting.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Vstep</span> <span class="o">=</span> <span class="p">(</span><span class="n">V</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">V</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">V</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">1000</span>
     <span class="n">Vdense</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
@@ -187,8 +190,10 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the function for fitting with the Murnaghan EOS as a function of volume only.</span>
 
-<span class="sd">    The input variable V is an 1D array of volumes, E are the corresponding </span>
+<span class="sd">    The input variable *V* is an 1D array of volumes, *E* are the corresponding </span>
 <span class="sd">    energies (or other analogous quantity to be fitted with the Murnaghan EOS.</span>
+<span class="sd">    </span>
+<span class="sd">    Note: volumes must be in a.u. and energies in Rydberg.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># reasonable initial guesses for EOS parameters</span>
@@ -210,7 +215,8 @@
 <div class="viewcode-block" id="compute_beta"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.compute_beta">[docs]</a><span class="k">def</span> <span class="nf">compute_beta</span><span class="p">(</span><span class="n">minT</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function computes the volumetric thermal expansion as a numerical</span>
-<span class="sd">    derivative of the volume as a function of temperature V(T). This is obtained</span>
+<span class="sd">    derivative of the volume as a function of temperature V(T) given in the</span>
+<span class="sd">    input array *minT*. This array can obtained</span>
 <span class="sd">    from the free energy minimization which should be done before.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">grad</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">minT</span><span class="p">))</span>  <span class="c1"># numerical derivatives with numpy</span>
@@ -228,6 +234,8 @@
 <span class="sd">    and *V* is the array of volumes used for it.</span>
 <span class="sd">    Returns *Cv(T)*.</span>
 <span class="sd">    </span>
+<span class="sd">    Work in progress... for now it uses all volumes in the interpolation.</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Cv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">iT</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">)):</span>
@@ -238,8 +246,14 @@
 
 <div class="viewcode-block" id="compute_Cp"><a class="viewcode-back" href="../../pyqha.html#pyqha.eos.compute_Cp">[docs]</a><span class="k">def</span> <span class="nf">compute_Cp</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">Cv</span><span class="p">,</span><span class="n">V</span><span class="p">,</span><span class="n">B0</span><span class="p">,</span><span class="n">beta</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function computes the isobaric heat capacity from the eq. Cp-Cv=...</span>
-<span class="sd">    Not implemented yet.</span>
+<span class="sd">    This function computes the isobaric heat capacity from the equation:</span>
+<span class="sd">    </span>
+<span class="sd">    :math:`Cp - Cv = T V beta^2 B0`</span>
+
+<span class="sd">    where *Cp,Cv* are the isobaric and isocoric heat capacities respectively,</span>
+<span class="sd">    *T* is the temperature, *V* the unit cell volume, *beta* the volumetric</span>
+<span class="sd">    thermal expansion and *B0* the isothermal bulk modulus.</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Cp</span> <span class="o">=</span> <span class="n">Cv</span> <span class="o">+</span> <span class="n">T</span> <span class="o">*</span> <span class="n">V</span> <span class="o">*</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">B0</span>
     <span class="k">return</span> <span class="n">Cp</span></div>

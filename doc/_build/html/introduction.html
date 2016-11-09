@@ -63,6 +63,7 @@
   <ul>
 <li><a class="reference internal" href="#">Introduction</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#general-notes">General notes</a></li>
 </ul>
 </li>
 </ul>
@@ -161,6 +162,37 @@ The package is based on numpy, scipy and matplotlib libraries.</p>
 </div>
 <p>or you can import only the ones you need. The above command also makes available a number of useful constants that you can use for unit conversions.</p>
 <p>More functions are available as submodules. See the related documentation for more details. Note, however, that most of these functions are less well documented and are meant for advanced users or if you want to tinker with the code.</p>
+</div>
+<div class="section" id="general-notes">
+<h2>General notes<a class="headerlink" href="#general-notes" title="Permalink to this headline">¶</a></h2>
+<p>The parameter <em>ibrav</em>, which occurs in many functions of this package, identifies the Bravais lattice of the system as in Quantum Espresso. Currently, only cubic (<em>ibrav=1,2,3</em>), hexagonal (<em>ibrav=4</em>), tetragonal (<em>ibrav=6,7</em>), orthorombic (<em>ibrav=8,9,10,11</em>) lattices are implemented. Note that only the variation of phonon frequencies over a grid <img class="math" src="_images/math/48f6917edfbcd881ae54ffeab449b6658e9e09dc.png" alt="(a,b,c)"/> of lattice parameters can be carried out for now. Angles and internal degrees of freedom (atomic positions) cannot be considered. Thus, different <em>ibrav</em> can give the same grid:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="35%" />
+<col width="35%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><em>ibrav</em></td>
+<td>Grid</td>
+<td>Fitting polynomial</td>
+</tr>
+<tr class="row-even"><td>1,2,3</td>
+<td><img class="math" src="_images/math/68f1e352d7d27e88ee2f40a2f5c457bc8e35d6e1.png" alt="(a,a,a)"/></td>
+<td>1 variable, 2nd or 4th degree</td>
+</tr>
+<tr class="row-odd"><td>4,6,7</td>
+<td><img class="math" src="_images/math/a72c01c138ffa64c49874035554893556dedb55f.png" alt="(a,a,c)"/></td>
+<td>2 variables, 2nd or 4th degree</td>
+</tr>
+<tr class="row-even"><td>8,9,10,11</td>
+<td><img class="math" src="_images/math/48f6917edfbcd881ae54ffeab449b6658e9e09dc.png" alt="(a,b,c)"/></td>
+<td>3 variables, 2nd or 4th degree</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
 </div>
 </div>
 

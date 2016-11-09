@@ -3,6 +3,11 @@
 # This file is distributed under the terms of the # MIT License. 
 # See the file `License' in the root directory of the present distribution.
 
+"""
+This submodule groups several functions for calculating isotropic quasi-harmonic
+quantities using the Murnaghan EOS.
+"""
+
 from constants import RY_KBAR
 from math import pow
 import numpy as np
@@ -19,7 +24,7 @@ def E_MurnV(V,a0,a1,a2,a3):
     from the equation:
     
     .. math::
-       a_0 - (a_2*a_1)/(a_3-1.0) V a_2/a_3 ( a_1/V^{a_3})/(a_3-1.0) +1.0 )
+       E = a_0 - (a_2*a_1)/(a_3-1.0) V a_2/a_3 ( a_1/V^{a_3})/(a_3-1.0) +1.0 )
     
     """
     res=np.zeros(len(V))
@@ -43,11 +48,9 @@ def P_Murn(V,a):
     return a[2]/a[3]*(pow(a[1]/V,a[3])-1.0)
 
 def H_Murn(V,a):
-    """
-    This function return
-    
+    """ 
     As :py:func:`E_MurnV` but input parameters are given as a single list 
-    *a=[a0,a1,a2,a3]* and it returns the pressure not the energy from the EOS.
+    *a=[a0,a1,a2,a3]* and it returns the enthalpy not the energy from the EOS.
     """
     return E_Murn(V,a)+P_Murn(V,a)*V
 
@@ -56,7 +59,7 @@ def H_Murn(V,a):
 
 def print_eos_data(x,y,a,chi,ylabel="Etot"):   
     """
-    Print the data and the fitted results using the EOS. It can be used for
+    Print the data and the fitted results using the Murnaghan EOS. It can be used for
     different fitted quantities using the proper ylabel. ylabel can be "Etot", 
     "Fvib", etc.
     """
@@ -75,7 +78,7 @@ def print_eos_data(x,y,a,chi,ylabel="Etot"):
 
 def write_Etotfitted(filename,x,y,a,chi,ylabel="E"): 
     """
-    Write in filename the data and the fitted results using the EOS. It can be used for
+    Write in filename the data and the fitted results using the Murnaghan EOS. It can be used for
     different fitted quantities using the proper ylabel. ylabel can be "Etot", 
     "Fvib", etc.
     """
@@ -95,7 +98,7 @@ def write_Etotfitted(filename,x,y,a,chi,ylabel="E"):
 #
 def calculate_fitted_points(V,a):
     """
-    Calculates a denser mesh of E(V) points for plotting...
+    Calculates a denser mesh of E(V) points (1000) for plotting.
     """
     Vstep = (V[len(V)-1]-V[0])/1000
     Vdense = np.zeros(1000)
@@ -113,8 +116,10 @@ def fit_Murn(V,E):
     """
     This is the function for fitting with the Murnaghan EOS as a function of volume only.
 
-    The input variable V is an 1D array of volumes, E are the corresponding 
+    The input variable *V* is an 1D array of volumes, *E* are the corresponding 
     energies (or other analogous quantity to be fitted with the Murnaghan EOS.
+    
+    Note: volumes must be in a.u. and energies in Rydberg.
     
     """
     # reasonable initial guesses for EOS parameters
@@ -136,7 +141,8 @@ def fit_Murn(V,E):
 def compute_beta(minT):
     """
     This function computes the volumetric thermal expansion as a numerical
-    derivative of the volume as a function of temperature V(T). This is obtained
+    derivative of the volume as a function of temperature V(T) given in the
+    input array *minT*. This array can obtained
     from the free energy minimization which should be done before.
     """
     grad=np.gradient(np.array(minT))  # numerical derivatives with numpy
@@ -154,6 +160,8 @@ def compute_Cv(T,Vmin,V,Cvib):
     and *V* is the array of volumes used for it.
     Returns *Cv(T)*.
     
+    Work in progress... for now it uses all volumes in the interpolation.
+    
     """
     Cv = np.zeros(len(T))
     for iT in range(0,len(T)):
@@ -164,8 +172,14 @@ def compute_Cv(T,Vmin,V,Cvib):
 
 def compute_Cp(T,Cv,V,B0,beta):
     """
-    This function computes the isobaric heat capacity from the eq. Cp-Cv=...
-    Not implemented yet.
+    This function computes the isobaric heat capacity from the equation:
+    
+    :math:`Cp - Cv = T V beta^2 B0`
+
+    where *Cp,Cv* are the isobaric and isocoric heat capacities respectively,
+    *T* is the temperature, *V* the unit cell volume, *beta* the volumetric
+    thermal expansion and *B0* the isothermal bulk modulus.
+    
     """
     Cp = Cv + T * V * beta * beta * B0
     return Cp

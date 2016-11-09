@@ -3,6 +3,10 @@
 # This file is distributed under the terms of the # MIT License. 
 # See the file `License' in the root directory of the present distribution.
 
+"""
+
+"""
+
 import sys
 import time
 import numpy as np
@@ -10,8 +14,6 @@ from read import read_Etot, read_freq_geo
 from fitutils import fit_anis, print_polynomial
 from minutils import fquadratic, fquartic, fquadratic_der, fquartic_der, find_min
 from write import write_freq
-
-
 
 ################################################################################
 
@@ -176,42 +178,3 @@ def fitfreq(celldmsx, min0, filefreq, ibrav=4, typefreq="quadratic", compute_gru
     
     return weightsx[0,:], f, grun	# weights for different geometries are supposed to be the same, return only one
 
-
-################################################################################
-#   MAIN, to be used for testing the module
-################################################################################
-#
-
-if __name__ == "__main__":
-  
-    # Default command line parameters
-    inputfileEtot = "Os.pz-spn-kjpaw_psl.1.0.0.UPF/energy_files/output_energy1"
-    inputfilefreq = "Os.pz-spn-kjpaw_psl.1.0.0.UPF/frequencies/save_frequencies.dat.g"  
-    
-    #inputfileEtot = "Re.pz-spn-kjpaw_psl.1.0.0.UPF/energy_files/output_energy1"
-    #inputfilefreq = "Re.pz-spn-kjpaw_psl.1.0.0.UPF/frequencies/save_frequencies.dat.g"  
-    
-    ibrav = 4  # default value, to be later changed to 1
-    typeEtot = "quartic"
-    typefreq = "quadratic"
-    guess = [5.13327423, 0.0, 1.57852513, 0.0, 0.0, 0.0]
-        
-    start_time = time.time()
-    
-    # Read the energies (this is necessary to read the celldmsx)
-    celldmsx, Ex = read_Etot(inputfileEtot)
-    # Fit and find the minimun at 0 K
-    a0, chia0 = fit_anis(celldmsx, Ex, ibrav, out=True, type=typeEtot)
-    if chia0!=None:
-        min0, fmin0 = find_min(a0, ibrav, type=typeEtot, guess=guess)
-    
-    # fit the frequencies over the grid of lattice parameters and get the fitted
-    # ones at the minimum point from Etot (min0)
-    weights, f, grun = fitfreq(celldmsx, min0, inputfilefreq, ibrav, typefreq="quadratic", compute_grun=True)
-    write_freq(weights,f,"average_freqPython")
-    write_freq(weights,grun[0],"output_grun_along_a_ext3Dfit")
-    write_freq(weights,grun[2],"output_grun_along_c_ext3Dfit")
-
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print ("Finished. Elapsed time: "+str(elapsed_time)+" s.")

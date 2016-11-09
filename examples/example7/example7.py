@@ -2,7 +2,7 @@
 #encoding: UTF-8
 
 """
-This is an example of a quasi-harmonic calculation using the Murnaghan EOS.
+This is an example of a quasi-static calculation of the elastic tensor.
 """
     
 if __name__ == "__main__":

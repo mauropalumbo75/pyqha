@@ -1,7 +1,0 @@
-pyqha
-=====
-
-.. toctree::
-   :maxdepth: 4
-
-   pyqha

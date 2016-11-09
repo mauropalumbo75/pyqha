@@ -2,128 +2,140 @@
 \def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
 
   \bigletter C
-  \item calculate\_fitted\_points() (in module pyqha.eos), \hyperpage{42}
-  \item calculate\_fitted\_points\_anis() (in module pyqha.minutils), \hyperpage{47}
-  \item compute\_alpha() (in module pyqha.properties\_anis), \hyperpage{48}
-  \item compute\_alpha\_splines() (in module pyqha.properties\_anis), \hyperpage{48}
-  \item compute\_beta() (in module pyqha.eos), \hyperpage{42}
-  \item compute\_Cp() (in module pyqha.eos), \hyperpage{42}
-  \item compute\_Cv() (in module pyqha.eos), \hyperpage{42}
-  \item compute\_grun() (in module pyqha.gruneisen1D), \hyperpage{47}
-  \item compute\_grun\_along\_one\_direction() (in module pyqha.gruneisen1D), \hyperpage{47}
-  \item compute\_heat\_capacity() (in module pyqha.properties\_anis), \hyperpage{48}
-  \item compute\_thermo() (in module pyqha.thermo), \hyperpage{39}, \hyperpage{50}
-  \item compute\_thermo\_geo() (in module pyqha.thermo), \hyperpage{39}, \hyperpage{50}
-  \item compute\_volume() (in module pyqha.properties\_anis), \hyperpage{48}
-  \item contract\_vector() (in module pyqha.minutils), \hyperpage{47}
+  \item c\_qv() (in module pyqha.alphagruneisenp), \hyperpage{46}
+  \item c\_qv2() (in module pyqha.alphagruneisenp), \hyperpage{46}
+  \item c\_qv\_python() (in module pyqha.alphagruneisenp), \hyperpage{46}
+  \item calculate\_fitted\_points() (in module pyqha.eos), \hyperpage{43}
+  \item calculate\_fitted\_points\_anis() (in module pyqha.minutils), \hyperpage{49}
+  \item compute\_alpha() (in module pyqha.properties\_anis), \hyperpage{51}
+  \item compute\_alpha\_grun() (in module pyqha.alphagruneisenp), \hyperpage{46}
+  \item compute\_alpha\_gruneisein() (in module pyqha.alphagruneisenp), \hyperpage{46}
+  \item compute\_alpha\_gruneisen\_loopparallel() (in module pyqha.alphagruneisenp), \hyperpage{47}
+  \item compute\_alpha\_splines() (in module pyqha.properties\_anis), \hyperpage{52}
+  \item compute\_beta() (in module pyqha.eos), \hyperpage{43}
+  \item compute\_Ceps() (in module pyqha.properties\_anis), \hyperpage{51}
+  \item compute\_Cp() (in module pyqha.eos), \hyperpage{43}
+  \item compute\_Csigma() (in module pyqha.properties\_anis), \hyperpage{51}
+  \item compute\_Cv() (in module pyqha.eos), \hyperpage{43}
+  \item compute\_heat\_capacity() (in module pyqha.properties\_anis), \hyperpage{52}
+  \item compute\_S() (in module pyqha.properties\_anis), \hyperpage{51}
+  \item compute\_thermo() (in module pyqha.thermo), \hyperpage{39}, \hyperpage{53}
+  \item compute\_thermo\_geo() (in module pyqha.thermo), \hyperpage{39}, \hyperpage{54}
+  \item compute\_volume() (in module pyqha.properties\_anis), \hyperpage{52}
+  \item contract\_vector() (in module pyqha.minutils), \hyperpage{49}
 
   \indexspace
   \bigletter D
-  \item dos\_integral() (in module pyqha.thermo), \hyperpage{40}, \hyperpage{50}
+  \item dos\_integral() (in module pyqha.thermo), \hyperpage{40}, \hyperpage{54}
 
   \indexspace
   \bigletter E
   \item E\_Murn() (in module pyqha.eos), \hyperpage{42}
   \item E\_MurnV() (in module pyqha.eos), \hyperpage{42}
-  \item expand\_quadratic\_to\_quartic() (in module pyqha.fitutils), \hyperpage{46}
-  \item expand\_vector() (in module pyqha.minutils), \hyperpage{47}
+  \item expand\_quadratic\_to\_quartic() (in module pyqha.fitutils), \hyperpage{48}
+  \item expand\_vector() (in module pyqha.minutils), \hyperpage{49}
 
   \indexspace
   \bigletter F
-  \item find\_geocenters() (in module pyqha.gruneisen1D), \hyperpage{47}
-  \item find\_min() (in module pyqha.minutils), \hyperpage{47}
-  \item find\_min\_quadratic() (in module pyqha.minutils), \hyperpage{47}
-  \item find\_min\_quartic() (in module pyqha.minutils), \hyperpage{47}
-  \item fit\_anis() (in module pyqha.fitutils), \hyperpage{46}
+  \item find\_min() (in module pyqha.minutils), \hyperpage{50}
+  \item find\_min\_quadratic() (in module pyqha.minutils), \hyperpage{50}
+  \item find\_min\_quartic() (in module pyqha.minutils), \hyperpage{50}
+  \item fit\_anis() (in module pyqha.fitutils), \hyperpage{48}
   \item fit\_Murn() (in module pyqha.eos), \hyperpage{43}
-  \item fit\_quadratic() (in module pyqha.fitutils), \hyperpage{46}
-  \item fit\_quartic() (in module pyqha.fitutils), \hyperpage{46}
+  \item fit\_quadratic() (in module pyqha.fitutils), \hyperpage{48}
+  \item fit\_quartic() (in module pyqha.fitutils), \hyperpage{49}
   \item fitCT() (in module pyqha.fitC), \hyperpage{41}, \hyperpage{43}
-  \item fitCxx() (in module pyqha.fitC), \hyperpage{41}, \hyperpage{43}
+  \item fitCxx() (in module pyqha.fitC), \hyperpage{42}, \hyperpage{44}
   \item fitEtot() (in module pyqha.fitEtot), \hyperpage{39}, \hyperpage{44}
   \item fitEtotV() (in module pyqha.fitEtot), \hyperpage{39}, \hyperpage{44}
-  \item fitfreq() (in module pyqha.fitfreqgrun), \hyperpage{45}
-  \item fitfreqxx() (in module pyqha.fitfreqgrun), \hyperpage{45}
-  \item fitFvib() (in module pyqha.fitFvib), \hyperpage{40}, \hyperpage{44}
+  \item fitfreq() (in module pyqha.fitfreqgrun), \hyperpage{47}
+  \item fitfreqxx() (in module pyqha.fitfreqgrun), \hyperpage{48}
+  \item fitFvib() (in module pyqha.fitFvib), \hyperpage{40}, \hyperpage{45}
   \item fitFvibV() (in module pyqha.fitFvib), \hyperpage{41}, \hyperpage{45}
-  \item fquadratic() (in module pyqha.minutils), \hyperpage{47}
-  \item fquadratic\_der() (in module pyqha.minutils), \hyperpage{47}
-  \item fquartic() (in module pyqha.minutils), \hyperpage{47}
-  \item fquartic\_der() (in module pyqha.minutils), \hyperpage{47}
-  \item freqmin() (in module pyqha.fitfreqgrun), \hyperpage{46}
-  \item freqmingrun() (in module pyqha.fitfreqgrun), \hyperpage{46}
+  \item fitS() (in module pyqha.fitC), \hyperpage{42}, \hyperpage{44}
+  \item fquadratic() (in module pyqha.minutils), \hyperpage{50}
+  \item fquadratic\_der() (in module pyqha.minutils), \hyperpage{50}
+  \item fquartic() (in module pyqha.minutils), \hyperpage{50}
+  \item fquartic\_der() (in module pyqha.minutils), \hyperpage{50}
+  \item freqmin() (in module pyqha.fitfreqgrun), \hyperpage{48}
+  \item freqmingrun() (in module pyqha.fitfreqgrun), \hyperpage{48}
+  \item fS() (in module pyqha.fitC), \hyperpage{41}, \hyperpage{43}
 
   \indexspace
   \bigletter G
-  \item gen\_TT() (in module pyqha.thermo), \hyperpage{40}, \hyperpage{50}
+  \item gen\_TT() (in module pyqha.thermo), \hyperpage{40}, \hyperpage{54}
 
   \indexspace
   \bigletter H
   \item H\_Murn() (in module pyqha.eos), \hyperpage{42}
 
   \indexspace
+  \bigletter J
+  \item join() (in module pyqha.alphagruneisenp), \hyperpage{47}
+
+  \indexspace
   \bigletter M
-  \item multiple\_plot\_xy() (in module pyqha.plotutils), \hyperpage{48}
+  \item multiple\_plot\_xy() (in module pyqha.plotutils), \hyperpage{50}
 
   \indexspace
   \bigletter P
   \item P\_Murn() (in module pyqha.eos), \hyperpage{42}
-  \item plot\_Etot() (in module pyqha.plotutils), \hyperpage{48}
-  \item plot\_Etot\_contour() (in module pyqha.plotutils), \hyperpage{48}
-  \item plot\_EV() (in module pyqha.plotutils), \hyperpage{48}
-  \item print\_data() (in module pyqha.fitutils), \hyperpage{46}
+  \item plot\_Etot() (in module pyqha.plotutils), \hyperpage{50}
+  \item plot\_Etot\_contour() (in module pyqha.plotutils), \hyperpage{51}
+  \item plot\_EV() (in module pyqha.plotutils), \hyperpage{50}
+  \item print\_data() (in module pyqha.fitutils), \hyperpage{49}
   \item print\_eos\_data() (in module pyqha.eos), \hyperpage{43}
-  \item print\_polynomial() (in module pyqha.fitutils), \hyperpage{47}
+  \item print\_polynomial() (in module pyqha.fitutils), \hyperpage{49}
+  \item pyqha.alphagruneisenp (module), \hyperpage{46}
   \item pyqha.constants (module), \hyperpage{42}
   \item pyqha.eos (module), \hyperpage{42}
   \item pyqha.fitC (module), \hyperpage{41}, \hyperpage{43}
   \item pyqha.fitEtot (module), \hyperpage{39}, \hyperpage{44}
-  \item pyqha.fitfreqgrun (module), \hyperpage{45}
-  \item pyqha.fitFvib (module), \hyperpage{40}, \hyperpage{44}
-  \item pyqha.fitutils (module), \hyperpage{46}
-  \item pyqha.gruneisen1D (module), \hyperpage{47}
-  \item pyqha.minutils (module), \hyperpage{47}
-  \item pyqha.plotutils (module), \hyperpage{48}
-  \item pyqha.properties\_anis (module), \hyperpage{48}
-  \item pyqha.read (module), \hyperpage{48}
-  \item pyqha.thermo (module), \hyperpage{39}, \hyperpage{50}
-  \item pyqha.write (module), \hyperpage{51}
+  \item pyqha.fitfreqgrun (module), \hyperpage{47}
+  \item pyqha.fitFvib (module), \hyperpage{40}, \hyperpage{45}
+  \item pyqha.fitutils (module), \hyperpage{48}
+  \item pyqha.minutils (module), \hyperpage{49}
+  \item pyqha.plotutils (module), \hyperpage{50}
+  \item pyqha.properties\_anis (module), \hyperpage{51}
+  \item pyqha.read (module), \hyperpage{52}
+  \item pyqha.thermo (module), \hyperpage{39}, \hyperpage{53}
+  \item pyqha.write (module), \hyperpage{54}
 
   \indexspace
   \bigletter R
-  \item read\_alpha() (in module pyqha.read), \hyperpage{49}
-  \item read\_celldmt\_hex() (in module pyqha.read), \hyperpage{49}
-  \item read\_dos() (in module pyqha.read), \hyperpage{49}
-  \item read\_dos\_geo() (in module pyqha.read), \hyperpage{49}
-  \item read\_elastic\_constants() (in module pyqha.read), \hyperpage{49}
-  \item read\_elastic\_constants\_geo() (in module pyqha.read), \hyperpage{49}
-  \item read\_Etot() (in module pyqha.read), \hyperpage{48}
-  \item read\_EtotV() (in module pyqha.read), \hyperpage{49}
-  \item read\_freq() (in module pyqha.read), \hyperpage{49}
-  \item read\_freq\_ext() (in module pyqha.read), \hyperpage{49}
-  \item read\_freq\_ext\_geo() (in module pyqha.read), \hyperpage{49}
-  \item read\_freq\_geo() (in module pyqha.read), \hyperpage{49}
-  \item read\_thermo() (in module pyqha.read), \hyperpage{50}
-  \item rearrange\_Cx() (in module pyqha.fitC), \hyperpage{42, 43}
-  \item rearrange\_freqx() (in module pyqha.fitfreqgrun), \hyperpage{46}
-  \item rearrange\_thermo() (in module pyqha.thermo), \hyperpage{40}, \hyperpage{50}
+  \item read\_alpha() (in module pyqha.read), \hyperpage{52}
+  \item read\_celldmt\_hex() (in module pyqha.read), \hyperpage{52}
+  \item read\_dos() (in module pyqha.read), \hyperpage{52}
+  \item read\_dos\_geo() (in module pyqha.read), \hyperpage{52}
+  \item read\_elastic\_constants() (in module pyqha.read), \hyperpage{52}
+  \item read\_elastic\_constants\_geo() (in module pyqha.read), \hyperpage{52}
+  \item read\_Etot() (in module pyqha.read), \hyperpage{52}
+  \item read\_EtotV() (in module pyqha.read), \hyperpage{52}
+  \item read\_freq() (in module pyqha.read), \hyperpage{53}
+  \item read\_freq\_geo() (in module pyqha.read), \hyperpage{53}
+  \item read\_freq\_geo\_old() (in module pyqha.read), \hyperpage{53}
+  \item read\_freq\_old() (in module pyqha.read), \hyperpage{53}
+  \item read\_thermo() (in module pyqha.read), \hyperpage{53}
+  \item rearrange\_Cx() (in module pyqha.fitC), \hyperpage{42}, \hyperpage{44}
+  \item rearrange\_freqx() (in module pyqha.fitfreqgrun), \hyperpage{48}
+  \item rearrange\_thermo() (in module pyqha.thermo), \hyperpage{40}, \hyperpage{54}
 
   \indexspace
   \bigletter S
-  \item simple\_plot\_xy() (in module pyqha.plotutils), \hyperpage{48}
+  \item simple\_plot\_xy() (in module pyqha.plotutils), \hyperpage{51}
 
   \indexspace
   \bigletter W
-  \item write\_alphaT() (in module pyqha.write), \hyperpage{51}
-  \item write\_C\_geo() (in module pyqha.write), \hyperpage{51}
-  \item write\_celldmsT() (in module pyqha.write), \hyperpage{51}
-  \item write\_CT() (in module pyqha.write), \hyperpage{51}
-  \item write\_elastic\_constants() (in module pyqha.write), \hyperpage{51}
-  \item write\_Etot() (in module pyqha.write), \hyperpage{51}
+  \item write\_alphaT() (in module pyqha.write), \hyperpage{54}
+  \item write\_C\_geo() (in module pyqha.write), \hyperpage{54}
+  \item write\_celldmsT() (in module pyqha.write), \hyperpage{54}
+  \item write\_CT() (in module pyqha.write), \hyperpage{54}
+  \item write\_elastic\_constants() (in module pyqha.write), \hyperpage{54}
+  \item write\_Etot() (in module pyqha.write), \hyperpage{54}
   \item write\_Etotfitted() (in module pyqha.eos), \hyperpage{43}
-  \item write\_freq() (in module pyqha.write), \hyperpage{51}
-  \item write\_freq\_ext() (in module pyqha.write), \hyperpage{51}
-  \item write\_thermo() (in module pyqha.write), \hyperpage{51}
-  \item write\_xy() (in module pyqha.write), \hyperpage{51}
+  \item write\_freq() (in module pyqha.write), \hyperpage{55}
+  \item write\_freq\_old() (in module pyqha.write), \hyperpage{55}
+  \item write\_thermo() (in module pyqha.write), \hyperpage{55}
+  \item write\_xy() (in module pyqha.write), \hyperpage{55}
 
 \end{theindex}
