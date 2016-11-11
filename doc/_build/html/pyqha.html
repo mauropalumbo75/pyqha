@@ -74,6 +74,7 @@
 <li><a class="reference internal" href="#module-pyqha.read">pyqha.read module</a></li>
 <li><a class="reference internal" href="#module-pyqha.thermo">pyqha.thermo module</a></li>
 <li><a class="reference internal" href="#module-pyqha.write">pyqha.write module</a></li>
+<li><a class="reference internal" href="#id1">pyqha.alphagruneisenp module</a></li>
 </ul>
 </li>
 </ul>
@@ -111,7 +112,8 @@
 <div class="section" id="module-contents">
 <h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 <p>The following functions are available from <code class="xref py py-mod docutils literal"><span class="pre">pyqha</span></code> module and are the most common ones for the end user.</p>
-<span class="target" id="module-pyqha.fitEtot"></span><dl class="function">
+<span class="target" id="module-pyqha.fitEtot"></span><p>This submodule groups all functions relevant for computing the total energies at 0 K.</p>
+<dl class="function">
 <dt id="pyqha.fitEtot.fitEtot">
 <code class="descclassname">pyqha.fitEtot.</code><code class="descname">fitEtot</code><span class="sig-paren">(</span><em>fin</em>, <em>out=True</em>, <em>ibrav=4</em>, <em>fittype='quadratic'</em>, <em>guess=None</em>, <em>method='BFGS'</em>, <em>minoptions={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/fitEtot.html#fitEtot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.fitEtot.fitEtot" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function reads the file <em>fin</em> containing the energies as a function
@@ -144,7 +146,8 @@ It returns the volumes and energies read from the input file, the fitted coeffic
 of the EOS and the corresponding <img class="math" src="_images/math/b0a677c7b64a9ce46bca897eabaf2af1c84de1a5.png" alt="\chi^2"/>.</p>
 </dd></dl>
 
-<span class="target" id="module-pyqha.thermo"></span><dl class="function">
+<span class="target" id="module-pyqha.thermo"></span><p>A collection of functions for computing harmonic quantities from phonon DOS.</p>
+<dl class="function">
 <dt id="pyqha.thermo.compute_thermo">
 <code class="descclassname">pyqha.thermo.</code><code class="descname">compute_thermo</code><span class="sig-paren">(</span><em>E</em>, <em>dos</em>, <em>TT</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/thermo.html#compute_thermo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.thermo.compute_thermo" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function computes the vibrational energy, Helmholtz energy, entropy and
@@ -226,7 +229,8 @@ The first index of the returning matrices <em>X</em> now gives all geometries at
 geometry, <em>X[0,1]</em> the second geometry and so on.</p>
 </dd></dl>
 
-<span class="target" id="module-pyqha.fitFvib"></span><dl class="function">
+<span class="target" id="module-pyqha.fitFvib"></span><p>This submodule groups all functions relevant for the total and vibrational energies.</p>
+<dl class="function">
 <dt id="pyqha.fitFvib.fitFvib">
 <code class="descclassname">pyqha.fitFvib.</code><code class="descname">fitFvib</code><span class="sig-paren">(</span><em>fEtot, thermodata, ibrav=4, typeEtot='quadratic', typeFvib='quadratic', defaultguess=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0], method='BFGS', minoptions={}, splinesoptions=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/fitFvib.html#fitFvib"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.fitFvib.fitFvib" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function computes quasi-harmonic quantities from the 
@@ -571,6 +575,7 @@ is the vector with ngeo values of the <em>C11</em> elastic constant and so on.</
 </div>
 <div class="section" id="module-pyqha.fitEtot">
 <span id="pyqha-fitetot-module"></span><h2>pyqha.fitEtot module<a class="headerlink" href="#module-pyqha.fitEtot" title="Permalink to this headline">¶</a></h2>
+<p>This submodule groups all functions relevant for computing the total energies at 0 K.</p>
 <dl class="function">
 <dt>
 <code class="descclassname">pyqha.fitEtot.</code><code class="descname">fitEtot</code><span class="sig-paren">(</span><em>fin</em>, <em>out=True</em>, <em>ibrav=4</em>, <em>fittype='quadratic'</em>, <em>guess=None</em>, <em>method='BFGS'</em>, <em>minoptions={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/fitEtot.html#fitEtot"><span class="viewcode-link">[source]</span></a></dt>
@@ -607,6 +612,7 @@ of the EOS and the corresponding <img class="math" src="_images/math/b0a677c7b64
 </div>
 <div class="section" id="module-pyqha.fitFvib">
 <span id="pyqha-fitfvib-module"></span><h2>pyqha.fitFvib module<a class="headerlink" href="#module-pyqha.fitFvib" title="Permalink to this headline">¶</a></h2>
+<p>This submodule groups all functions relevant for the total and vibrational energies.</p>
 <dl class="function">
 <dt>
 <code class="descclassname">pyqha.fitFvib.</code><code class="descname">fitFvib</code><span class="sig-paren">(</span><em>fEtot, thermodata, ibrav=4, typeEtot='quadratic', typeFvib='quadratic', defaultguess=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0], method='BFGS', minoptions={}, splinesoptions=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/fitFvib.html#fitFvib"><span class="viewcode-link">[source]</span></a></dt>
@@ -697,6 +703,15 @@ the tutorial.</p>
 </div>
 <div class="section" id="module-pyqha.alphagruneisenp">
 <span id="pyqha-alphagruneisenp-module"></span><h2>pyqha.alphagruneisenp module<a class="headerlink" href="#module-pyqha.alphagruneisenp" title="Permalink to this headline">¶</a></h2>
+<p>This module is still experimental.</p>
+<p>It contains functions for computing the thermal expansion tensor as a function 
+of temperature from the Gruneisein parameters, the mode contributions to the 
+heat capacity, the elastic tensor and the unit cell volume.</p>
+<p>The mode contribution to the heat capacity are calculated in <a class="reference internal" href="#pyqha.alphagruneisenp.c_qv_python" title="pyqha.alphagruneisenp.c_qv_python"><code class="xref py py-func docutils literal"><span class="pre">c_qv_python()</span></code></a>.
+A faster C function is also available and used instead (if succesfully compiled.</p>
+<p>The full calculation here can be quite time consuming. For this reason, the 
+<a class="reference internal" href="#pyqha.alphagruneisenp.compute_alpha_gruneisein" title="pyqha.alphagruneisenp.compute_alpha_gruneisein"><code class="xref py py-func docutils literal"><span class="pre">compute_alpha_gruneisein()</span></code></a> is implemented with a simple parallelization
+over the temperatures using the Python package <a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#module-multiprocessing" title="(in Python v2.7)"><code class="xref py py-mod docutils literal"><span class="pre">multiprocessing</span></code></a>.</p>
 <dl class="function">
 <dt id="pyqha.alphagruneisenp.c_qv">
 <code class="descclassname">pyqha.alphagruneisenp.</code><code class="descname">c_qv</code><span class="sig-paren">(</span><em>T</em>, <em>omega</em><span class="sig-paren">)</span><a class="headerlink" href="#pyqha.alphagruneisenp.c_qv" title="Permalink to this definition">¶</a></dt>
@@ -815,6 +830,8 @@ was calculated in parallel into a single numpy array</p>
 </div>
 <div class="section" id="module-pyqha.fitfreqgrun">
 <span id="pyqha-fitfreqgrun-module"></span><h2>pyqha.fitfreqgrun module<a class="headerlink" href="#module-pyqha.fitfreqgrun" title="Permalink to this headline">¶</a></h2>
+<p>This submodule groups all functions relevant for fitting phonon frequencies and
+computing Gruneisen parameters.</p>
 <dl class="function">
 <dt id="pyqha.fitfreqgrun.fitfreq">
 <code class="descclassname">pyqha.fitfreqgrun.</code><code class="descname">fitfreq</code><span class="sig-paren">(</span><em>celldmsx</em>, <em>min0</em>, <em>filefreq</em>, <em>ibrav=4</em>, <em>typefreq='quadratic'</em>, <em>compute_grun=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/fitfreqgrun.html#fitfreq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.fitfreqgrun.fitfreq" title="Permalink to this definition">¶</a></dt>
@@ -884,6 +901,8 @@ at the first q-point and first mode so on.</p>
 </div>
 <div class="section" id="module-pyqha.fitutils">
 <span id="pyqha-fitutils-module"></span><h2>pyqha.fitutils module<a class="headerlink" href="#module-pyqha.fitutils" title="Permalink to this headline">¶</a></h2>
+<p>This submodule contains all functions relevant for fitting anistotropic quantities
+(energies, frequencies, etc.).</p>
 <dl class="function">
 <dt id="pyqha.fitutils.expand_quadratic_to_quartic">
 <code class="descclassname">pyqha.fitutils.</code><code class="descname">expand_quadratic_to_quartic</code><span class="sig-paren">(</span><em>a</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/fitutils.html#expand_quadratic_to_quartic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.fitutils.expand_quadratic_to_quartic" title="Permalink to this definition">¶</a></dt>
@@ -903,9 +922,10 @@ into a vector of coeffients as from a quartic fit (extra coeffients are set to z
 <dd><p>This function fits the <em>y</em> values (energies) with a quadratic polynomial of
 up to 3 variables <img class="math" src="_images/math/4cc066d57a73756a55e51e3ede2effbf7af31135.png" alt="x1,x2,x3"/> corresponding to the lattice parameters
 <img class="math" src="_images/math/48f6917edfbcd881ae54ffeab449b6658e9e09dc.png" alt="(a,b,c)"/>. In the most general form the polynomial is:</p>
-<p><img class="math" src="_images/math/9ed7e282b0583420641a5d0ceb0d454b638317ac.png" alt="a1 + a2 x1 + a3 x1^2 + a4  x2 + a5  x2^2 + a6 x1*x2 +    
-+ a7  x3 + a8  x3^2 + a9  x1*x3 + a10 x2*x3"/></p>
-<p>The input variable <em>x</em> is a matrix <img class="math" src="_images/math/679f82947ab910b14ecc1c1960c8a5cb2e23ed12.png" alt="ngeo*6"/>, where:</p>
+<div class="math">
+<p><img src="_images/math/12c5d02cf2cf257c442155cb3524a579c48e192a.png" alt="a_1 + a_2 * x_1 + a_3 * x_1^2 + a_4 * x_2 + a_5 * x_2^2 + a_6 * x_1*x_2 +    
++ a_7 * x_3 + a_8 * x_3^2 + a_9 * x_1*x_3 + a_10 * x_2*x_3"/></p>
+</div><p>The input variable <em>x</em> is a matrix <img class="math" src="_images/math/679f82947ab910b14ecc1c1960c8a5cb2e23ed12.png" alt="ngeo*6"/>, where:</p>
 <p><em>x[:,0]</em> is the set of a values</p>
 <p><em>x[:,1]</em> is the set of b values</p>
 <p><em>x[:,2]</em> is the set of c values</p>
@@ -925,14 +945,16 @@ Please refer to numpy documentation for further details.</p>
 <dd><p>This function fits the <em>y</em> values (energies) with a quartic polynomial of
 up to 3 variables <img class="math" src="_images/math/4cc066d57a73756a55e51e3ede2effbf7af31135.png" alt="x1,x2,x3"/> corresponding to the lattice parameters
 <img class="math" src="_images/math/48f6917edfbcd881ae54ffeab449b6658e9e09dc.png" alt="(a,b,c)"/>. In the most general form the polynomial is:</p>
-<p><img class="math" src="_images/math/8b2ae044edfed2334d0e2f1726a2292c4cdc36fb.png" alt="a1 + a2 x1 + a3 x1^2 + a4  x1^3 + a5  x1^4 + a6 x2 + a7  x2^2 + 
-a8  x2^3 + a9  x2^4 + a10 x1*x2 + a11 x1*x2^2 + a12 x1*x2^3 +
-a13 x1^2*x2 + a14 x1^2*x2^2 + a15 x1^3*x2 + a16 x3 + a17 x3^2 + a18 x3^3 +
-a19 x3^4 + a20 x1*x3 + a21 x1*x3^2 + a22 x1*x3^3 + a23 x1^2*x3 + a24 x1^2*x3^2 +
-a25 x1^3*x3 + a26 x2*x3 + a27 x2*x3^2 + a28 x2*x3^3 + a29 x2^2*x3 +
-a30 x2^2*x3^2 + a31 x2^3*x3 + a32 x1*x2*x3 + a33 x1^2*x2*x3 +
-a34 x1*x2^2*x3 + a35 x1*x2*x3^2"/></p>
-<p>The input variable <em>x</em> is a matrix <img class="math" src="_images/math/679f82947ab910b14ecc1c1960c8a5cb2e23ed12.png" alt="ngeo*6"/>, where:</p>
+<div class="math">
+<p><img src="_images/math/6dd1b9f3fe06cf5416c49b89ded566c0083a8769.png" alt="a_1 + a_2 * x_1 + a_3 * x_1^2 + a_4 * x_1^3 + a_5 * x_1^4 + a_6 * x_2 + a_7 * x_2^2 + 
+a_8 * x_2^3 + a_9 * x_2^4 + a_10 * x_1*x_2 + a_11 * x_1*x_2^2 + a_12 * x_1*x_2^3 +
+a_13 * x_1^2*x_2 + a_14 * x_1^2*x_2^2 + a_15 * x_1^3*x_2 + a_16 * x_3 + a_17 * x_3^2 + a_18 * x_3^3 +"/></p>
+</div><div class="math">
+<p><img src="_images/math/d26b126927c21e8218681467ea7014af567f923f.png" alt="a_19 * x_3^4 + a_20 * x_1*x_3 + a_21 * x_1*x_3^2 + a_22 * x_1*x_3^3 + a_23 * x_1^2*x_3 + a_24 * x_1^2*x_3^2 +
+a_25 * x_1^3*x_3 + a_26 * x_2*x_3 + a_27 * x_2*x_3^2 + a_28 * x_2*x_3^3 + a_29 * x_2^2*x_3 +
+a_30 * x_2^2*x_3^2 + a_31 * x_2^3*x_3 + a_32 * x_1*x_2*x_3 + a_33 * x_1^2*x_2*x_3 +
+a_34 * x_1*x_2^2*x_3 + a_35 * x_1*x_2*x_3^2"/></p>
+</div><p>The input variable <em>x</em> is a matrix <img class="math" src="_images/math/679f82947ab910b14ecc1c1960c8a5cb2e23ed12.png" alt="ngeo*6"/>, where:</p>
 <p><em>x[:,0]</em> is the set of a values</p>
 <p><em>x[:,1]</em> is the set of b values</p>
 <p><em>x[:,2]</em> is the set of c values</p>
@@ -963,6 +985,9 @@ fitted quantities</p>
 </div>
 <div class="section" id="module-pyqha.minutils">
 <span id="pyqha-minutils-module"></span><h2>pyqha.minutils module<a class="headerlink" href="#module-pyqha.minutils" title="Permalink to this headline">¶</a></h2>
+<p>This submodule groups all functions relevant for minimizing the energy in the 
+anisotropic case. It also contains the functions implementing the fitting
+polynomials, which can be &#8220;quadratic&#8221; or &#8220;quartic&#8221; and depend on up to 3 variables.</p>
 <dl class="function">
 <dt id="pyqha.minutils.calculate_fitted_points_anis">
 <code class="descclassname">pyqha.minutils.</code><code class="descname">calculate_fitted_points_anis</code><span class="sig-paren">(</span><em>celldmsx</em>, <em>nmesh</em>, <em>fittype='quadratic'</em>, <em>ibrav=4</em>, <em>a=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/minutils.html#calculate_fitted_points_anis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.minutils.calculate_fitted_points_anis" title="Permalink to this definition">¶</a></dt>
@@ -1069,6 +1094,11 @@ tetragonal (<em>ibrav=6,7</em>), orthorombic (<em>ibrav=8,9,10,11</em>)</p>
 </div>
 <div class="section" id="module-pyqha.plotutils">
 <span id="pyqha-plotutils-module"></span><h2>pyqha.plotutils module<a class="headerlink" href="#module-pyqha.plotutils" title="Permalink to this headline">¶</a></h2>
+<p>A collection of wrappers for the <em>matplotlib</em> functions.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All functions return a <em>matplotlib</em> which can be modified by the user.</p>
+</div>
 <dl class="function">
 <dt id="pyqha.plotutils.multiple_plot_xy">
 <code class="descclassname">pyqha.plotutils.</code><code class="descname">multiple_plot_xy</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>xlabel=''</em>, <em>ylabel=''</em>, <em>labels=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/plotutils.html#multiple_plot_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.plotutils.multiple_plot_xy" title="Permalink to this definition">¶</a></dt>
@@ -1107,13 +1137,19 @@ The plot type depends on ibrav.</p>
 </div>
 <div class="section" id="module-pyqha.properties_anis">
 <span id="pyqha-properties-anis-module"></span><h2>pyqha.properties_anis module<a class="headerlink" href="#module-pyqha.properties_anis" title="Permalink to this headline">¶</a></h2>
+<p>Several functions to manipulate anisotropic quantities.</p>
 <dl class="function">
 <dt id="pyqha.properties_anis.compute_Ceps">
 <code class="descclassname">pyqha.properties_anis.</code><code class="descname">compute_Ceps</code><span class="sig-paren">(</span><em>min0</em>, <em>celldmsx</em>, <em>T</em>, <em>Cvib</em>, <em>ibrav=4</em>, <em>typeCvib='quadratic'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/properties_anis.html#compute_Ceps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.properties_anis.compute_Ceps" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function calculates the constant strain heat capacity <img class="math" src="_images/math/ee29b3ad0e4252ec431d0c2ef077fdcefc108abb.png" alt="C_{\epsilon}"/>
 as a function of temperature. 
 By definition <img class="math" src="_images/math/038d251a0746c17a0d1cfbc315be3ce66082fd28.png" alt="C_{\epsilon} = -T(dS/dT)_{\epsilon}=-T(d^2F/dT^2)_{\epsilon}"/>. 
-To avoid the numerical derivation, within the quasi-harmonic
+As for the entropy, we have <em>F(T)</em> from the
+minimization of <em>F</em> at each T with <img class="math" src="_images/math/657d31802d2f4bc730544452ca5839d1f891a157.png" alt="\sigma=0"/>. However, if we use finite
+difference for the derivatives, we can assume that  <img class="math" src="_images/math/65d19c66c148d5016c6a89d26486bf6d1966ded1.png" alt="\epsilon"/> is 
+approximately constant over the temperatures where the numerical derivative 
+is done.</p>
+<p>To avoid the numerical derivation and the above issue, within the quasi-harmonic
 approximation it is better to derive it from fitting the harmonic heat capacities
 results on the grid <img class="math" src="_images/math/48f6917edfbcd881ae54ffeab449b6658e9e09dc.png" alt="(a,b,c)"/> at the equilibrium lattic parameters given
 in <em>min0</em>. <em>celldms</em> is the grid <img class="math" src="_images/math/48f6917edfbcd881ae54ffeab449b6658e9e09dc.png" alt="(a,b,c)"/>, <em>Cvib</em> are the harmonic 
@@ -1149,14 +1185,42 @@ i.e. on the fact that anharmonic contribution are only due to the change of
 phonon frequencies with the lattice parameters. In reality, this is not the 
 case and the entropy so obtained can only be taken as an approximation of the
 real one.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Still very experimental...</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyqha.properties_anis.compute_Csigma_from_alphaandC">
+<code class="descclassname">pyqha.properties_anis.</code><code class="descname">compute_Csigma_from_alphaandC</code><span class="sig-paren">(</span><em>TT</em>, <em>minT</em>, <em>alphaT</em>, <em>CT</em>, <em>ibrav=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/properties_anis.html#compute_Csigma_from_alphaandC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.properties_anis.compute_Csigma_from_alphaandC" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculate the difference between the constant stress heat capacity
+<img class="math" src="_images/math/51da4686722e2c5d315b23d1e7a76a826fde1ac3.png" alt="C_{\sigma}"/> and the constant strain heat capacity <img class="math" src="_images/math/ee29b3ad0e4252ec431d0c2ef077fdcefc108abb.png" alt="C_{\epsilon}"/> 
+from the <em>V</em> (obtained from the input lattice parameters <em>minT</em>, the thermal
+expansion tensor <em>alphaT</em> and the elastic constant tensor <em>CT</em>, all as a function
+of temperature. This is essentially the anisotropic equivalent of the equation
+<img class="math" src="_images/math/88d274581cf97c4040b56e114e205ae7da9efe48.png" alt="Cp - Cv = T V beta^2 B0"/> for the isotropic case (volume only)
+and it avoids a further numerical derivation to obtain <img class="math" src="_images/math/51da4686722e2c5d315b23d1e7a76a826fde1ac3.png" alt="C_{\sigma}"/>. 
+It is however more complex in the anisotropic case since <em>minT</em>, <em>alphaT</em> and
+in particul the elastic constant tensor <em>CT</em> must me known in principle 
+including their temperature dependence.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Still very experimental...</p>
+</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyqha.properties_anis.compute_S">
 <code class="descclassname">pyqha.properties_anis.</code><code class="descname">compute_S</code><span class="sig-paren">(</span><em>min0</em>, <em>celldmsx</em>, <em>T</em>, <em>Svib</em>, <em>ibrav=4</em>, <em>typeSvib='quadratic'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/properties_anis.html#compute_S"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.properties_anis.compute_S" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function calculates the entropy as a function of temperature. By definition
-<img class="math" src="_images/math/166f4b7b66c208378be1ee04c19977c94c9e2e28.png" alt="S = -(dF/dT)_{\epsilon}"/>. To avoid the numerical derivation, within the quasi-harmonic
-approximation it is better to derive it from fitting the harmonic entropy
+<img class="math" src="_images/math/166f4b7b66c208378be1ee04c19977c94c9e2e28.png" alt="S = -(dF/dT)_{\epsilon}"/>. The problem is that we have <em>F(T)</em> from the
+minimization of <em>F</em> at each T with <img class="math" src="_images/math/657d31802d2f4bc730544452ca5839d1f891a157.png" alt="\sigma=0"/>. However, if we use finite
+difference for the derivatives, we can assume that  <img class="math" src="_images/math/65d19c66c148d5016c6a89d26486bf6d1966ded1.png" alt="\epsilon"/> is 
+approximately constant over the temperatures where the numerical derivative 
+is done.</p>
+<p>To avoid the numerical derivation and the above issue, within the quasi-harmonic
+approximation it is possible to derive the entropy from fitting the harmonic 
 results on the grid <img class="math" src="_images/math/48f6917edfbcd881ae54ffeab449b6658e9e09dc.png" alt="(a,b,c)"/> at the equilibrium lattic parameters given
 in <em>min0</em>. <em>celldms</em> is the grid <img class="math" src="_images/math/48f6917edfbcd881ae54ffeab449b6658e9e09dc.png" alt="(a,b,c)"/>, <em>Svib</em> are the harmonic 
 entropies on the grid.
@@ -1191,14 +1255,6 @@ scipy.interpolate.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyqha.properties_anis.compute_heat_capacity">
-<code class="descclassname">pyqha.properties_anis.</code><code class="descname">compute_heat_capacity</code><span class="sig-paren">(</span><em>TT</em>, <em>minT</em>, <em>alphaT</em>, <em>C</em>, <em>ibrav=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/properties_anis.html#compute_heat_capacity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.properties_anis.compute_heat_capacity" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function calculate the difference between the constant stress heat capacity
-C_sigma and the constant strain heat capacity C_epsilon from the V, the thermal
-expansions and the elastic constant tensor C</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="pyqha.properties_anis.compute_volume">
 <code class="descclassname">pyqha.properties_anis.</code><code class="descname">compute_volume</code><span class="sig-paren">(</span><em>celldms</em>, <em>ibrav=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/properties_anis.html#compute_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.properties_anis.compute_volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the volume given the <em>celldms</em>. Only for ibrav=4 for now, else 
@@ -1208,6 +1264,7 @@ returns 0.</p>
 </div>
 <div class="section" id="module-pyqha.read">
 <span id="pyqha-read-module"></span><h2>pyqha.read module<a class="headerlink" href="#module-pyqha.read" title="Permalink to this headline">¶</a></h2>
+<p>A collection of functions for reading different quantities from files.</p>
 <dl class="function">
 <dt id="pyqha.read.read_Etot">
 <code class="descclassname">pyqha.read.</code><code class="descname">read_Etot</code><span class="sig-paren">(</span><em>fname</em>, <em>ibrav=4</em>, <em>bc_as_a_ratio=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/read.html#read_Etot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.read.read_Etot" title="Permalink to this definition">¶</a></dt>
@@ -1371,6 +1428,7 @@ entropy and heat capacity.</p>
 </div>
 <div class="section" id="module-pyqha.thermo">
 <span id="pyqha-thermo-module"></span><h2>pyqha.thermo module<a class="headerlink" href="#module-pyqha.thermo" title="Permalink to this headline">¶</a></h2>
+<p>A collection of functions for computing harmonic quantities from phonon DOS.</p>
 <dl class="function">
 <dt>
 <code class="descclassname">pyqha.thermo.</code><code class="descname">compute_thermo</code><span class="sig-paren">(</span><em>E</em>, <em>dos</em>, <em>TT</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/thermo.html#compute_thermo"><span class="viewcode-link">[source]</span></a></dt>
@@ -1456,6 +1514,7 @@ geometry, <em>X[0,1]</em> the second geometry and so on.</p>
 </div>
 <div class="section" id="module-pyqha.write">
 <span id="pyqha-write-module"></span><h2>pyqha.write module<a class="headerlink" href="#module-pyqha.write" title="Permalink to this headline">¶</a></h2>
+<p>A collection of functions for writing different quantities to files or screen.</p>
 <dl class="function">
 <dt id="pyqha.write.write_CT">
 <code class="descclassname">pyqha.write.</code><code class="descname">write_CT</code><span class="sig-paren">(</span><em>Ts</em>, <em>CT</em>, <em>fCout=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/write.html#write_CT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyqha.write.write_CT" title="Permalink to this definition">¶</a></dt>
@@ -1535,6 +1594,133 @@ It can be used to write the Gruneisen mode parameters, giving them in input as f
 y and x are arrays and should have the same lenght. labelx and labely
 are the axis labels (possibly with units), written in the header of the file
 (first line).</p>
+</dd></dl>
+
+</div>
+<div class="section" id="id1">
+<h2>pyqha.alphagruneisenp module<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-pyqha.alphagruneisenp"></span><p>This module is still experimental.</p>
+<p>It contains functions for computing the thermal expansion tensor as a function 
+of temperature from the Gruneisein parameters, the mode contributions to the 
+heat capacity, the elastic tensor and the unit cell volume.</p>
+<p>The mode contribution to the heat capacity are calculated in <a class="reference internal" href="#pyqha.alphagruneisenp.c_qv_python" title="pyqha.alphagruneisenp.c_qv_python"><code class="xref py py-func docutils literal"><span class="pre">c_qv_python()</span></code></a>.
+A faster C function is also available and used instead (if succesfully compiled.</p>
+<p>The full calculation here can be quite time consuming. For this reason, the 
+<a class="reference internal" href="#pyqha.alphagruneisenp.compute_alpha_gruneisein" title="pyqha.alphagruneisenp.compute_alpha_gruneisein"><code class="xref py py-func docutils literal"><span class="pre">compute_alpha_gruneisein()</span></code></a> is implemented with a simple parallelization
+over the temperatures using the Python package <a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#module-multiprocessing" title="(in Python v2.7)"><code class="xref py py-mod docutils literal"><span class="pre">multiprocessing</span></code></a>.</p>
+<dl class="function">
+<dt>
+<code class="descclassname">pyqha.alphagruneisenp.</code><code class="descname">c_qv</code><span class="sig-paren">(</span><em>T</em>, <em>omega</em><span class="sig-paren">)</span></dt>
+<dd><p>This function calculates the mode contribution to the heat capacity at a given T
+and omega. A similar (faster) function should be available as C extension.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descclassname">pyqha.alphagruneisenp.</code><code class="descname">c_qv2</code><span class="sig-paren">(</span><em>T</em>, <em>omega</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/alphagruneisenp.html#c_qv2"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descclassname">pyqha.alphagruneisenp.</code><code class="descname">c_qv_python</code><span class="sig-paren">(</span><em>T</em>, <em>omega</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/alphagruneisenp.html#c_qv_python"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This function calculates the mode contribution to the heat capacity at a given T
+and omega. A similar (faster) function should be available as C extension.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descclassname">pyqha.alphagruneisenp.</code><code class="descname">compute_alpha_grun</code><span class="sig-paren">(</span><em>T</em>, <em>V</em>, <em>S</em>, <em>weights</em>, <em>freq</em>, <em>grun</em>, <em>ibrav=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/alphagruneisenp.html#compute_alpha_grun"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This function computes the thermal expansions alpha using the Gruneisein 
+parameters at a given temperature <em>T</em>. <em>V</em> is the unit cell volume, <em>S</em> is
+the elastic compliances matrix in Voigt notation, <em>freq</em> and <em>weights</em>  are
+the phonon frequencies in a grid of q-point and their corresponding weights.
+<em>grun</em> are the Gruneisen parameters. <em>ibrav</em> identifies the Bravais lattice.</p>
+<p>It implements the following equation:</p>
+<p>:math:``</p>
+<p>more comments to be added</p>
+<p>First with min0, freq and grun T-independent</p>
+<p>More ibrav types to be implemented</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descclassname">pyqha.alphagruneisenp.</code><code class="descname">compute_alpha_gruneisein</code><span class="sig-paren">(</span><em>TT</em>, <em>ibrav</em>, <em>celldmsx</em>, <em>min0=None</em>, <em>S=None</em>, <em>weights=None</em>, <em>freq=None</em>, <em>grun=None</em>, <em>minT=None</em>, <em>afreq=None</em>, <em>fittypefreq=None</em>, <em>aS=None</em>, <em>fittypeS=None</em>, <em>nproc=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/alphagruneisenp.html#compute_alpha_gruneisein"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This function computes the thermal expansions at different temperatures from
+the Gruneisen parameters and other parameters.</p>
+<p><em>TT</em> is a numpy array of temperatures for which the thermal expansions are
+computed. <em>ibrav</em> identifies the Bravais lattice. <em>celldmsx</em> contains the lattice
+parameters of the computed grid <img class="math" src="_images/math/48f6917edfbcd881ae54ffeab449b6658e9e09dc.png" alt="(a,b,c)"/> as read with <code class="xref py py-func docutils literal"><span class="pre">read_Etot()</span></code>.
+Different calculation options are possible, according to the optional 
+input parameters given in input:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="36%" />
+<col width="64%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Input parameters</th>
+<th class="head">Meaning</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><em>min0,S,weights,freq,grun</em></td>
+<td>Use temperarature-independent (0 K) volume, elastic compliances,
+average frequencies and Gruneisen parameters. The volume is obtained
+from <em>min0</em>, the lattice parameters at the minimun 0 K energy. <em>S</em> is
+the elastic compliances tensor at 0 K calculated at <em>min0</em>. <em>weights</em>
+,*freq*,*grun* are the weights, phonon frequencies and Gruneisen
+parameters at 0 K calculated at <em>min0</em>.</td>
+</tr>
+<tr class="row-odd"><td><em>S,weights,minT,afreq,fittypefreq</em></td>
+<td>Use temperarature-independent (0 K) elastic compliances but
+temperature-dependent volume, average frequencies and Gruneisen
+parameters. The volume is obtained from <em>minT</em>, a numpy array with
+the lattice parameters at the minimun free energy at each temperature
+. <em>S</em> is the elastic compliances tensor at 0 K calculated at <em>min0</em>.
+<em>weights</em> are the weights of the phonon frequencies.  <em>afreq</em>,
+<em>fittypefreq</em> are the coefficients of the fitted polynomials for the
+phonon frequencies and the type of polynomial. They are used here to
+compute the average frequencies and Gruneisen parameters at each
+temperature.</td>
+</tr>
+<tr class="row-even"><td><em>weights,afreq,fittypefreq,aS,fittypeS</em></td>
+<td>Use temperarature-dependent (0 K) volume, elastic compliances,
+average frequencies and Gruneisen parameters. The volume is obtained
+from <em>minT</em>, a numpy array with the lattice parameters at the minimun
+free energy at each temperature. <em>weights</em> are the weights of the
+phonon frequencies. <em>afreq</em>,
+<em>fittypefreq</em> are the coefficients of the fitted polynomials for the
+phonon frequencies and the type of polynomial. They are used here to
+the average frequencies and Gruneisen parameters at each temperature.
+<em>aS,fittypeS</em> are the coefficients of the fitted polynomials for the
+elastic compliances and the polynomial type. They are used here to
+compute the elastic compliances at each temperature as in the quasi-
+static approximation.</td>
+</tr>
+</tbody>
+</table>
+<p>By default, all the input parameters in the above table are ==None and if nothing
+is given in input the function will return None without computing anything.</p>
+<p><em>nproc</em> is the number of processes to be run in parallel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descclassname">pyqha.alphagruneisenp.</code><code class="descname">compute_alpha_gruneisen_loopparallel</code><span class="sig-paren">(</span><em>it</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/alphagruneisenp.html#compute_alpha_gruneisen_loopparallel"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This function implements the parallel loop where the alpha are computed. It  
+essentially calls the compute_alpha_grun function with the proper parameters
+according to the selected option. &#8220;it&#8221; is a list with all function parameters
+for the call in pool.map</p>
+<p>it[0]== 0 -&gt; use V, S, average frequencies and gruneisen parameters at 0 K 
+it[0]== 1 -&gt; use S at 0 K, calculate V, average frequencies and gruneisen parameters at each T 
+it[0]== 2 -&gt;  calculate S, V, average frequencies and gruneisen parameters at each T</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descclassname">pyqha.alphagruneisenp.</code><code class="descname">join</code><span class="sig-paren">(</span><em>partials</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyqha/alphagruneisenp.html#join"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This function simply puts together the different temperature ranges where alpha
+was calculated in parallel into a single numpy array</p>
 </dd></dl>
 
 </div>

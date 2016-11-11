@@ -77,6 +77,10 @@
 <span class="c1"># This file is distributed under the terms of the # MIT License. </span>
 <span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Several functions to manipulate anisotropic quantities.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">interpolate</span> 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="n">RY_KBAR</span>
@@ -170,8 +174,14 @@
 <div class="viewcode-block" id="compute_S"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_S">[docs]</a><span class="k">def</span> <span class="nf">compute_S</span><span class="p">(</span><span class="n">min0</span><span class="p">,</span><span class="n">celldmsx</span><span class="p">,</span><span class="n">T</span><span class="p">,</span><span class="n">Svib</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">typeSvib</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function calculates the entropy as a function of temperature. By definition</span>
-<span class="sd">    :math:`S = -(dF/dT)_{\epsilon}`. To avoid the numerical derivation, within the quasi-harmonic</span>
-<span class="sd">    approximation it is better to derive it from fitting the harmonic entropy</span>
+<span class="sd">    :math:`S = -(dF/dT)_{\epsilon}`. The problem is that we have *F(T)* from the</span>
+<span class="sd">    minimization of *F* at each T with :math:`\sigma=0`. However, if we use finite</span>
+<span class="sd">    difference for the derivatives, we can assume that  :math:`\epsilon` is </span>
+<span class="sd">    approximately constant over the temperatures where the numerical derivative </span>
+<span class="sd">    is done.</span>
+<span class="sd">    </span>
+<span class="sd">    To avoid the numerical derivation and the above issue, within the quasi-harmonic</span>
+<span class="sd">    approximation it is possible to derive the entropy from fitting the harmonic </span>
 <span class="sd">    results on the grid :math:`(a,b,c)` at the equilibrium lattic parameters given</span>
 <span class="sd">    in *min0*. *celldms* is the grid :math:`(a,b,c)`, *Svib* are the harmonic </span>
 <span class="sd">    entropies on the grid.</span>
@@ -210,7 +220,13 @@
 <span class="sd">    This function calculates the constant strain heat capacity :math:`C_{\epsilon}`</span>
 <span class="sd">    as a function of temperature. </span>
 <span class="sd">    By definition :math:`C_{\epsilon} = -T(dS/dT)_{\epsilon}=-T(d^2F/dT^2)_{\epsilon}`. </span>
-<span class="sd">    To avoid the numerical derivation, within the quasi-harmonic</span>
+<span class="sd">    As for the entropy, we have *F(T)* from the</span>
+<span class="sd">    minimization of *F* at each T with :math:`\sigma=0`. However, if we use finite</span>
+<span class="sd">    difference for the derivatives, we can assume that  :math:`\epsilon` is </span>
+<span class="sd">    approximately constant over the temperatures where the numerical derivative </span>
+<span class="sd">    is done.</span>
+<span class="sd">    </span>
+<span class="sd">    To avoid the numerical derivation and the above issue, within the quasi-harmonic</span>
 <span class="sd">    approximation it is better to derive it from fitting the harmonic heat capacities</span>
 <span class="sd">    results on the grid :math:`(a,b,c)` at the equilibrium lattic parameters given</span>
 <span class="sd">    in *min0*. *celldms* is the grid :math:`(a,b,c)`, *Cvib* are the harmonic </span>
@@ -244,22 +260,32 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="compute_heat_capacity"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_heat_capacity">[docs]</a><span class="k">def</span> <span class="nf">compute_heat_capacity</span><span class="p">(</span><span class="n">TT</span><span class="p">,</span><span class="n">minT</span><span class="p">,</span><span class="n">alphaT</span><span class="p">,</span><span class="n">C</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+<div class="viewcode-block" id="compute_Csigma_from_alphaandC"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_Csigma_from_alphaandC">[docs]</a><span class="k">def</span> <span class="nf">compute_Csigma_from_alphaandC</span><span class="p">(</span><span class="n">TT</span><span class="p">,</span><span class="n">minT</span><span class="p">,</span><span class="n">alphaT</span><span class="p">,</span><span class="n">CT</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function calculate the difference between the constant stress heat capacity</span>
-<span class="sd">    C_sigma and the constant strain heat capacity C_epsilon from the V, the thermal</span>
-<span class="sd">    expansions and the elastic constant tensor C</span>
+<span class="sd">    :math:`C_{\sigma}` and the constant strain heat capacity :math:`C_{\epsilon}` </span>
+<span class="sd">    from the *V* (obtained from the input lattice parameters *minT*, the thermal</span>
+<span class="sd">    expansion tensor *alphaT* and the elastic constant tensor *CT*, all as a function</span>
+<span class="sd">    of temperature. This is essentially the anisotropic equivalent of the equation</span>
+<span class="sd">    :math:`Cp - Cv = T V beta^2 B0` for the isotropic case (volume only)</span>
+<span class="sd">    and it avoids a further numerical derivation to obtain :math:`C_{\sigma}`. </span>
+<span class="sd">    It is however more complex in the anisotropic case since *minT*, *alphaT* and</span>
+<span class="sd">    in particul the elastic constant tensor *CT* must me known in principle </span>
+<span class="sd">    including their temperature dependence.</span>
+<span class="sd">    </span>
+<span class="sd">    .. Warning::</span>
+<span class="sd">      Still very experimental...</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">C</span> <span class="o">=</span> <span class="n">C</span> <span class="o">/</span> <span class="n">RY_KBAR</span>
-    <span class="n">CT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">))</span>
+    <span class="n">CT</span> <span class="o">=</span> <span class="n">CT</span> <span class="o">/</span> <span class="n">RY_KBAR</span>
+    <span class="n">Csigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">TT</span><span class="p">)):</span>
         <span class="n">V</span> <span class="o">=</span> <span class="n">compute_volume</span><span class="p">(</span><span class="n">minT</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">ibrav</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
-                <span class="n">temp</span> <span class="o">=</span> <span class="n">alphaT</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">l</span><span class="p">]</span> <span class="o">*</span> <span class="n">C</span><span class="p">[</span><span class="n">l</span><span class="p">,</span><span class="n">m</span><span class="p">]</span> <span class="o">*</span> <span class="n">alphaT</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">m</span><span class="p">]</span>
-        <span class="n">CT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">V</span> <span class="o">*</span> <span class="n">TT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">temp</span>    <span class="c1"># this is C_sigma-C_epsilon at a given T</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="n">alphaT</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">l</span><span class="p">]</span> <span class="o">*</span> <span class="n">CT</span><span class="p">[</span><span class="n">l</span><span class="p">,</span><span class="n">m</span><span class="p">]</span> <span class="o">*</span> <span class="n">alphaT</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">m</span><span class="p">]</span>
+        <span class="n">Csigma</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">V</span> <span class="o">*</span> <span class="n">TT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">temp</span>    <span class="c1"># this is C_sigma-C_epsilon at a given T</span>
   
-    <span class="k">return</span> <span class="n">CT</span></div>
+    <span class="k">return</span> <span class="n">Csigma</span></div>
 
 
 <div class="viewcode-block" id="compute_Csigma"><a class="viewcode-back" href="../../pyqha.html#pyqha.properties_anis.compute_Csigma">[docs]</a><span class="k">def</span> <span class="nf">compute_Csigma</span><span class="p">(</span><span class="n">TT</span><span class="p">,</span><span class="n">Ceps</span><span class="p">,</span><span class="n">minT</span><span class="p">,</span><span class="n">alphaT</span><span class="p">,</span><span class="n">C</span><span class="p">,</span><span class="n">ibrav</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
@@ -283,6 +309,9 @@
 <span class="sd">    phonon frequencies with the lattice parameters. In reality, this is not the </span>
 <span class="sd">    case and the entropy so obtained can only be taken as an approximation of the</span>
 <span class="sd">    real one.</span>
+<span class="sd">    </span>
+<span class="sd">    .. Warning::</span>
+<span class="sd">      Still very experimental...</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">Csigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">))</span>

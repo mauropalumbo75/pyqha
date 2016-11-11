@@ -4,7 +4,8 @@
 # See the file `License' in the root directory of the present distribution.
 
 """
-
+This submodule groups all functions relevant for fitting phonon frequencies and
+computing Gruneisen parameters. 
 """
 
 import sys

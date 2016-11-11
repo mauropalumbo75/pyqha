@@ -3,6 +3,10 @@
 # This file is distributed under the terms of the # MIT License. 
 # See the file `License' in the root directory of the present distribution.
 
+"""
+A collection of functions for writing different quantities to files or screen.
+"""
+
 import numpy as np
 
 def write_elastic_constants(C,S,fname):

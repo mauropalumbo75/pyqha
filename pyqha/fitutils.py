@@ -2,6 +2,12 @@
 # Copyright (C) 2016 Mauro Palumbo
 # This file is distributed under the terms of the # MIT License. 
 # See the file `License' in the root directory of the present distribution.
+
+"""
+This submodule contains all functions relevant for fitting anistotropic quantities
+(energies, frequencies, etc.). 
+"""
+
 import numpy as np
 from scipy.optimize import minimize
 
@@ -128,8 +134,9 @@ def fit_quadratic(x,y,ibrav=4,out=False,ylabel="E"):
     up to 3 variables :math:`x1,x2,x3` corresponding to the lattice parameters
     :math:`(a,b,c)`. In the most general form the polynomial is:
 
-    :math:`a1 + a2 x1 + a3 x1^2 + a4  x2 + a5  x2^2 + a6 x1*x2 +    
-    + a7  x3 + a8  x3^2 + a9  x1*x3 + a10 x2*x3`
+    .. math::
+      a_1 + a_2 * x_1 + a_3 * x_1^2 + a_4 * x_2 + a_5 * x_2^2 + a_6 * x_1*x_2 +    
+      + a_7 * x_3 + a_8 * x_3^2 + a_9 * x_1*x_3 + a_10 * x_2*x_3
 
     The input variable *x* is a matrix :math:`ngeo*6`, where:
     
@@ -188,13 +195,15 @@ def fit_quartic(x,y,ibrav=4,out=False,ylabel="E"):
     up to 3 variables :math:`x1,x2,x3` corresponding to the lattice parameters
     :math:`(a,b,c)`. In the most general form the polynomial is:
 
-    :math:`a1 + a2 x1 + a3 x1^2 + a4  x1^3 + a5  x1^4 + a6 x2 + a7  x2^2 + 
-    a8  x2^3 + a9  x2^4 + a10 x1*x2 + a11 x1*x2^2 + a12 x1*x2^3 +
-    a13 x1^2*x2 + a14 x1^2*x2^2 + a15 x1^3*x2 + a16 x3 + a17 x3^2 + a18 x3^3 +
-    a19 x3^4 + a20 x1*x3 + a21 x1*x3^2 + a22 x1*x3^3 + a23 x1^2*x3 + a24 x1^2*x3^2 +
-    a25 x1^3*x3 + a26 x2*x3 + a27 x2*x3^2 + a28 x2*x3^3 + a29 x2^2*x3 +
-    a30 x2^2*x3^2 + a31 x2^3*x3 + a32 x1*x2*x3 + a33 x1^2*x2*x3 +
-    a34 x1*x2^2*x3 + a35 x1*x2*x3^2`  
+    .. math::
+      a_1 + a_2 * x_1 + a_3 * x_1^2 + a_4 * x_1^3 + a_5 * x_1^4 + a_6 * x_2 + a_7 * x_2^2 + 
+      a_8 * x_2^3 + a_9 * x_2^4 + a_10 * x_1*x_2 + a_11 * x_1*x_2^2 + a_12 * x_1*x_2^3 +
+      a_13 * x_1^2*x_2 + a_14 * x_1^2*x_2^2 + a_15 * x_1^3*x_2 + a_16 * x_3 + a_17 * x_3^2 + a_18 * x_3^3 +
+    .. math::
+      a_19 * x_3^4 + a_20 * x_1*x_3 + a_21 * x_1*x_3^2 + a_22 * x_1*x_3^3 + a_23 * x_1^2*x_3 + a_24 * x_1^2*x_3^2 +
+      a_25 * x_1^3*x_3 + a_26 * x_2*x_3 + a_27 * x_2*x_3^2 + a_28 * x_2*x_3^3 + a_29 * x_2^2*x_3 +
+      a_30 * x_2^2*x_3^2 + a_31 * x_2^3*x_3 + a_32 * x_1*x_2*x_3 + a_33 * x_1^2*x_2*x_3 +
+      a_34 * x_1*x_2^2*x_3 + a_35 * x_1*x_2*x_3^2 
 
     The input variable *x* is a matrix :math:`ngeo*6`, where:
     

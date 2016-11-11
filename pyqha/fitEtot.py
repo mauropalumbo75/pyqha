@@ -3,6 +3,10 @@
 # This file is distributed under the terms of the # MIT License. 
 # See the file `License' in the root directory of the present distribution.
 
+"""
+This submodule groups all functions relevant for computing the total energies at 0 K.
+"""
+
 import sys
 import time
 from read import read_EtotV, read_Etot

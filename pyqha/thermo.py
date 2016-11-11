@@ -3,6 +3,10 @@
 # This file is distributed under the terms of the # MIT License. 
 # See the file `License' in the root directory of the present distribution.
 
+"""
+A collection of functions for computing harmonic quantities from phonon DOS.
+"""
+
 from constants import RY_TO_CMM1, K_BOLTZMANN_RY
 from math import tanh, sinh, log, exp
 import numpy as np

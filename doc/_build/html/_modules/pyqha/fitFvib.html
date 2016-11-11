@@ -77,6 +77,10 @@
 <span class="c1"># This file is distributed under the terms of the # MIT License. </span>
 <span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This submodule groups all functions relevant for the total and vibrational energies. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="n">RY_KBAR</span>
@@ -84,7 +88,7 @@
 <span class="kn">from</span> <span class="nn">fitutils</span> <span class="k">import</span> <span class="n">print_polynomial</span><span class="p">,</span> <span class="n">fit_anis</span><span class="p">,</span> <span class="n">expand_quadratic_to_quartic</span>
 <span class="kn">from</span> <span class="nn">minutils</span> <span class="k">import</span> <span class="n">find_min</span>
 <span class="kn">from</span> <span class="nn">eos</span> <span class="k">import</span> <span class="n">fit_Murn</span><span class="p">,</span> <span class="n">print_eos_data</span><span class="p">,</span> <span class="n">calculate_fitted_points</span><span class="p">,</span> <span class="n">compute_beta</span><span class="p">,</span> <span class="n">compute_Cv</span><span class="p">,</span> <span class="n">compute_Cp</span>
-<span class="kn">from</span> <span class="nn">properties_anis</span> <span class="k">import</span> <span class="n">compute_alpha</span><span class="p">,</span> <span class="n">compute_alpha_splines</span><span class="p">,</span><span class="n">compute_heat_capacity</span>
+<span class="kn">from</span> <span class="nn">properties_anis</span> <span class="k">import</span> <span class="n">compute_alpha</span><span class="p">,</span> <span class="n">compute_alpha_splines</span>
 <span class="kn">from</span> <span class="nn">write</span> <span class="k">import</span> <span class="n">write_celldmsT</span><span class="p">,</span> <span class="n">write_alphaT</span><span class="p">,</span> <span class="n">write_xy</span>
 <span class="kn">from</span> <span class="nn">thermo</span> <span class="k">import</span> <span class="n">gen_TT</span><span class="p">,</span> <span class="n">compute_thermo_geo</span><span class="p">,</span> <span class="n">rearrange_thermo</span>
 <span class="kn">from</span> <span class="nn">plotutils</span> <span class="k">import</span> <span class="n">simple_plot_xy</span><span class="p">,</span> <span class="n">multiple_plot_xy</span>

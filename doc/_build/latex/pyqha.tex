@@ -34,7 +34,7 @@
 
 
 \title{pyqha Documentation}
-\date{Nov 09, 2016}
+\date{Nov 11, 2016}
 \release{0.1}
 \author{Mauro Palumbo}
 \newcommand{\sphinxlogo}{}
@@ -2136,7 +2136,13 @@ This function generates a simple xy plot with matplotlib.
 This function calculates the constant strain heat capacity \(C_{\epsilon}\)
 as a function of temperature. 
 By definition \(C_{\epsilon} = -T(dS/dT)_{\epsilon}=-T(d^2F/dT^2)_{\epsilon}\). 
-To avoid the numerical derivation, within the quasi-harmonic
+As for the entropy, we have \sphinxstyleemphasis{F(T)} from the
+minimization of \sphinxstyleemphasis{F} at each T with \(\sigma=0\). However, if we use finite
+difference for the derivatives, we can assume that  \(\epsilon\) is 
+approximately constant over the temperatures where the numerical derivative 
+is done.
+
+To avoid the numerical derivation and the above issue, within the quasi-harmonic
 approximation it is better to derive it from fitting the harmonic heat capacities
 results on the grid \((a,b,c)\) at the equilibrium lattic parameters given
 in \sphinxstyleemphasis{min0}. \sphinxstyleemphasis{celldms} is the grid \((a,b,c)\), \sphinxstyleemphasis{Cvib} are the harmonic 
@@ -2179,6 +2185,31 @@ phonon frequencies with the lattice parameters. In reality, this is not the
 case and the entropy so obtained can only be taken as an approximation of the
 real one.
 
+\begin{sphinxadmonition}{warning}{Warning:}
+Still very experimental...
+\end{sphinxadmonition}
+
+\end{fulllineitems}
+
+\index{compute\_Csigma\_from\_alphaandC() (in module pyqha.properties\_anis)}
+
+\begin{fulllineitems}
+\phantomsection\label{pyqha:pyqha.properties_anis.compute_Csigma_from_alphaandC}\pysiglinewithargsret{\sphinxcode{pyqha.properties\_anis.}\sphinxbfcode{compute\_Csigma\_from\_alphaandC}}{\emph{TT}, \emph{minT}, \emph{alphaT}, \emph{CT}, \emph{ibrav=4}}{}
+This function calculate the difference between the constant stress heat capacity
+\(C_{\sigma}\) and the constant strain heat capacity \(C_{\epsilon}\) 
+from the \sphinxstyleemphasis{V} (obtained from the input lattice parameters \sphinxstyleemphasis{minT}, the thermal
+expansion tensor \sphinxstyleemphasis{alphaT} and the elastic constant tensor \sphinxstyleemphasis{CT}, all as a function
+of temperature. This is essentially the anisotropic equivalent of the equation
+\(Cp - Cv = T V beta^2 B0\) for the isotropic case (volume only)
+and it avoids a further numerical derivation to obtain \(C_{\sigma}\). 
+It is however more complex in the anisotropic case since \sphinxstyleemphasis{minT}, \sphinxstyleemphasis{alphaT} and
+in particul the elastic constant tensor \sphinxstyleemphasis{CT} must me known in principle 
+including their temperature dependence.
+
+\begin{sphinxadmonition}{warning}{Warning:}
+Still very experimental...
+\end{sphinxadmonition}
+
 \end{fulllineitems}
 
 \index{compute\_S() (in module pyqha.properties\_anis)}
@@ -2186,8 +2217,14 @@ real one.
 \begin{fulllineitems}
 \phantomsection\label{pyqha:pyqha.properties_anis.compute_S}\pysiglinewithargsret{\sphinxcode{pyqha.properties\_anis.}\sphinxbfcode{compute\_S}}{\emph{min0}, \emph{celldmsx}, \emph{T}, \emph{Svib}, \emph{ibrav=4}, \emph{typeSvib='quadratic'}}{}
 This function calculates the entropy as a function of temperature. By definition
-\(S = -(dF/dT)_{\epsilon}\). To avoid the numerical derivation, within the quasi-harmonic
-approximation it is better to derive it from fitting the harmonic entropy
+\(S = -(dF/dT)_{\epsilon}\). The problem is that we have \sphinxstyleemphasis{F(T)} from the
+minimization of \sphinxstyleemphasis{F} at each T with \(\sigma=0\). However, if we use finite
+difference for the derivatives, we can assume that  \(\epsilon\) is 
+approximately constant over the temperatures where the numerical derivative 
+is done.
+
+To avoid the numerical derivation and the above issue, within the quasi-harmonic
+approximation it is possible to derive the entropy from fitting the harmonic 
 results on the grid \((a,b,c)\) at the equilibrium lattic parameters given
 in \sphinxstyleemphasis{min0}. \sphinxstyleemphasis{celldms} is the grid \((a,b,c)\), \sphinxstyleemphasis{Svib} are the harmonic 
 entropies on the grid.
@@ -2226,16 +2263,6 @@ More ibrav types must be implemented
 This function calculates the thermal expansions alphaT at different temperatures
 as the previous function but using spline interpolation as implemented in
 scipy.interpolate.
-
-\end{fulllineitems}
-
-\index{compute\_heat\_capacity() (in module pyqha.properties\_anis)}
-
-\begin{fulllineitems}
-\phantomsection\label{pyqha:pyqha.properties_anis.compute_heat_capacity}\pysiglinewithargsret{\sphinxcode{pyqha.properties\_anis.}\sphinxbfcode{compute\_heat\_capacity}}{\emph{TT}, \emph{minT}, \emph{alphaT}, \emph{C}, \emph{ibrav=4}}{}
-This function calculate the difference between the constant stress heat capacity
-C\_sigma and the constant strain heat capacity C\_epsilon from the V, the thermal
-expansions and the elastic constant tensor C
 
 \end{fulllineitems}
 

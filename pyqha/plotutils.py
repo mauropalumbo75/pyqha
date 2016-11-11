@@ -3,6 +3,14 @@
 # This file is distributed under the terms of the # MIT License. 
 # See the file `License' in the root directory of the present distribution.
 
+"""
+A collection of wrappers for the *matplotlib* functions. 
+
+.. Note::
+  All functions return a *matplotlib* which can be modified by the user.
+"""
+
+
 try:
     wx
     from matplotlib import use

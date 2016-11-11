@@ -82,38 +82,38 @@
 \indexentry{pyqha.properties\_anis (module)|hyperpage}{51}
 \indexentry{compute\_Ceps() (in module pyqha.properties\_anis)|hyperpage}{51}
 \indexentry{compute\_Csigma() (in module pyqha.properties\_anis)|hyperpage}{51}
-\indexentry{compute\_S() (in module pyqha.properties\_anis)|hyperpage}{51}
-\indexentry{compute\_alpha() (in module pyqha.properties\_anis)|hyperpage}{51}
+\indexentry{compute\_Csigma\_from\_alphaandC() (in module pyqha.properties\_anis)|hyperpage}{51}
+\indexentry{compute\_S() (in module pyqha.properties\_anis)|hyperpage}{52}
+\indexentry{compute\_alpha() (in module pyqha.properties\_anis)|hyperpage}{52}
 \indexentry{compute\_alpha\_splines() (in module pyqha.properties\_anis)|hyperpage}{52}
-\indexentry{compute\_heat\_capacity() (in module pyqha.properties\_anis)|hyperpage}{52}
 \indexentry{compute\_volume() (in module pyqha.properties\_anis)|hyperpage}{52}
 \indexentry{pyqha.read (module)|hyperpage}{52}
 \indexentry{read\_Etot() (in module pyqha.read)|hyperpage}{52}
 \indexentry{read\_EtotV() (in module pyqha.read)|hyperpage}{52}
-\indexentry{read\_alpha() (in module pyqha.read)|hyperpage}{52}
-\indexentry{read\_celldmt\_hex() (in module pyqha.read)|hyperpage}{52}
-\indexentry{read\_dos() (in module pyqha.read)|hyperpage}{52}
-\indexentry{read\_dos\_geo() (in module pyqha.read)|hyperpage}{52}
-\indexentry{read\_elastic\_constants() (in module pyqha.read)|hyperpage}{52}
-\indexentry{read\_elastic\_constants\_geo() (in module pyqha.read)|hyperpage}{52}
+\indexentry{read\_alpha() (in module pyqha.read)|hyperpage}{53}
+\indexentry{read\_celldmt\_hex() (in module pyqha.read)|hyperpage}{53}
+\indexentry{read\_dos() (in module pyqha.read)|hyperpage}{53}
+\indexentry{read\_dos\_geo() (in module pyqha.read)|hyperpage}{53}
+\indexentry{read\_elastic\_constants() (in module pyqha.read)|hyperpage}{53}
+\indexentry{read\_elastic\_constants\_geo() (in module pyqha.read)|hyperpage}{53}
 \indexentry{read\_freq() (in module pyqha.read)|hyperpage}{53}
 \indexentry{read\_freq\_geo() (in module pyqha.read)|hyperpage}{53}
 \indexentry{read\_freq\_geo\_old() (in module pyqha.read)|hyperpage}{53}
 \indexentry{read\_freq\_old() (in module pyqha.read)|hyperpage}{53}
 \indexentry{read\_thermo() (in module pyqha.read)|hyperpage}{53}
-\indexentry{pyqha.thermo (module)|hyperpage}{53}
-\indexentry{compute\_thermo() (in module pyqha.thermo)|hyperpage}{53}
+\indexentry{pyqha.thermo (module)|hyperpage}{54}
+\indexentry{compute\_thermo() (in module pyqha.thermo)|hyperpage}{54}
 \indexentry{compute\_thermo\_geo() (in module pyqha.thermo)|hyperpage}{54}
 \indexentry{dos\_integral() (in module pyqha.thermo)|hyperpage}{54}
 \indexentry{gen\_TT() (in module pyqha.thermo)|hyperpage}{54}
 \indexentry{rearrange\_thermo() (in module pyqha.thermo)|hyperpage}{54}
-\indexentry{pyqha.write (module)|hyperpage}{54}
-\indexentry{write\_CT() (in module pyqha.write)|hyperpage}{54}
-\indexentry{write\_C\_geo() (in module pyqha.write)|hyperpage}{54}
-\indexentry{write\_Etot() (in module pyqha.write)|hyperpage}{54}
-\indexentry{write\_alphaT() (in module pyqha.write)|hyperpage}{54}
-\indexentry{write\_celldmsT() (in module pyqha.write)|hyperpage}{54}
-\indexentry{write\_elastic\_constants() (in module pyqha.write)|hyperpage}{54}
+\indexentry{pyqha.write (module)|hyperpage}{55}
+\indexentry{write\_CT() (in module pyqha.write)|hyperpage}{55}
+\indexentry{write\_C\_geo() (in module pyqha.write)|hyperpage}{55}
+\indexentry{write\_Etot() (in module pyqha.write)|hyperpage}{55}
+\indexentry{write\_alphaT() (in module pyqha.write)|hyperpage}{55}
+\indexentry{write\_celldmsT() (in module pyqha.write)|hyperpage}{55}
+\indexentry{write\_elastic\_constants() (in module pyqha.write)|hyperpage}{55}
 \indexentry{write\_freq() (in module pyqha.write)|hyperpage}{55}
 \indexentry{write\_freq\_old() (in module pyqha.write)|hyperpage}{55}
 \indexentry{write\_thermo() (in module pyqha.write)|hyperpage}{55}

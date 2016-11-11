@@ -3,6 +3,10 @@
 # This file is distributed under the terms of the # MIT License. 
 # See the file `License' in the root directory of the present distribution.
 
+"""
+Several functions to manipulate anisotropic quantities.
+"""
+
 import numpy as np
 from scipy import interpolate 
 from constants import RY_KBAR
@@ -96,8 +100,14 @@ def compute_alpha_splines(TT,minT,ibrav,splinesoptions):
 def compute_S(min0,celldmsx,T,Svib,ibrav=4,typeSvib="quadratic"):
     """
     This function calculates the entropy as a function of temperature. By definition
-    :math:`S = -(dF/dT)_{\epsilon}`. To avoid the numerical derivation, within the quasi-harmonic
-    approximation it is better to derive it from fitting the harmonic entropy
+    :math:`S = -(dF/dT)_{\epsilon}`. The problem is that we have *F(T)* from the
+    minimization of *F* at each T with :math:`\sigma=0`. However, if we use finite
+    difference for the derivatives, we can assume that  :math:`\epsilon` is 
+    approximately constant over the temperatures where the numerical derivative 
+    is done.
+    
+    To avoid the numerical derivation and the above issue, within the quasi-harmonic
+    approximation it is possible to derive the entropy from fitting the harmonic 
     results on the grid :math:`(a,b,c)` at the equilibrium lattic parameters given
     in *min0*. *celldms* is the grid :math:`(a,b,c)`, *Svib* are the harmonic 
     entropies on the grid.
@@ -136,7 +146,13 @@ def compute_Ceps(min0,celldmsx,T,Cvib,ibrav=4,typeCvib="quadratic"):
     This function calculates the constant strain heat capacity :math:`C_{\epsilon}`
     as a function of temperature. 
     By definition :math:`C_{\epsilon} = -T(dS/dT)_{\epsilon}=-T(d^2F/dT^2)_{\epsilon}`. 
-    To avoid the numerical derivation, within the quasi-harmonic
+    As for the entropy, we have *F(T)* from the
+    minimization of *F* at each T with :math:`\sigma=0`. However, if we use finite
+    difference for the derivatives, we can assume that  :math:`\epsilon` is 
+    approximately constant over the temperatures where the numerical derivative 
+    is done.
+    
+    To avoid the numerical derivation and the above issue, within the quasi-harmonic
     approximation it is better to derive it from fitting the harmonic heat capacities
     results on the grid :math:`(a,b,c)` at the equilibrium lattic parameters given
     in *min0*. *celldms* is the grid :math:`(a,b,c)`, *Cvib* are the harmonic 
@@ -170,22 +186,32 @@ def compute_Ceps(min0,celldmsx,T,Cvib,ibrav=4,typeCvib="quadratic"):
         return None
 
 
-def compute_heat_capacity(TT,minT,alphaT,C,ibrav=4):
+def compute_Csigma_from_alphaandC(TT,minT,alphaT,CT,ibrav=4):
     """
     This function calculate the difference between the constant stress heat capacity
-    C_sigma and the constant strain heat capacity C_epsilon from the V, the thermal
-    expansions and the elastic constant tensor C
+    :math:`C_{\sigma}` and the constant strain heat capacity :math:`C_{\epsilon}` 
+    from the *V* (obtained from the input lattice parameters *minT*, the thermal
+    expansion tensor *alphaT* and the elastic constant tensor *CT*, all as a function
+    of temperature. This is essentially the anisotropic equivalent of the equation
+    :math:`Cp - Cv = T V beta^2 B0` for the isotropic case (volume only)
+    and it avoids a further numerical derivation to obtain :math:`C_{\sigma}`. 
+    It is however more complex in the anisotropic case since *minT*, *alphaT* and
+    in particul the elastic constant tensor *CT* must me known in principle 
+    including their temperature dependence.
+    
+    .. Warning::
+      Still very experimental...
     """
-    C = C / RY_KBAR
-    CT = np.zeros(len(TT))
+    CT = CT / RY_KBAR
+    Csigma = np.zeros(len(TT))
     for i in range(1,len(TT)):
         V = compute_volume(minT[i],ibrav)
         for l in range(0,6):
             for m in range(0,6):
-                temp = alphaT[i,l] * C[l,m] * alphaT[i,m]
-        CT[i] = V * TT[i] * temp    # this is C_sigma-C_epsilon at a given T
+                temp = alphaT[i,l] * CT[l,m] * alphaT[i,m]
+        Csigma[i] = V * TT[i] * temp    # this is C_sigma-C_epsilon at a given T
   
-    return CT
+    return Csigma
 
 
 def compute_Csigma(TT,Ceps,minT,alphaT,C,ibrav=4):
@@ -209,6 +235,9 @@ def compute_Csigma(TT,Ceps,minT,alphaT,C,ibrav=4):
     phonon frequencies with the lattice parameters. In reality, this is not the 
     case and the entropy so obtained can only be taken as an approximation of the
     real one.
+    
+    .. Warning::
+      Still very experimental...
     """
     
     Csigma = np.zeros(len(T))

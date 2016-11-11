@@ -153,5 +153,11 @@ pyqha.write module
     :undoc-members:
     :show-inheritance:
 
+pyqha.alphagruneisenp module
+-----------------------------
 
+.. automodule:: pyqha.alphagruneisenp
+    :members:
+    :undoc-members:
+    :show-inheritance:
 

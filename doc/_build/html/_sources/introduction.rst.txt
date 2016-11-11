@@ -5,7 +5,7 @@
 Introduction
 ****************
 
-:py:mod:`pyqha` is a Python package to perform quasi-harmonic and related calculations from total energies at 0 K, elastic constants at 0 K and phonon densities of states. The package provides Python functions to postprocess the results of your favourite DFT code, such as Quantum Espresso [#QE]_ or VASP [#VASP]_, to obtain quasi-harmonic properties. It is meant to be imported in your own code or used to produce quasi-harmonic results (see the Tutorial part of this documentation). It is also meant for people who want to tinker with the code and adapt it to their own needs. Finally note that you may couple the package with some other available calculation Python tools, such as `ASE <https://wiki.fysik.dtu.dk/ase/about.html>`_ or `AiiDA <http://www.aiida.net/>`_.
+:py:mod:`pyqha` is a Python package to perform quasi-harmonic and related calculations from total energies at 0 K, elastic constants at 0 K and phonon densities of states. The package provides Python functions to post-process the results of your favorite DFT code, such as Quantum Espresso [#QE]_ or VASP [#VASP]_, to obtain quasi-harmonic properties. It is meant to be imported in your own code or used to produce quasi-harmonic results (see the Tutorial part of this documentation). It is also meant for people who want to tinker with the code and adapt it to their own needs. Finally note that you may couple the package with some other available calculation Python tools, such as `ASE <https://wiki.fysik.dtu.dk/ase/about.html>`_ or `AiiDA <http://www.aiida.net/>`_.
 The package is based on numpy, scipy and matplotlib libraries.
 
 A non-exhaustive list of properties which can be obtained using :py:mod:`pyqha` is:
@@ -57,7 +57,11 @@ More functions are available as submodules. See the related documentation for mo
 General notes
 ================
 
-The parameter *ibrav*, which occurs in many functions of this package, identifies the Bravais lattice of the system as in Quantum Espresso. Currently, only cubic (*ibrav=1,2,3*), hexagonal (*ibrav=4*), tetragonal (*ibrav=6,7*), orthorombic (*ibrav=8,9,10,11*) lattices are implemented. Note that only the variation of phonon frequencies over a grid :math:`(a,b,c)` of lattice parameters can be carried out for now. Angles and internal degrees of freedom (atomic positions) cannot be considered. Thus, different *ibrav* can give the same grid:
+----------------------------
+Bravais lattice (*ibrav*)
+----------------------------
+
+The parameter *ibrav*, which occurs in many functions of this package, identifies the Bravais lattice of the system as in Quantum Espresso. Currently, only cubic (*ibrav=1,2,3*), hexagonal (*ibrav=4*), tetragonal (*ibrav=6,7*), orthorhombic (*ibrav=8,9,10,11*) lattices are implemented. Note that only the variation of phonon frequencies over a grid :math:`(a,b,c)` of lattice parameters can be carried out for now. Angles and internal degrees of freedom (atomic positions) cannot be considered. Thus, different *ibrav* can give the same grid:
 
     +-----------------------------+----------------------------------+----------------------------------+
     | *ibrav*                     | Grid                             | Fitting polynomial               |
@@ -70,3 +74,21 @@ The parameter *ibrav*, which occurs in many functions of this package, identifie
     +-----------------------------+----------------------------------+----------------------------------+ 
 
 
+----------------------------
+Choice of the grid points
+----------------------------
+
+:py:mod:`pyqha` essentially relies on the calculation of total energies, phonon frequencies and elastic constants using one of the above grids according to the symmetry of the unit cell. For the choice of the values of grid points you should follow the following guidelines:
+
+ - the minimum of the energy must be close to the center of the grid to guarantee better results. This of course can only be evaluated *a posteriori* or based on experimental values. Since the minimum changes with temperature because of thermal expansion, the size of the grid must be large enough for it not to get too close to the boundaries at high temperature.
+ - the step between the grid points must be small enough to guarantee a correct fitting of the energy but at the same time you must limit the total number of points. The same is true for the total width of the grid. This is especially important for phonon frequencies which are more computational demanding than the total energies at 0 K.
+ - typically, 9 volume values are sufficient for fitting the Murnaghan for most purposes. Typical values for a 2D grid are 25 values (5x5) and 125 values for a 3D grid (5x5x5).
+ 
+ .. Warning::
+   Testing the choice of the grid points is essential to obtain reliable results!  
+
+----------------------------
+Plotting
+----------------------------
+
+:py:mod:`pyqha` uses the *matplotlib* library for Plotting. Some functions in the package are simply useful wrappers of *matplotlib* functions for common uses. They return a *matplotlib* object which can be further adapted to specific needs and personal taste.

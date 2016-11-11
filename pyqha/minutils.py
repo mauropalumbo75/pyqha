@@ -3,6 +3,13 @@
 # This file is distributed under the terms of the # MIT License. 
 # See the file `License' in the root directory of the present distribution.
 
+"""
+This submodule groups all functions relevant for minimizing the energy in the 
+anisotropic case. It also contains the functions implementing the fitting
+polynomials, which can be "quadratic" or "quartic" and depend on up to 3 variables.
+"""
+
+
 import numpy as np
 from scipy.optimize import minimize
 

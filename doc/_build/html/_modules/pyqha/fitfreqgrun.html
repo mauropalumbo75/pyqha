@@ -77,6 +77,11 @@
 <span class="c1"># This file is distributed under the terms of the # MIT License. </span>
 <span class="c1"># See the file `License&#39; in the root directory of the present distribution.</span>
 
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This submodule groups all functions relevant for fitting phonon frequencies and</span>
+<span class="sd">computing Gruneisen parameters. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -84,8 +89,6 @@
 <span class="kn">from</span> <span class="nn">fitutils</span> <span class="k">import</span> <span class="n">fit_anis</span><span class="p">,</span> <span class="n">print_polynomial</span>
 <span class="kn">from</span> <span class="nn">minutils</span> <span class="k">import</span> <span class="n">fquadratic</span><span class="p">,</span> <span class="n">fquartic</span><span class="p">,</span> <span class="n">fquadratic_der</span><span class="p">,</span> <span class="n">fquartic_der</span><span class="p">,</span> <span class="n">find_min</span>
 <span class="kn">from</span> <span class="nn">write</span> <span class="k">import</span> <span class="n">write_freq</span>
-
-
 
 <span class="c1">################################################################################</span>
 
@@ -250,45 +253,6 @@
     
     <span class="k">return</span> <span class="n">weightsx</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span> <span class="n">f</span><span class="p">,</span> <span class="n">grun</span>	<span class="c1"># weights for different geometries are supposed to be the same, return only one</span></div>
 
-
-<span class="c1">################################################################################</span>
-<span class="c1">#   MAIN, to be used for testing the module</span>
-<span class="c1">################################################################################</span>
-<span class="c1">#</span>
-
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-  
-    <span class="c1"># Default command line parameters</span>
-    <span class="n">inputfileEtot</span> <span class="o">=</span> <span class="s2">&quot;Os.pz-spn-kjpaw_psl.1.0.0.UPF/energy_files/output_energy1&quot;</span>
-    <span class="n">inputfilefreq</span> <span class="o">=</span> <span class="s2">&quot;Os.pz-spn-kjpaw_psl.1.0.0.UPF/frequencies/save_frequencies.dat.g&quot;</span>  
-    
-    <span class="c1">#inputfileEtot = &quot;Re.pz-spn-kjpaw_psl.1.0.0.UPF/energy_files/output_energy1&quot;</span>
-    <span class="c1">#inputfilefreq = &quot;Re.pz-spn-kjpaw_psl.1.0.0.UPF/frequencies/save_frequencies.dat.g&quot;  </span>
-    
-    <span class="n">ibrav</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># default value, to be later changed to 1</span>
-    <span class="n">typeEtot</span> <span class="o">=</span> <span class="s2">&quot;quartic&quot;</span>
-    <span class="n">typefreq</span> <span class="o">=</span> <span class="s2">&quot;quadratic&quot;</span>
-    <span class="n">guess</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.13327423</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.57852513</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
-        
-    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    
-    <span class="c1"># Read the energies (this is necessary to read the celldmsx)</span>
-    <span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span> <span class="o">=</span> <span class="n">read_Etot</span><span class="p">(</span><span class="n">inputfileEtot</span><span class="p">)</span>
-    <span class="c1"># Fit and find the minimun at 0 K</span>
-    <span class="n">a0</span><span class="p">,</span> <span class="n">chia0</span> <span class="o">=</span> <span class="n">fit_anis</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">Ex</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">typeEtot</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">chia0</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
-        <span class="n">min0</span><span class="p">,</span> <span class="n">fmin0</span> <span class="o">=</span> <span class="n">find_min</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">typeEtot</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">)</span>
-    
-    <span class="c1"># fit the frequencies over the grid of lattice parameters and get the fitted</span>
-    <span class="c1"># ones at the minimum point from Etot (min0)</span>
-    <span class="n">weights</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">grun</span> <span class="o">=</span> <span class="n">fitfreq</span><span class="p">(</span><span class="n">celldmsx</span><span class="p">,</span> <span class="n">min0</span><span class="p">,</span> <span class="n">inputfilefreq</span><span class="p">,</span> <span class="n">ibrav</span><span class="p">,</span> <span class="n">typefreq</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">compute_grun</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">write_freq</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="s2">&quot;average_freqPython&quot;</span><span class="p">)</span>
-    <span class="n">write_freq</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">grun</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s2">&quot;output_grun_along_a_ext3Dfit&quot;</span><span class="p">)</span>
-    <span class="n">write_freq</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span><span class="n">grun</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s2">&quot;output_grun_along_c_ext3Dfit&quot;</span><span class="p">)</span>
-
-    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
-    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Finished. Elapsed time: &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">elapsed_time</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; s.&quot;</span><span class="p">)</span>
 </pre></div>
 
           </div>

@@ -3,6 +3,20 @@
 # This file is distributed under the terms of the # MIT License. 
 # See the file `License' in the root directory of the present distribution.
 
+"""
+This module is still experimental. 
+
+It contains functions for computing the thermal expansion tensor as a function 
+of temperature from the Gruneisein parameters, the mode contributions to the 
+heat capacity, the elastic tensor and the unit cell volume.
+
+The mode contribution to the heat capacity are calculated in :py:func:`c_qv_python`.
+A faster C function is also available and used instead (if succesfully compiled.
+
+The full calculation here can be quite time consuming. For this reason, the 
+:py:func:`compute_alpha_gruneisein` is implemented with a simple parallelization
+over the temperatures using the Python package :py:mod:`multiprocessing`.
+""" 
 
 import numpy as np
 import math

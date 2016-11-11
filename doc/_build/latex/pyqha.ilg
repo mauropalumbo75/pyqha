@@ -1,7 +1,7 @@
 This is makeindex, version 2.15 [TeX Live 2013] (kpathsea + Thai support).
 Scanning style file ./python.ist......done (6 attributes redefined, 0 ignored).
 Scanning input file pyqha.idx....done (120 entries accepted, 0 rejected).
-Sorting entries....done (834 comparisons).
+Sorting entries....done (839 comparisons).
 Generating output file pyqha.ind....done (141 lines written, 0 warnings).
 Output written in pyqha.ind.
 Transcript written in pyqha.ilg.

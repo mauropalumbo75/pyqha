@@ -3,7 +3,14 @@
 # This file is distributed under the terms of the # MIT License. 
 # See the file `License' in the root directory of the present distribution.
 
-# This part is still very messy...
+"""
+An earlier and now oblosete implementation of functions for computing the 
+thermal expansion tensor as a function 
+of temperature from the Gruneisein parameters, the mode contributions to the 
+heat capacity, the elastic tensor and the unit cell volume.
+
+Use :py:mod:`alphagruneisenp` instead.
+"""
 
 import numpy as np
 import time
@@ -296,72 +303,3 @@ def compute_alpha_gruneiseinCT(inputfileEtot,inputfileFvib,inputpathCx,inputfile
         
     write_alphaT("alpha_gruneisenT",T,alphaT,4)
         
-        
-################################################################################
-#   MAIN
-################################################################################
-#
-
-if __name__ == "__main__":
-    
-    start_time = time.time()
-  
-    # Default command line parameters
-    #inputfileEtot = "Os.pz-spn-kjpaw_psl.1.0.0.UPF/energy_files/output_energy1"
-    #inputfileFvib = "Os.pz-spn-kjpaw_psl.1.0.0.UPF/therm_files/output_therm.dat"  
-    #inputfilefreq = "Os.pz-spn-kjpaw_psl.1.0.0.UPF/frequencies/save_frequencies.dat.g"
-    #inputfileC = "Os.pz-spn-kjpaw_psl.1.0.0.UPF/elastic_constants/output_el_cons.dat"
-    #inputfileC = "Os.pz-spn-kjpaw_psl.1.0.0.UPF/elastic_constants/" 
-    
-    #inputfileEtot = "Re.pz-spn-kjpaw_psl.1.0.0.UPF/energy_files/output_energy1"
-    #inputfileFvib = "Re.pz-spn-kjpaw_psl.1.0.0.UPF/therm_files/output_therm.dat"
-    #inputfilefreq = "Re.pz-spn-kjpaw_psl.1.0.0.UPF/frequencies/save_frequencies.dat.g"
-    #inputfileC = "Re.pz-spn-kjpaw_psl.1.0.0.UPF/elastic_constants/"
-    
-    inputfileEtot = "Tc.pz-spn-kjpaw_psl.1.0.0.UPF/energy_files/output_energy1"
-    inputfileFvib = "Tc.pz-spn-kjpaw_psl.1.0.0.UPF/therm_files/output_therm.dat"
-    inputfilefreq = "Tc.pz-spn-kjpaw_psl.1.0.0.UPF/frequencies/save_frequencies.dat.g"
-    inputfileC = "Tc.pz-spn-kjpaw_psl.1.0.0.UPF/elastic_constants/"
-    
-    ibrav = 4  # default value, to be later changed to 1
-    typeEtot = "quartic"
-    typeFvib = "quartic"
-    typefreq = "quadratic"
-    typeSx = "quartic"
-    # default guess for Os pz
-    #guess=[5.12376396,0.0,8.19355157,0.0,0.0,0.0]
-    # default guess for Re pz
-    #guess=[5.16916792,0.0,8.33684861,0.0,0.0,0.0]
-    # default guess for Tc pz
-    guess=[5.12374914,0.0,8.19314311,0.0,0.0,0.0]
-    
-    option=0    # possible choices: 0, 1, 2   
-    
-    # Read and process command line parameters, if any
-    print ("Possible options are: -fileEtot -fileFvib -filefreq -fileC "+ 
-    "-ibrav -fittypeEtot -fittypeFvib -fittypefreq -fittypeSx -option -guess\n")
-    print ("Assuming default values for unspecified options: \n")
-    if len(sys.argv)>1:
-        for i in range(1,len(sys.argv)):
-            if sys.argv[i] == "-fileEtot": inputfileEtot = sys.argv[i+1]
-            elif sys.argv[i] == "-fileFvib": inputfileFvib = sys.argv[i+1]
-            elif sys.argv[i] == "-filefreq": inputfileFvib = sys.argv[i+1]
-            elif sys.argv[i] == "-fileC": inputfileFvib = sys.argv[i+1]
-            elif sys.argv[i] == "-ibrav": ibrav = int(sys.argv[i+1])
-            elif sys.argv[i] == "-fittypeEtot": typeEtot = sys.argv[i+1]
-            elif sys.argv[i] == "-fittypeFvib": typeFvib = sys.argv[i+1]
-            elif sys.argv[i] == "-fittypefreq": typefreq = sys.argv[i+1]
-            elif sys.argv[i] == "-fittypeSx": typeSx = sys.argv[i+1]
-            elif sys.argv[i] == "-option": option = int(sys.argv[i+1])
-            elif sys.argv[i] == "-guess": guess = sys.argv[i+1]
-
-    # Add ibrav parameter in all 3
-    compute_alpha_gruneisein(inputfileEtot,inputfileC,inputfilefreq,range(1,2000,1),typeEtot,typefreq,ibrav) 
-    #compute_alpha_gruneiseinT(inputfileEtot,inputfileFvib,inputfileC,inputfilefreq,typeEtot,typeFvib,typefreq,ibrav,guess)
-    #compute_alpha_gruneiseinCT(inputfileEtot,inputfileFvib,inputpathCx,inputfilefreq,typeEtot,typeFvib,typeSx,typefreq,ibrav,guess)
-
-    
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print ("Finished. Elapsed time: "+str(elapsed_time)+" s.")
-
