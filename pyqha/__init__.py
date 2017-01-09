@@ -16,7 +16,7 @@ from alphagruneisenp import compute_alpha_gruneisein
 
 
 # read/write functions
-from read import read_dos, read_dos_geo, read_thermo, read_Etot, read_elastic_constants, read_elastic_constants_geo
+from read import read_dos, read_dos_geo, read_thermo, read_EtotV, read_Etot, read_elastic_constants, read_elastic_constants_geo
 from read import read_freq, read_freq_geo
 from write import write_thermo, write_xy, write_celldmsT, write_alphaT, write_C_geo, write_CT, write_freq
 

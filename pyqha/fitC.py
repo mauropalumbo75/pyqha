@@ -8,15 +8,11 @@ This submodule groups all functions relevant for computing elastic constants and
 compliances. 
 """
 
-import sys
 import numpy as np
-from read import read_Etot, read_elastic_constants_geo, read_thermo
-from write import write_C_geo, write_CT
-from fitutils import fit_anis, print_polynomial
-from minutils import find_min, fquadratic, fquartic
-from fitFvib import fitFvib
-from thermo import gen_TT, compute_thermo_geo, rearrange_thermo
-from plotutils import simple_plot_xy, multiple_plot_xy
+from read import read_Etot, read_elastic_constants_geo
+from write import write_C_geo
+from fitutils import fit_anis
+from minutils import fquadratic, fquartic
 
 ################################################################################
 
@@ -134,7 +130,7 @@ def fitS(inputfileEtot, inputpathCx, ibrav, typeSx="quadratic"):
     
     # This function works for both C and S, here I use it for S 
     Sxx = rearrange_Cx(Sx,ngeo)
-    write_qha_C(celldmsx, Sxx, ibrav, inputpathCx)	# Write the S as a function of T for reference
+    write_C_geo(celldmsx, Sxx, ibrav, inputpathCx)	# Write the S as a function of T for reference
     
     aS, chiS = fitCxx(celldmsx, Sxx, ibrav, True, typeSx)
     

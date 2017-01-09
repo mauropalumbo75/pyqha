@@ -70,17 +70,21 @@ def compute_thermo(E,dos,TT):
             Svib += 3.0*(E[j]/arg2/tanh(E[j]/arg2)-log(2.0*sinh(E[j]/arg2)))*dos[j]+\
             3.0*(E[j+1]/arg2/tanh(E[j+1]/arg2)-log(2.0*sinh(E[j+1]/arg2)))*dos[j+1]+\
             2.0*(E[j+2]/arg2/tanh(E[j+2]/arg2)-log(2.0*sinh(E[j+2]/arg2)))*dos[j+2]
-            
-            Cvib += 3.0*pow(E[j]/arg,2)/( 4.0*pow(sinh(E[j]/(arg2)),2) )*dos[j]+\
-                3.0*pow(E[j+1]/arg,2)/( 4.0*pow(sinh(E[j+1]/(arg2)),2) )*dos[j+1]+\
-                2.0*pow(E[j+2]/arg,2)/( 4.0*pow(sinh(E[j+2]/(arg2)),2) )*dos[j+2]
-            
+
+            try:  # avoid overflow error for arg very small
+                Cvib += 3.0*pow(E[j]/arg,2)/( 4.0*pow(sinh(E[j]/(arg2)),2) )*dos[j]+\
+                    3.0*pow(E[j+1]/arg,2)/( 4.0*pow(sinh(E[j+1]/(arg2)),2) )*dos[j+1]+\
+                    2.0*pow(E[j+2]/arg,2)/( 4.0*pow(sinh(E[j+2]/(arg2)),2) )*dos[j+2]
+            except:
+                Cvib += 0.0
+
         EvibT[i] = h*0.5*Evib*3.0/8.0  #  h is the integration step, 0.5 comes from the equation for E,
                                                     # the factor 3.0/8.0 comes from the Simpson 3/8 rule
         SvibT[i] = h*K_BOLTZMANN_RY*Svib*3.0/8.0
         CvibT[i] = h*K_BOLTZMANN_RY*Cvib*3.0/8.0
     FvibT = EvibT - SvibT * TT
-    
+
+    print ()
     return TT, EvibT, SvibT, CvibT, FvibT, ZPE, modes
 
 
@@ -163,4 +167,4 @@ def rearrange_thermo(T,Evib,Fvib,Svib,Cvib,ngeo=1):
             Cvib2 [i,j] = Cvib[j][i]
     
     return len(T[0]), T[0], Evib2, Fvib2, Svib2, Cvib2
-    
+

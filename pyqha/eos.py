@@ -12,6 +12,7 @@ from constants import RY_KBAR
 from math import pow
 import numpy as np
 from scipy.optimize import curve_fit
+from scipy import interpolate
 
 ################################################################################
 # Murnaghan EOS functions 
@@ -112,23 +113,24 @@ def calculate_fitted_points(V,a):
 
 ################################################################################
 
-def fit_Murn(V,E):
+def fit_Murn(V,E,guess=[0.0,0.0,900/RY_KBAR,1.15],lm_pars={}):
     """
     This is the function for fitting with the Murnaghan EOS as a function of volume only.
 
     The input variable *V* is an 1D array of volumes, *E* are the corresponding 
     energies (or other analogous quantity to be fitted with the Murnaghan EOS.
+    *a*
     
-    Note: volumes must be in a.u. and energies in Rydberg.
+    Note: volumes must be in a.u.^3 and energies in Rydberg.
     
     """
     # reasonable initial guesses for EOS parameters
-    a0=E[len(E)/2]
-    a1=V[len(V)/2]
-    a2=500/RY_KBAR
-    a3=5.0
-    
-    a, pcov = curve_fit(E_MurnV, V, E, p0=[a0,a1,a2,a3])
+    if guess[0]==0.0:
+        guess[0] = E[len(E) / 2]
+    if guess[1]==0.0:
+        guess[1] = V[len(V) / 2]
+
+    a, pcov = curve_fit(E_MurnV, V, E, p0=guess, **lm_pars)
     
     chi = 0
     for i in range(0,len(V)):
@@ -138,7 +140,7 @@ def fit_Murn(V,E):
 
 
 
-def compute_beta(minT):
+def compute_beta(TT, minT):
     """
     This function computes the volumetric thermal expansion as a numerical
     derivative of the volume as a function of temperature V(T) given in the
@@ -148,6 +150,31 @@ def compute_beta(minT):
     grad=np.gradient(np.array(minT))  # numerical derivatives with numpy
     betaT = np.array(grad)  # grad contains the derivatives with respect to T
                                 # also convert to np.array format    
+    return betaT/minT
+
+
+def compute_beta_splines(TT, minT, splinesoptions={}):
+    """
+    This function computes the volumetric thermal expansion as a numerical
+    derivative of the volume as a function of temperature V(T) given in the
+    input array *minT*. This array can obtained
+    from the free energy minimization which should be done before.
+    This function uses splines for smoothing the derivative.
+    """
+
+    betaT = np.zeros(len(TT))
+
+    x = np.array(TT)
+    y0 = np.array(minT)
+
+    if (splinesoptions == {}):
+        tck0 = interpolate.splrep(x, y0)
+    else:
+        tck0 = interpolate.splrep(x, y0, k=splinesoptions['k0'], s=splinesoptions['s0'])
+
+    ynew0 = interpolate.splev(x, tck0, der=0)
+    betaT = interpolate.splev(x, tck0, der=1)
+
     return betaT/minT
 
 

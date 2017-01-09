@@ -9,11 +9,11 @@ This submodule groups all functions relevant for the total and vibrational energ
 
 import sys
 import numpy as np
-from constants import RY_KBAR
+from constants import RY_KBAR, RYDBERG_SI, NA
 from read import read_Etot, read_EtotV, read_thermo, read_dos_geo
 from fitutils import print_polynomial, fit_anis, expand_quadratic_to_quartic
 from minutils import find_min
-from eos import fit_Murn, print_eos_data, calculate_fitted_points, compute_beta, compute_Cv, compute_Cp
+from eos import fit_Murn, print_eos_data, calculate_fitted_points, compute_beta, compute_beta_splines, compute_Cv, compute_Cp
 from properties_anis import compute_alpha, compute_alpha_splines
 from write import write_celldmsT, write_alphaT, write_xy
 from thermo import gen_TT, compute_thermo_geo, rearrange_thermo
@@ -148,7 +148,7 @@ def fitFvib(fEtot,thermodata,ibrav=4,typeEtot="quadratic",typeFvib="quadratic",d
 
 ################################################################################
 
-def fitFvibV(fin,thermodata,verbosity="low"):
+def fitFvibV(fin,thermodata,splinesoptions={},lm_pars={},verbosity="low"):
     """
     This function computes quasi-harmonic quantities from the 
     :math:`E_{tot}(V)+F_{vib}(V,T)` as a function of temperature with Murnaghan's
@@ -166,7 +166,7 @@ def fitFvibV(fin,thermodata,verbosity="low"):
     (:py:func:`compute_Cv`) and the constant pression heat capacity (:py:func:`compute_Cp`).
     
     It returns the numpy 1D arrays containing the temperatures (as in input), the
-    minimun energy, minimun volume, bulk modulus, volume thermal expansion, constant
+    minimun energy,lm_pars minimun volume, bulk modulus, volume thermal expansion, constant
     volume and constant pressure heat capacities, one matrix with all fitted 
     coefficients at each T and finally an array with the :math:`\chi^2` at each T.
     
@@ -196,7 +196,7 @@ def fitFvibV(fin,thermodata,verbosity="low"):
         print ("####################################################################")
         print ("T=",T[i])
   
-        a, cov, chi = fit_Murn(V,E+Fvib[i])
+        a, cov, chi = fit_Murn(V,E+Fvib[i],a0,lm_pars)
         if (verbosity=="high"):
             print_eos_data(V,E+Fvib[i],a,chi,"E+Fvib")  # print full detail at each T
              
@@ -211,7 +211,12 @@ def fitFvibV(fin,thermodata,verbosity="low"):
     # They are arrays, all function of T
     
     # Compute the volume thermal expansion as numerical derivative of Vmin(T)
-    betaT = compute_beta(aT[:,1])
+    if (splinesoptions=={}):
+        betaT = compute_beta(T, aT[:,1])
+        print ("Computing beta with finite differences...")
+    else:
+        betaT = compute_beta_splines(T, aT[:,1],splinesoptions)
+        print ("Computing beta with splines...")
     
     # compute Cv(Vmin(T))
     Cv = compute_Cv(T,aT[:,1],V,Cvib)
@@ -219,6 +224,6 @@ def fitFvibV(fin,thermodata,verbosity="low"):
     # compute Cp as Cp = Cv + TV beta^2 B0
     Cp = compute_Cp(T,Cvib[:,4],aT[:,1],aT[:,2],betaT)
     
-    return T, aT[:,0], aT[:,1], aT[:,2], betaT, Cv, Cp, aT, chiT
+    return T, aT[:,0], aT[:,1], aT[:,2]*RY_KBAR, betaT, Cv*RYDBERG_SI*NA, Cp*RYDBERG_SI*NA, aT, chiT
     
     

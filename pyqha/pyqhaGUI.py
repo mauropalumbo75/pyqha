@@ -4,21 +4,25 @@
 # See the file `License' in the root directory of the present distribution.
 
 
+"""
+A tentative GUI for pyqha. Jut started...
+
+It uses :py:mod:`wxPython`. Note that at the time of writing this library is 
+available for Python 2.x only. Porting of the library to Python 3.x is ongoing.
+""" 
+
 import wx
-#import matplotlib
 #matplotlib.use('WXAgg')
 import matplotlib.pyplot as plt
 
 import time, sys, os
 import numpy as np
-from read import read_EtotV, read_Etot
-from eos import fit_Murn, print_data, calculate_fitted_points, write_Etotfitted
-from fitutils import fit_anis
-from minutils import find_min
-from fitEtot import fitEtot, fitEtotV
-from fitFvib import fitFvib, fitFvibV
-from fitC import fitCT
-from alphagruneisenp import compute_alpha_gruneisein
+from pyqha.read import read_EtotV, read_Etot
+#from pyqha import fit_Murn, print_data, calculate_fitted_points, fit_anis, find_min
+from pyqha import fitEtot, fitEtotV, fitFvib, fitFvibV, fitCT, compute_alpha_gruneisein
+from pyqha.eos import fit_Murn, print_eos_data
+
+from pyqha.plotutils import plot_EV
 
 
 class RedirectText:
@@ -73,13 +77,13 @@ class MyFrame(wx.Frame):
         To modify the menus of the application you need to change them here.
         """
         return (("&File",
-            ("&Open E_tot file...\tctrl+E", "Load total energies file", self.OnOpenEtot),
-            ("&Open DOS file(s)...\tctrl+D", "Load DOS file(s)", self.OnOpenDOS),
+            ("Open Etot(V) file...\tctrl+O", "", self.OnOpenEtotV), 
             ("", "", ""),
             ("Quit...\tctrl+Q", "Exit the program", self.OnQuit)),
                 ("&Compute",
-            ("Fit E_tot\tctrl+F", "Fit the total energies", self.OnFitEtot)),
-
+            ("Fit iso E_tot\tctrl+E", "Fit the total energies as a function of volume", self.OnFitisoEtot),
+            ("Fit aniso E_tot\tctrl+F", "Fit the total energies as a function of lattice parameters", self.OnFitanisoEtot)),
+            
                 ("&Help",
             ("&Help contents\tctrl+H", "Compute the bare potential from the electronic charge", self.OnHelp),
             ("&About\tctrl+A", "Compute the bare plus the Hartree potential from the electronic charge", self.OnAbout)))
@@ -110,7 +114,7 @@ class MyFrame(wx.Frame):
     # Handling methods, rather self explaining
     #
     
-    def OnOpenEtot(self, event):
+    def OnOpenEtotV(self, event):
         wildcard =  "dat file (*.dat)|*.dat|" \
                     "All files (*)|*"
         dialog = wx.FileDialog(None, "Choose a file with total energies", os.getcwd(),"", wildcard)
@@ -118,48 +122,38 @@ class MyFrame(wx.Frame):
             try:
                 fname = dialog.GetPath()
                 self.V, self.E = read_EtotV(fname)   
-                self.IsEtotRead = True
-                self.SetStatusText("Read E_tot file: "+fname)
+                self.IsEtotVRead = True
+                self.SetStatusText("E_tot(V) file "+fname+" read")
             except:
                 wx.MessageBox("Something wrong while opening the E_tot file... not loaded.",
                 "", wx.OK | wx.ICON_EXCLAMATION, self)  
 
         dialog.Destroy()
         
-        
-    def OnOpenDOS(self, event):
-        wildcard =  "dos file (*.dos)|*.dos|" \
-                    "All files (*)|*"
-        dialog = wx.FileDialog(None, "Choose one or more files with phonon DOS", os.getcwd(),"", wildcard, style= wx.FD_MULTIPLE)
-        if dialog.ShowModal() == wx.ID_OK:
-            try:
-                fnames = dialog.GetPaths()
-                print (fnames)
-            except:
-                wx.MessageBox("Something wrong while opening the DOS file(s)... not loaded.",
-                "", wx.OK | wx.ICON_EXCLAMATION, self)  
-
-        dialog.Destroy()
     
         
-    def OnFitEtot(self, event):
+    def OnFitisoEtot(self, event):
         try:
-            a, cov, chi = fit_Murn(self.V,self.E)
-            print_data(self.V,self.E,a,chi,"Etot")
-            #write_Etotfitted(outputfileEtot,V,E,a,chi,"Etot")
-                        
-            # Plotting using matplotlib
-            Vdense, Edensefitted = calculate_fitted_points(self.V,a)
+            
+            self.a, self.cov, self.chi = fit_Murn(self.V,self.E)
+            print_eos_data(self.V,self.E,self.a,self.chi,"Etot")
     
-            plt.plot(self.V, self.E, 'o', label='Etot data', markersize=10)
-            plt.plot(Vdense, Edensefitted, 'r', label='Fitted EOS')
-            plt.legend()
-            plt.xlabel('V (a.u.^3)')
-            plt.ylabel('E (a.u.) ')
-            plt.show()
+            fig1 = plot_EV(self.V,self.E,self.a)                  	# plot the E(V) data and the fitting line
+            fig1.savefig("figure_1.png")
+
         except:
             wx.MessageBox("Something wrong while fitting total energies...",
                 "", wx.OK | wx.ICON_EXCLAMATION, self)  
+                
+    def OnFitanisoEtot(self, event):
+        try:
+            wx.MessageBox("Not implemented yet...",
+                "", wx.OK | wx.ICON_EXCLAMATION, self)  
+
+        except:
+            wx.MessageBox("Something wrong while fitting total energies...",
+                "", wx.OK | wx.ICON_EXCLAMATION, self)  
+                
     
     def OnQuit(self, event):
         plt.close("all")  # close all matplotlib figures
@@ -167,12 +161,12 @@ class MyFrame(wx.Frame):
 
                 
     def OnHelp(self, event):
-        wx.MessageBox("A program to perform quasi-harmonic calculations",
+        wx.MessageBox("A program to perform quasi-harmonic calculations based on the pyqha module",
         "Help Contents", wx.OK | wx.ICON_INFORMATION, self)
 
 
     def OnAbout(self, event):
-        wx.MessageBox("pyQHA: a program to perform quasi-harmonic calculations",
+        wx.MessageBox("pyqhaGUI: a program to perform quasi-harmonic calculations",
         "About pyQHA", wx.OK | wx.ICON_INFORMATION, self)      
         
 

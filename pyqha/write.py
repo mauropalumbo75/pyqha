@@ -7,8 +7,6 @@
 A collection of functions for writing different quantities to files or screen.
 """
 
-import numpy as np
-
 def write_elastic_constants(C,S,fname):
     """
     Elastic constants (and elastic compliances) are stored in Voigt notation 
@@ -42,8 +40,8 @@ def write_C_geo(celldmsx,C,ibrav=4,fCout=""):
     ngeo defines the total number of geometries evaluated
     Note: the order must be the same as for the total energies in the quasi-harmonic calculations!  
     """
-    for i in range(0,6):
-        for j in range(0,6):
+    for i in range(0, 6):
+        for j in range(0, 6):
             C_label = "C" + str(i+1) + str(j+1)
             fname = fCout + C_label + ".dat"
             fout = open(fname, "w")

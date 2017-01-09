@@ -240,7 +240,7 @@ def compute_Csigma(TT,Ceps,minT,alphaT,C,ibrav=4):
       Still very experimental...
     """
     
-    Csigma = np.zeros(len(T))
+    Csigma = np.zeros(len(TT))
     C = C / RY_KBAR
     Ctemp = np.zeros(len(TT))
     for i in range(1,len(TT)):
