@@ -82,7 +82,7 @@ def plot_EV(V,E,a=None,labely="Etot"):
     the fitted results
     """
     
-    from eos import calculate_fitted_points
+    from .eos import calculate_fitted_points
     
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)  # create an axes object in the figure
@@ -107,7 +107,7 @@ def plot_Etot(celldmsx,Ex,n,nmesh=(50,50,50),fittype="quadratic",ibrav=4,a=None)
     
     from mpl_toolkits.mplot3d import axes3d
     from matplotlib import cm
-    from minutils import calculate_fitted_points_anis
+    from .minutils import calculate_fitted_points_anis
     
     if (Ex==None) and (a==None):
         return
@@ -170,7 +170,7 @@ def plot_Etot_contour(celldmsx,nmesh=(50,50,50),fittype="quadratic",ibrav=4,a=No
     The plot type depends on ibrav.
     """
 
-    from minutils import calculate_fitted_points_anis
+    from .minutils import calculate_fitted_points_anis
     
     if a==None:
         return
