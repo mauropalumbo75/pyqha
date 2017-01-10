@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     from pyqha import RY_KBAR
     from pyqha import gen_TT, read_dos_geo, compute_thermo_geo, read_thermo, rearrange_thermo, fitFvibV, write_xy
-    from pyqha import simple_plot_xy, multiple_plot_xy
+    from pyqha import simple_plot_xy, multiple_plot_xy, print_eos_data
 
     # this part is for calculating the thermodynamic properties from the dos
     fdos="dos_files/output_dos.dat.g"	# base name for the dos files (numbers will be added as postfix)
@@ -56,5 +56,5 @@ if __name__ == "__main__":
     fig6 = multiple_plot_xy(TT,CvCp,xlabel="T (K)",ylabel="Cv/Cp (Ry/cell/K")
     fig6.savefig("figure_6.png")
 
-    print_eos_data(V,E+Fvib[i],a,chi,"E")  # print full detail at each T
+    #print_eos_data(V,E+Fvib[i],a,chi,"E")  # print full detail at each T
 
