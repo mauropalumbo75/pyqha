@@ -9,10 +9,10 @@ This submodule groups all functions relevant for computing the total energies at
 
 import sys
 import time
-from read import read_EtotV, read_Etot
-from eos import fit_Murn, print_eos_data, write_Etotfitted
-from fitutils import fit_anis
-from minutils import find_min
+from .read import read_EtotV, read_Etot
+from .eos import fit_Murn, print_eos_data, write_Etotfitted
+from .fitutils import fit_anis
+from .minutils import find_min
 
    
 def fitEtotV(fin,fout=None):

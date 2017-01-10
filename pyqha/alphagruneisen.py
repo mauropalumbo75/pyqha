@@ -16,17 +16,17 @@ import numpy as np
 import time
 import math
 import sys
-from read import read_Etot, read_freq, read_freq_ext, read_elastic_constants, \
+from .read import read_Etot, read_freq, read_freq_ext, read_elastic_constants, \
                  read_elastic_constants_geo, read_freq_ext_geo
-from write import write_freq, write_freq_ext, write_alphaT, write_qha_C, write_qha_CT
-from constants import RY_KBAR, K_BOLTZMANN_RY, kb1
-from fitutils import fit_anis
-from minutils import find_min, fquadratic, fquartic
-from fitfreqgrun import fitfreq, fitfreqxx, freqmingrun, rearrange_freqx
-from fitFvib import fitFvib
-from fitC import rearrange_Cx, fitCxx
+from .write import write_freq, write_freq_ext, write_alphaT, write_qha_C, write_qha_CT
+from .constants import RY_KBAR, K_BOLTZMANN_RY, kb1
+from .fitutils import fit_anis
+from .minutils import find_min, fquadratic, fquartic
+from .fitfreqgrun import fitfreq, fitfreqxx, freqmingrun, rearrange_freqx
+from .fitFvib import fitFvib
+from .fitC import rearrange_Cx, fitCxx
 
-from grunc import c_qvc  # This is the same routine c_qv implemented in C to speed it up
+from .grunc import c_qvc  # This is the same routine c_qv implemented in C to speed it up
 
 
 ################################################################################

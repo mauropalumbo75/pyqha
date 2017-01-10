@@ -11,10 +11,10 @@ computing Gruneisen parameters.
 import sys
 import time
 import numpy as np
-from read import read_Etot, read_freq_geo
-from fitutils import fit_anis, print_polynomial
-from minutils import fquadratic, fquartic, fquadratic_der, fquartic_der, find_min
-from write import write_freq
+from .read import read_Etot, read_freq_geo
+from .fitutils import fit_anis, print_polynomial
+from .minutils import fquadratic, fquartic, fquadratic_der, fquartic_der, find_min
+from .write import write_freq
 
 ################################################################################
 

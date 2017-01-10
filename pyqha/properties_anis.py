@@ -9,9 +9,9 @@ Several functions to manipulate anisotropic quantities.
 
 import numpy as np
 from scipy import interpolate 
-from constants import RY_KBAR
-from fitutils import fit_anis
-from minutils import fquadratic, fquartic
+from .constants import RY_KBAR
+from .fitutils import fit_anis
+from .minutils import fquadratic, fquartic
 
 ################################################################################ 
 

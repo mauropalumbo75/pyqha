@@ -8,7 +8,7 @@ This submodule groups several functions for calculating isotropic quasi-harmonic
 quantities using the Murnaghan EOS.
 """
 
-from constants import RY_KBAR
+from .constants import RY_KBAR
 from math import pow
 import numpy as np
 from scipy.optimize import curve_fit

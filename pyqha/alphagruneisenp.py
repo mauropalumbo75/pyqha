@@ -20,10 +20,10 @@ over the temperatures using the Python package :py:mod:`multiprocessing`.
 
 import numpy as np
 import math
-from constants import RY_KBAR, K_BOLTZMANN_RY, KB1
-from fitfreqgrun import freqmingrun
-from properties_anis import compute_volume
-from fitC import fS
+from .constants import RY_KBAR, K_BOLTZMANN_RY, KB1
+from .fitfreqgrun import freqmingrun
+from .properties_anis import compute_volume
+from .fitC import fS
 
 from multiprocessing import Pool
 

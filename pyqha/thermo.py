@@ -7,11 +7,11 @@
 A collection of functions for computing harmonic quantities from phonon DOS.
 """
 
-from constants import RY_TO_CMM1, K_BOLTZMANN_RY
+from .constants import RY_TO_CMM1, K_BOLTZMANN_RY
 from math import tanh, sinh, log, exp
 import numpy as np
-from read import read_dos, read_dos_geo
-from write import write_thermo
+from .read import read_dos, read_dos_geo
+from .write import write_thermo
 
 
 def dos_integral(E,dos,m=0):

@@ -9,15 +9,15 @@ This submodule groups all functions relevant for the total and vibrational energ
 
 import sys
 import numpy as np
-from constants import RY_KBAR, RYDBERG_SI, NA
-from read import read_Etot, read_EtotV, read_thermo, read_dos_geo
-from fitutils import print_polynomial, fit_anis, expand_quadratic_to_quartic
-from minutils import find_min
-from eos import fit_Murn, print_eos_data, calculate_fitted_points, compute_beta, compute_beta_splines, compute_Cv, compute_Cp
-from properties_anis import compute_alpha, compute_alpha_splines
-from write import write_celldmsT, write_alphaT, write_xy
-from thermo import gen_TT, compute_thermo_geo, rearrange_thermo
-from plotutils import simple_plot_xy, multiple_plot_xy
+from .constants import RY_KBAR, RYDBERG_SI, NA
+from .read import read_Etot, read_EtotV, read_thermo, read_dos_geo
+from .fitutils import print_polynomial, fit_anis, expand_quadratic_to_quartic
+from .minutils import find_min
+from .eos import fit_Murn, print_eos_data, calculate_fitted_points, compute_beta, compute_beta_splines, compute_Cv, compute_Cp
+from .properties_anis import compute_alpha, compute_alpha_splines
+from .write import write_celldmsT, write_alphaT, write_xy
+from .thermo import gen_TT, compute_thermo_geo, rearrange_thermo
+from .plotutils import simple_plot_xy, multiple_plot_xy
 
 
 ################################################################################

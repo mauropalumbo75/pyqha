@@ -9,10 +9,10 @@ compliances.
 """
 
 import numpy as np
-from read import read_Etot, read_elastic_constants_geo
-from write import write_C_geo
-from fitutils import fit_anis
-from minutils import fquadratic, fquartic
+from .read import read_Etot, read_elastic_constants_geo
+from .write import write_C_geo
+from .fitutils import fit_anis
+from .minutils import fquadratic, fquartic
 
 ################################################################################
 
