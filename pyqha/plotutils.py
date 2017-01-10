@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 
     
 import numpy as np
+from .eos import calculate_fitted_points
 
 
 def simple_plot_xy(x,y,xlabel="",ylabel=""):
@@ -81,9 +82,7 @@ def plot_EV(V,E,a=None,labely="Etot"):
     This function plots with matplotlib E(V) data and if a is given it also plot
     the fitted results
     """
-    
-    from .eos import calculate_fitted_points
-    
+     
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)  # create an axes object in the figure
     
