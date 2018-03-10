@@ -113,7 +113,7 @@ def calculate_fitted_points(V,a):
 
 ################################################################################
 
-def fit_Murn(V,E,guess=[0.0,0.0,900/RY_KBAR,1.15],lm_pars={}):
+def fit_Murn(V,E,guess=None,lm_pars={}):
     """
     This is the function for fitting with the Murnaghan EOS as a function of volume only.
 
@@ -124,6 +124,8 @@ def fit_Murn(V,E,guess=[0.0,0.0,900/RY_KBAR,1.15],lm_pars={}):
     Note: volumes must be in a.u.^3 and energies in Rydberg.
     
     """
+    if guess is None:
+        guess = [ 0.0, 0.0, 900/RY_KBAR, 1.15 ]
     # reasonable initial guesses for EOS parameters
     if guess[0]==0.0:
         guess[0] = E[len(E) / 2]
